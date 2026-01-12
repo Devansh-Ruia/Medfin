@@ -96,7 +96,7 @@ pip install -r requirements.txt
 
 4. Run the backend server:
 ```bash
-uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 ```
 
 The backend API will be available at `http://localhost:8000`
@@ -198,7 +198,7 @@ npm test
 ### Backend
 The backend is production-ready with uvicorn:
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ### Frontend
