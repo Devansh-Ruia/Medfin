@@ -9,7 +9,14 @@ class Settings(BaseSettings):
 
     api_v1_prefix: str = "/api/v1"
 
-    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://medfin.vercel.app",
+    ]
+
+    class Config:
+        env_file = ".env"
 
     financial_guidelines: Dict[str, Any] = {
         "federal_poverty_level": {
