@@ -122,7 +122,7 @@ export default function Home() {
 
       <footer className="mt-16 py-8 bg-white border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
-          <p>© 2024 MedFin. This tool provides estimates and recommendations only. Not financial or medical advice.</p>
+          <p>© 2024 MedFin. MedFin provides informational assistance only and is not medical or financial advice.</p>
         </div>
       </footer>
     </div>
