@@ -238,7 +238,7 @@ export default function Home() {
                     if (response.ok) {
                       const result = await response.json();
                       console.log('Feedback submitted:', result);
-                      alert(`Thank you for your feedback! Your feedback ID is: ${result.feedback_id}`);
+                      alert('Thank you for your feedback!');
                       setFeedbackData({
                         name: '',
                         email: '',
