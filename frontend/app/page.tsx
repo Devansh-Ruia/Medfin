@@ -11,6 +11,7 @@ import { InsuranceInfo, MedicalBill } from '../lib/api';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showSettings, setShowSettings] = useState(false);
 
   const [insuranceInfo, setInsuranceInfo] = useState<InsuranceInfo>({
     insurance_type: 'private',
@@ -46,7 +47,12 @@ export default function Home() {
               <span className="ml-2 text-sm text-gray-500">Healthcare Financial Navigator</span>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="btn-secondary text-sm">Settings</button>
+              <button 
+                onClick={() => setShowSettings(!showSettings)}
+                className="btn-secondary text-sm"
+              >
+                Settings
+              </button>
             </div>
           </div>
         </div>
@@ -125,6 +131,54 @@ export default function Home() {
           <p>© 2024 MedFin. MedFin provides informational assistance only and is not medical or financial advice.</p>
         </div>
       </footer>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Settings</h2>
+              <button 
+                onClick={() => setShowSettings(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">API Endpoint</label>
+                <input
+                  type="text"
+                  value={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}
+                  readOnly
+                  className="input-field"
+                  title="API Endpoint URL"
+                  placeholder="API Endpoint URL"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Application Version</label>
+                <p className="text-sm text-gray-600">MedFin v1.0.0</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Environment</label>
+                <p className="text-sm text-gray-600">
+                  {process.env.NODE_ENV === 'production' ? 'Production' : 'Development'}
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setShowSettings(false)}
+                className="btn-primary"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
