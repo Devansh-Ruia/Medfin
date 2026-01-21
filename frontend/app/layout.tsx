@@ -5,8 +5,11 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'MedFin - Healthcare Financial Navigator',
-  description: 'Autonomous healthcare financial navigation system',
+  title: "MedFin",
+  description: "Autonomous Healthcare Financial Navigator",
+  icons: {
+    icon: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
