@@ -129,7 +129,7 @@ class ApiClient {
   }
 
   async analyzeBills(data: { bills: MedicalBill[] }) {
-    return this.request<{ issues: any[] }>('/api/v1/bills/analyze', {
+    return this.request<{ issues: any[] }>('/api/v1/analyze', {
       method: 'POST',
       body: JSON.stringify(data),
     });
