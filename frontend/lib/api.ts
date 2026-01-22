@@ -116,7 +116,7 @@ class ApiClient {
     insurance: InsuranceInfo;
     bills?: MedicalBill[];
   }) {
-    return this.request<any>('/api/v1/insurance/analyze', {
+    return this.request<any>('/api/v1/analyze', {
       method: 'POST',
       body: JSON.stringify(data),
     });
