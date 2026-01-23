@@ -45,18 +45,25 @@ export default function BillAnalysis({ bills, onBillsChange }: BillAnalysisProps
   };
 
   const analyzeBills = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.analyzeBills({ bills });
-      setIssues(response.issues);
-    } catch (err) {
-      setError('Failed to analyze bills');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  console.log('1. analyzeBills called');
+  console.log('2. Bills to analyze:', bills);
+  
+  setLoading(true);
+  setError(null);
+  
+  try {
+    console.log('3. Calling API...');
+    const response = await api.analyzeBills({ bills });
+    console.log('4. API Response:', response);
+    setIssues(response.issues || []);
+  } catch (err) {
+    console.error('5. Error caught:', err);
+    setError('Failed to analyze bills');
+  } finally {
+    setLoading(false);
+    console.log('6. Done');
+  }
+};
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
