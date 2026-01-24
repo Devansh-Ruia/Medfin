@@ -12,6 +12,7 @@ export default function BillAnalysis({ bills, onBillsChange }: BillAnalysisProps
   const [issues, setIssues] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
 
   const [newBill, setNewBill] = useState<MedicalBill>({
     provider_name: '',
@@ -50,12 +51,14 @@ export default function BillAnalysis({ bills, onBillsChange }: BillAnalysisProps
   
   setLoading(true);
   setError(null);
+  setAnalysisComplete(false);
   
   try {
     console.log('3. Calling API...');
     const response = await api.analyzeBills({ bills });
     console.log('4. API Response:', response);
     setIssues(response.issues || []);
+    setAnalysisComplete(true);
   } catch (err) {
     console.error('5. Error caught:', err);
     setError('Failed to analyze bills');
@@ -267,6 +270,18 @@ export default function BillAnalysis({ bills, onBillsChange }: BillAnalysisProps
               <li>• Review insurance EOB for all claims</li>
               <li>• Keep records of all communications</li>
             </ul>
+          </div>
+        </div>
+      )}
+
+      {analysisComplete && issues.length === 0 && (
+        <div className="card">
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">✓ No Issues Found</h3>
+            <p className="text-green-700">
+              Great news! We analyzed {bills.length} bill(s) and found no billing errors, 
+              duplicate charges, or pricing concerns.
+            </p>
           </div>
         </div>
       )}
