@@ -10,7 +10,7 @@ from ..core.models import (
 )
 
 
-router = APIRouter()
+router = APIRouter(prefix="/assistance", tags=["assistance"])
 
 
 class AssistanceMatchRequest(BaseModel):

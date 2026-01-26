@@ -5,7 +5,7 @@ from ..services.payment_planner import payment_planner
 from ..core.models import PaymentPlanOption
 
 
-router = APIRouter()
+router = APIRouter(prefix="/payment-plans", tags=["payment-plans"])
 
 
 class PaymentPlansGenerateRequest(BaseModel):

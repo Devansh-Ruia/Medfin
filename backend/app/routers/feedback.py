@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import os
 
-router = APIRouter(tags=["feedback"])
+router = APIRouter(prefix="/feedback", tags=["feedback"])
 
 # Feedback data model
 class FeedbackRequest(BaseModel):
