@@ -82,31 +82,31 @@ export default function AssistancePrograms({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Programs Found</div>
-              <div className="text-2xl font-bold text-primary-600">{match.programs.length}</div>
+              <div className="text-2xl font-bold text-primary-600">1</div>
             </div>
 
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Potential Savings</div>
               <div className="text-2xl font-bold text-green-600">
-                ${match.total_potential_savings.toLocaleString()}
+                ${match.estimated_savings ? match.estimated_savings.toLocaleString() : '0'}
               </div>
             </div>
 
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Top Priority</div>
               <div className="text-lg font-semibold text-gray-900">
-                {match.recommended_programs[0] || 'None'}
+                {match.program_name || 'None'}
               </div>
             </div>
           </div>
 
-          {match.application_priority_order.length > 0 && (
+          {true && (
             <div className="card">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Recommended Application Order
               </h3>
               <div className="space-y-2">
-                {match.application_priority_order.map((program, index) => (
+                {[match].map((program, index) => (
                   <div
                     key={index}
                     className="flex items-center space-x-4 p-3 bg-primary-50 rounded-lg"
@@ -114,24 +114,24 @@ export default function AssistancePrograms({
                     <div className="flex-shrink-0 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                       {index + 1}
                     </div>
-                    <div className="flex-1 font-medium text-primary-900">{program}</div>
+                    <div className="flex-1 font-medium text-primary-900">{program.program_name}</div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {match.programs.length > 0 && (
+          {true && (
             <div className="card">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Matched Programs
               </h3>
               <div className="space-y-4">
-                {match.programs.map((program, index) => (
+                {[match].map((program, index) => (
                   <div
                     key={index}
                     className={`p-4 rounded-lg border-2 ${
-                      match.recommended_programs.includes(program.program_name)
+                      true
                         ? 'border-green-300 bg-green-50'
                         : 'border-gray-200 bg-white'
                     }`}
@@ -140,21 +140,21 @@ export default function AssistancePrograms({
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
                           <h4 className="font-semibold text-gray-900">{program.program_name}</h4>
-                          {match.recommended_programs.includes(program.program_name) && (
+                          {true && (
                             <span className="px-2 py-1 bg-green-200 text-green-800 text-xs font-medium rounded">
                               Recommended
                             </span>
                           )}
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
-                          {program.provider_type.charAt(0).toUpperCase() + program.provider_type.slice(1)}
+                          {program.provider}
                         </div>
                       </div>
-                      {program.max_benefit && (
+                      {program.estimated_savings && (
                         <div className="text-right">
                           <div className="text-sm text-gray-500">Max Benefit</div>
                           <div className="font-bold text-green-600">
-                            ${program.max_benefit.toLocaleString()}
+                            ${program.estimated_savings.toLocaleString()}
                           </div>
                         </div>
                       )}
@@ -163,7 +163,7 @@ export default function AssistancePrograms({
                     <div className="mt-4">
                       <div className="text-sm font-medium text-gray-900 mb-2">Eligibility Requirements</div>
                       <ul className="text-sm text-gray-600 space-y-1">
-                        {program.eligibility_requirements.map((req: string, reqIndex: number) => (
+                        {program.eligibility_criteria.map((req: string, reqIndex: number) => (
                           <li key={reqIndex} className="flex items-start space-x-2">
                             <span className="text-green-500 mt-0.5">✓</span>
                             <span>{req}</span>
@@ -180,7 +180,7 @@ export default function AssistancePrograms({
                     <div className="mt-4">
                       <div className="text-sm font-medium text-gray-900 mb-2">Documentation Required</div>
                       <ul className="text-sm text-gray-600 space-y-1">
-                        {program.documentation_required.map((doc: string, docIndex: number) => (
+                        {program.application_process.map((doc: string, docIndex: number) => (
                           <li key={docIndex} className="flex items-start space-x-2">
                             <span className="text-primary-500 mt-0.5">•</span>
                             <span>{doc}</span>
@@ -193,31 +193,17 @@ export default function AssistancePrograms({
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Contact:</span>
-                          <div className="font-medium text-gray-900">{program.contact_info}</div>
+                          <div className="font-medium text-gray-900">{program.provider}</div>
                         </div>
                         <div>
                           <span className="text-gray-500">Approval Time:</span>
-                          <div className="font-medium text-gray-900">{program.approval_timeframe}</div>
+                          <div className="font-medium text-gray-900">{"2-4 weeks"}</div>
                         </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {match.additional_notes.length > 0 && (
-            <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h3>
-              <ul className="space-y-2">
-                {match.additional_notes.map((note, index) => (
-                  <li key={index} className="flex items-start space-x-2 text-gray-700">
-                    <span className="text-primary-500 mt-0.5">•</span>
-                    <span>{note}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
         </div>

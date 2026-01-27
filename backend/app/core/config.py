@@ -1,16 +1,33 @@
-from typing import Dict, Any
 from pydantic_settings import BaseSettings
-
+from typing import List, Dict, Any
+import os
 
 class Settings(BaseSettings):
+    # App
     app_name: str = "MedFin API"
-    app_version: str = "1.0.1"
+    app_version: str = "1.0.0"
     debug: bool = False
-
+    environment: str = "production"
+    
+    # API
     api_v1_prefix: str = "/api/v1"
-
-    cors_origins: list[str] = ["*"]
-
+    
+    # Security
+    allowed_origins: List[str] = ["https://medfin-phi.vercel.app"]
+    api_key_header: str = "X-API-Key"
+    
+    # Rate Limiting
+    rate_limit_requests: int = 100
+    rate_limit_window: int = 60  # seconds
+    
+    # Email
+    resend_api_key: str = os.getenv("RESEND_API_KEY", "")
+    feedback_email: str = "ruiadevansh@gmail.com"
+    
+    # Logging
+    log_level: str = "INFO"
+    
+    # Financial Guidelines (existing data)
     financial_guidelines: Dict[str, Any] = {
         "federal_poverty_level": {
             "2024": {
@@ -55,5 +72,7 @@ class Settings(BaseSettings):
         "emergency_multiplier": 2.0,
     }
 
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
