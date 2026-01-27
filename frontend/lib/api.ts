@@ -98,7 +98,7 @@ class ApiClient {
   }
 
   async getServices() {
-    return this.request<{ services: any[] }>('/api/v1/services');
+    return this.request<{ services: any[] }>('/api/v1/cost/services');
   }
 
   async estimateCost(data: {
@@ -108,7 +108,7 @@ class ApiClient {
     is_emergency?: boolean;
     in_network?: boolean;
   }) {
-    return this.request<CostEstimate>('/api/v1/estimate', {
+    return this.request<CostEstimate>('/api/v1/cost/estimate', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -118,7 +118,7 @@ class ApiClient {
     insurance: InsuranceInfo;
     bills?: MedicalBill[];
   }) {
-    return this.request<any>('/api/v1/analyze', {
+    return this.request<any>('/api/v1/insurance/analyze', {
       method: 'POST',
       body: JSON.stringify(data),
     });
