@@ -66,5 +66,10 @@ AI-powered insurance policy analysis and bill validation platform using Google G
 - All analysis happens in real-time
 - HIPAA-aware design principles
 
+## Troubleshooting
+
+### Build Failures on Render
+If you see `pydantic-core` build errors, ensure `requirements.txt` uses `>=` version specifiers instead of `==` to allow pre-built wheels.
+
 ## 📝 License
 MIT License
