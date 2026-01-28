@@ -214,6 +214,71 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  async checkAIHealth() {
+    return this.request<{ status: string; ai_configured: boolean }>('/api/v1/ai/health');
+  }
+
+  async uploadPolicy(file: File): Promise<{ policy_data: PolicyData }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${this.baseUrl}/api/v1/ai/upload-policy`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to upload policy');
+    }
+    
+    return response.json();
+  }
+
+  async askPolicyQuestion(
+    question: string,
+    policyData: PolicyData,
+    conversationHistory?: Array<{ role: string; content: string }>
+  ): Promise<QuestionAnswer> {
+    return this.request<QuestionAnswer>('/api/v1/ai/ask-question', {
+      method: 'POST',
+      body: JSON.stringify({
+        question,
+        policy_data: policyData,
+        conversation_history: conversationHistory,
+      }),
+    });
+  }
+
+  async uploadBill(file: File, policyData: PolicyData): Promise<BillValidationResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('policy_data', JSON.stringify(policyData));
+    
+    const response = await fetch(`${this.baseUrl}/api/v1/ai/upload-bill`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to validate bill');
+    }
+    
+    return response.json();
+  }
+
+  async optimizePolicy(
+    policyData: PolicyData,
+    userNeeds: any
+  ): Promise<OptimizationResult> {
+    return this.request<OptimizationResult>('/api/v1/ai/optimize-policy', {
+      method: 'POST',
+      body: JSON.stringify({
+        policy_data: policyData,
+        user_needs: userNeeds,
+      }),
+    });
+  }
 }
 
 export const api = new ApiClient();
@@ -291,4 +356,83 @@ export interface PaymentPlanOption {
   cons: string[];
   eligibility_criteria: string[];
   recommendation_score: number;
+}
+
+// AI-related interfaces
+export interface PolicyData {
+  policy_number?: string;
+  policy_holder_name?: string;
+  insurance_company?: string;
+  plan_name?: string;
+  plan_type?: string;
+  annual_deductible_individual?: number;
+  annual_deductible_family?: number;
+  out_of_pocket_max_individual?: number;
+  out_of_pocket_max_family?: number;
+  copay_primary_care?: number;
+  copay_specialist?: number;
+  copay_emergency?: number;
+  coinsurance_in_network?: number;
+  coinsurance_out_of_network?: number;
+  policy_strength_score?: number;
+  coverage_gaps?: string[];
+  key_benefits?: string[];
+  recommendations?: string[];
+  [key: string]: any;
+}
+
+export interface BillValidationResult {
+  bill_extracted: any;
+  validation_results: {
+    services_covered: string[];
+    services_not_covered: string[];
+    deductible_applied_correctly: boolean;
+    copays_correct: boolean;
+    coinsurance_correct: boolean;
+  };
+  issues_found: string[];
+  financial_summary: {
+    billed_amount: number;
+    expected_insurance_payment: number;
+    expected_patient_responsibility: number;
+    actual_patient_responsibility: number;
+    potential_savings: number;
+  };
+  recommendations: string[];
+  confidence_score: number;
+}
+
+export interface QuestionAnswer {
+  answer: string;
+  relevant_policy_details: string[];
+  estimated_costs?: any;
+  warnings: string[];
+  follow_up_questions: string[];
+  confidence: number;
+}
+
+export interface OptimizationResult {
+  current_plan_rating: number;
+  fit_for_needs: string;
+  annual_potential_savings: number;
+  optimizations: Array<{
+    category: string;
+    recommendation: string;
+    potential_savings: number;
+    effort_level: string;
+    priority: number;
+  }>;
+  alternative_plans: Array<{
+    plan_type: string;
+    why_consider: string;
+    estimated_premium_change: number;
+    coverage_trade_offs: string;
+    best_for: string;
+  }>;
+  action_items: Array<{
+    action: string;
+    timeline: string;
+    priority: number;
+  }>;
+  summary: string;
 }

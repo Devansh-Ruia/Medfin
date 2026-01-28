@@ -1,98 +1,70 @@
-# 🏥 MedFin - Healthcare Financial Navigator
+# 🏥 MedFin AI - Healthcare Financial Navigator
 
-A comprehensive healthcare financial management platform that helps users understand, manage, and reduce healthcare costs.
+AI-powered insurance policy analysis and bill validation platform using Google Gemini.
 
 ## 🚀 Live Demo
-- **Frontend:** https://medfin-phi.vercel.app
-- **Backend API:** https://medfin.onrender.com
-- **API Docs:** https://medfin.onrender.com/docs (dev only)
+- **App:** https://medfin-phi.vercel.app
+- **API:** https://medfin.onrender.com
 
 ## ✨ Features
-- **Bill Analysis** - Detect billing errors, duplicate charges, and overcharges
-- **Cost Estimation** - Get estimates for medical procedures by location
-- **Insurance Analysis** - Track deductibles, coverage gaps, and benefits
-- **Financial Assistance** - Match with charity care and assistance programs
-- **Payment Plans** - Compare and generate payment options
-- **Navigation Engine** - Personalized action plans to reduce medical debt
+
+### 📄 Policy Analysis
+- Upload insurance policy (PDF or image)
+- AI extracts ALL policy parameters automatically
+- Coverage strength scoring
+- Gap identification
+
+### 💬 AI Q&A (Estimation Tool)
+- Ask questions about your coverage in natural language
+- Get cost estimates for procedures
+- Understand complex insurance terms
+- Conversational interface
+
+### 📸 Bill Validation
+- Photo-scan medical bills
+- AI validates charges against your policy
+- Identifies billing errors and overcharges
+- Calculates expected vs actual patient responsibility
+
+### ✨ Policy Optimization
+- AI analyzes your healthcare needs
+- Recommends coverage optimizations
+- Suggests alternative plan types
+- Prioritized action items
 
 ## 🛠️ Tech Stack
 - **Frontend:** Next.js 14, TypeScript, Tailwind CSS
-- **Backend:** FastAPI, Python 3.9+, Pydantic
-- **Deployment:** Vercel (frontend), Render (backend)
+- **Backend:** FastAPI, Python 3.9+
+- **AI:** Google Gemini 1.5 Flash
+- **Deployment:** Vercel + Render
 
 ## 📋 API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/v1/cost/services` | GET | List available medical services |
-| `/api/v1/cost/estimate` | POST | Get cost estimate for a service |
-| `/api/v1/insurance/analyze` | POST | Analyze insurance coverage |
-| `/api/v1/insurance/analyze/bills` | POST | Analyze medical bills |
-| `/api/v1/navigation/plan` | POST | Generate financial action plan |
-| `/api/v1/assistance/match` | POST | Match with assistance programs |
-| `/api/v1/payment-plans/generate` | POST | Generate payment plan options |
-| `/api/v1/feedback` | POST | Submit user feedback |
-| `/health` | GET | Health check |
-
-## 🔧 Local Development
-
-### Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn main:app --reload
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
+| `/api/v1/ai/upload-policy` | POST | Upload and analyze policy |
+| `/api/v1/ai/ask-question` | POST | Ask questions about policy |
+| `/api/v1/ai/upload-bill` | POST | Validate bill photo |
+| `/api/v1/ai/optimize-policy` | POST | Get optimization recommendations |
+| `/api/v1/ai/health` | GET | Check AI service status |
 
 ## 🔐 Environment Variables
 
 ### Backend (Render)
 | Variable | Description |
 |----------|-------------|
-| `RESEND_API_KEY` | Resend API key for email |
-| `DEBUG` | Enable debug mode (default: false) |
-| `ENVIRONMENT` | Environment name |
+| `GEMINI_API_KEY` | Google AI API key |
+| `RESEND_API_KEY` | Email service (optional) |
 
 ### Frontend (Vercel)
 | Variable | Description |
 |----------|-------------|
 | `NEXT_PUBLIC_API_URL` | Backend API URL |
 
-## 📊 Health Monitoring
-- `/health` - Basic health check
-- `/health/ready` - Readiness probe
-- `/health/live` - Liveness probe
-
-## 🔒 Security Features
-- CORS restricted to frontend domain
-- Rate limiting (100 requests/minute per IP)
-- Input validation with Pydantic
-- No sensitive data storage
-- Security headers configured
+## 🔒 Privacy
+- No policy data is stored permanently
+- All analysis happens in real-time
+- HIPAA-aware design principles
 
 ## 📝 License
 MIT License
-
-## 👥 Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📋 Changelog
-
-### v1.0.1 - Bug Fixes
-- Fixed crash when payment plans API returns empty or partial data
-- Fixed AssistancePrograms component handling of varying API response formats
-- Added defensive checks for array mapping throughout components
-- Improved error handling in API client with proper TypeScript types
