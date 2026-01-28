@@ -290,15 +290,21 @@ async def get_system_status(request: Request):
 
 
 # Import and include routers
-from app.routers.cost_estimates import router as cost_estimates_router
+from app.routers.cost_estimation import router as cost_router
+from app.routers.insurance import router as insurance_router
+from app.routers.bills import router as bills_router
+from app.routers.navigation import router as navigation_router
+from app.routers.assistance import router as assistance_router
 from app.routers.payment_plans import router as payment_plans_router
-from app.routers.assistance_programs import router as assistance_programs_router
 from app.routers.feedback import router as feedback_router
 from app.routers.ai import router as ai_router
 
 # Include routers
-app.include_router(cost_estimates_router, prefix="/api/v1")
+app.include_router(cost_router, prefix="/api/v1")
+app.include_router(insurance_router, prefix="/api/v1")
+app.include_router(bills_router, prefix="/api/v1")
+app.include_router(navigation_router, prefix="/api/v1")
+app.include_router(assistance_router, prefix="/api/v1")
 app.include_router(payment_plans_router, prefix="/api/v1")
-app.include_router(assistance_programs_router, prefix="/api/v1")
 app.include_router(feedback_router, prefix="/api/v1")
 app.include_router(ai_router, prefix="/api/v1")
