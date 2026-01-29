@@ -47,6 +47,7 @@ async def analyze_policy(request: PolicyTextRequest):
 @router.post("/upload-policy")
 async def upload_policy(file: UploadFile = File(...)):
     """Upload and analyze a policy document (PDF or image)."""
+    import logging
     logger = logging.getLogger(__name__)
     
     logger.info(f"Received file upload: {file.filename}, content_type: {file.content_type}")
