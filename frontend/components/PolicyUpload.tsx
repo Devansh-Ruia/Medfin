@@ -77,42 +77,42 @@ export default function PolicyUpload({
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
       {/* Logo & Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-green-500 rounded-2xl mb-6 shadow-lg">
+      <div className="text-center mb-16 animate-fade-in">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-black rounded-2xl mb-8 shadow-subtle">
           <span className="text-4xl">🏥</span>
         </div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">
-          MedFin <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">AI</span>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          MedFin <span className="text-emerald-600">AI</span>
         </h1>
-        <p className="text-xl text-gray-600 max-w-md">
-          Your AI-powered insurance navigator. Upload your policy and let AI do the rest.
+        <p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
+          Your AI-powered insurance navigator. Upload your policy and let AI do the heavy lifting.
         </p>
       </div>
 
       {/* Upload Area */}
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl animate-stagger-1">
         {isAnalyzing ? (
-          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
-            <div className="relative w-24 h-24 mx-auto mb-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-16 text-center">
+            <div className="relative w-24 h-24 mx-auto mb-8">
               {/* Animated AI Brain */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
               <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
                 <span className="text-4xl animate-bounce">🧠</span>
               </div>
               {/* Orbiting dots */}
-              <div className="absolute inset-0 animate-spin" style={{ animationDuration: '3s' }}>
-                <div className="absolute top-0 left-1/2 w-3 h-3 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1"></div>
+              <div className="absolute inset-0 animate-spin animation-duration-3000">
+                <div className="absolute top-0 left-1/2 w-3 h-3 bg-emerald-500 rounded-full -translate-x-1/2 -translate-y-1"></div>
               </div>
-              <div className="absolute inset-0 animate-spin" style={{ animationDuration: '3s', animationDelay: '1s' }}>
-                <div className="absolute top-0 left-1/2 w-3 h-3 bg-green-500 rounded-full -translate-x-1/2 -translate-y-1"></div>
+              <div className="absolute inset-0 animate-spin animation-duration-3000 animation-delay-1000">
+                <div className="absolute top-0 left-1/2 w-3 h-3 bg-gray-400 rounded-full -translate-x-1/2 -translate-y-1"></div>
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">AI is analyzing your policy</h3>
-            <p className="text-gray-600 mb-4">{progress}</p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">AI is analyzing your policy</h3>
+            <p className="text-gray-600 mb-6">{progress}</p>
+            <div className="w-full bg-gray-100 rounded-full h-2">
+              <div className="bg-emerald-500 h-2 rounded-full animate-pulse w-3/5"></div>
             </div>
           </div>
         ) : (
@@ -122,11 +122,10 @@ export default function PolicyUpload({
             onDragOver={handleDrag}
             onDrop={handleDrop}
             className={`
-              bg-white rounded-2xl shadow-xl p-12 text-center cursor-pointer
-              border-3 border-dashed transition-all duration-300
+              bg-white rounded-2xl border-2 border-dashed shadow-subtle p-16 text-center cursor-pointer transition-all
               ${dragActive 
-                ? 'border-blue-500 bg-blue-50 scale-105' 
-                : 'border-gray-300 hover:border-blue-400 hover:shadow-2xl'
+                ? 'border-gray-400 bg-gray-50' 
+                : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
               }
             `}
             onClick={() => fileInputRef.current?.click()}
@@ -137,55 +136,49 @@ export default function PolicyUpload({
               accept=".pdf,.png,.jpg,.jpeg"
               onChange={handleFileSelect}
               className="hidden"
+              aria-label="Upload insurance policy file"
+              title="Upload insurance policy file (PDF, PNG, JPG)"
             />
             
-            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-green-100 rounded-2xl flex items-center justify-center">
-              <span className="text-4xl">📄</span>
+            <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+              <span className="text-3xl">📄</span>
             </div>
             
-            <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-              Add Your Insurance Policy
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              Drop your policy here
             </h3>
-            <p className="text-gray-600 mb-6">
-              Drag and drop your policy document or click to browse
+            <p className="text-gray-600 mb-8 text-lg">
+              PDF, PNG, JPG up to 10MB
             </p>
             
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
-              <span className="flex items-center gap-1">
-                <span>📎</span> PDF
-              </span>
-              <span className="flex items-center gap-1">
-                <span>🖼️</span> Images
-              </span>
-              <span className="flex items-center gap-1">
-                <span>🔒</span> Secure
-              </span>
-            </div>
+            <button className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all">
+              Choose File
+            </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-center">
+          <div className="mt-6 p-4 bg-error/10 border-l-4 border-error rounded-r-xl text-error text-sm animate-stagger-2">
             {error}
           </div>
         )}
       </div>
 
       {/* Features Preview */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
-        <div className="bg-white/80 backdrop-blur rounded-xl p-6 text-center">
-          <div className="text-3xl mb-3">💬</div>
-          <h4 className="font-semibold text-gray-900 mb-1">Ask Questions</h4>
+      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-stagger-3">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
+          <div className="text-3xl mb-4">💬</div>
+          <h4 className="font-semibold text-gray-900 mb-2">Ask Questions</h4>
           <p className="text-sm text-gray-600">Get instant answers about your coverage</p>
         </div>
-        <div className="bg-white/80 backdrop-blur rounded-xl p-6 text-center">
-          <div className="text-3xl mb-3">📸</div>
-          <h4 className="font-semibold text-gray-900 mb-1">Validate Bills</h4>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
+          <div className="text-3xl mb-4">📸</div>
+          <h4 className="font-semibold text-gray-900 mb-2">Validate Bills</h4>
           <p className="text-sm text-gray-600">Photo-scan bills for instant verification</p>
         </div>
-        <div className="bg-white/80 backdrop-blur rounded-xl p-6 text-center">
-          <div className="text-3xl mb-3">✨</div>
-          <h4 className="font-semibold text-gray-900 mb-1">Optimize</h4>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
+          <div className="text-3xl mb-4">✨</div>
+          <h4 className="font-semibold text-gray-900 mb-2">Optimize</h4>
           <p className="text-sm text-gray-600">Get AI recommendations to save money</p>
         </div>
       </div>
