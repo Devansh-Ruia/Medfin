@@ -30,8 +30,26 @@ async def ai_health():
     return {
         "status": "ok",
         "ai_configured": gemini_service.is_configured(),
-        "model": "gemini-pro" if gemini_service.is_configured() else None
+        "model": "gemini-1.5-flash-latest" if gemini_service.is_configured() else None
     }
+
+@router.get("/models")
+async def list_models():
+    """List available Gemini models."""
+    try:
+        import google.generativeai as genai
+        models = []
+        for model in genai.list_models():
+            if 'generateContent' in model.supported_generation_methods:
+                models.append({
+                    "name": model.name,
+                    "display_name": model.display_name,
+                    "description": model.description[:100] if model.description else None,
+                    "input_token_limit": model.input_token_limit,
+                })
+        return {"models": models}
+    except Exception as e:
+        return {"error": str(e)}
 
 @router.post("/analyze-policy")
 async def analyze_policy(request: PolicyTextRequest):
@@ -97,7 +115,7 @@ async def upload_policy(file: UploadFile = File(...)):
                 
                 # Use the vision model from gemini_service
                 import google.generativeai as genai
-                model = genai.GenerativeModel('gemini-pro-vision')
+                model = genai.GenerativeModel('gemini-1.5-flash-latest')
                 response = model.generate_content([
                     "Extract all text from this insurance policy document. Return only the extracted text, nothing else.",
                     image

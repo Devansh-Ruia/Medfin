@@ -11,8 +11,9 @@ class GeminiService:
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
-            self.vision_model = genai.GenerativeModel('gemini-pro-vision')
+            # Use gemini-1.5-flash for both text and vision (it supports both)
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            self.vision_model = genai.GenerativeModel('gemini-1.5-flash-latest')
         else:
             self.model = None
             self.vision_model = None
