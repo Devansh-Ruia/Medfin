@@ -30,7 +30,7 @@ async def ai_health():
     return {
         "status": "ok",
         "ai_configured": gemini_service.is_configured(),
-        "model": "gemini-2.0-flash" if gemini_service.is_configured() else None
+        "model": "gemini-2.5-flash" if gemini_service.is_configured() else None
     }
 
 @router.get("/models")
@@ -115,7 +115,7 @@ async def upload_policy(file: UploadFile = File(...)):
                 
                 # Use the vision model from gemini_service
                 import google.generativeai as genai
-                model = genai.GenerativeModel('gemini-2.0-flash')
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 response = model.generate_content([
                     "Extract all text from this insurance policy document. Return only the extracted text, nothing else.",
                     image
