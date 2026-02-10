@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { api, PolicyData } from '../lib/api';
+import { Upload, FileText, Brain, CheckCircle } from 'lucide-react';
 
 interface PolicyUploadProps {
   onPolicyUploaded: (data: PolicyData) => void;
@@ -77,42 +78,33 @@ export default function PolicyUpload({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
-      {/* Logo & Header */}
-      <div className="text-center mb-16 animate-fade-in">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-black rounded-2xl mb-8 shadow-subtle">
-          <span className="text-4xl">🏥</span>
-        </div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          MedFin <span className="text-emerald-600">AI</span>
+    <div className="content-container py-12">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <h1 className="text-3xl font-bold text-heading mb-4">
+          Upload your insurance policy
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
-          Your AI-powered insurance navigator. Upload your policy and let AI do the heavy lifting.
+        <p className="text-lg text-body max-w-2xl mx-auto">
+          Let AI analyze your coverage details, deductibles, and find opportunities to save money on healthcare costs.
         </p>
       </div>
 
       {/* Upload Area */}
-      <div className="w-full max-w-2xl animate-stagger-1">
+      <div className="max-w-2xl mx-auto mb-16">
         {isAnalyzing ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-16 text-center">
-            <div className="relative w-24 h-24 mx-auto mb-8">
-              {/* Animated AI Brain */}
-              <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
+          <div className="card p-12 text-center">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-accent/10 rounded-full animate-pulse"></div>
               <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                <span className="text-4xl animate-bounce">🧠</span>
-              </div>
-              {/* Orbiting dots */}
-              <div className="absolute inset-0 animate-spin animation-duration-3000">
-                <div className="absolute top-0 left-1/2 w-3 h-3 bg-emerald-500 rounded-full -translate-x-1/2 -translate-y-1"></div>
-              </div>
-              <div className="absolute inset-0 animate-spin animation-duration-3000 animation-delay-1000">
-                <div className="absolute top-0 left-1/2 w-3 h-3 bg-gray-400 rounded-full -translate-x-1/2 -translate-y-1"></div>
+                <Brain className="w-8 h-8 text-accent animate-pulse" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">AI is analyzing your policy</h3>
-            <p className="text-gray-600 mb-6">{progress}</p>
+            <h3 className="text-xl font-semibold text-heading mb-3">
+              AI is analyzing your policy
+            </h3>
+            <p className="text-body mb-6">{progress}</p>
             <div className="w-full bg-gray-100 rounded-full h-2">
-              <div className="bg-emerald-500 h-2 rounded-full animate-pulse w-3/5"></div>
+              <div className="bg-accent h-2 rounded-full animate-pulse w-3/5 transition-all duration-300"></div>
             </div>
           </div>
         ) : (
@@ -122,10 +114,10 @@ export default function PolicyUpload({
             onDragOver={handleDrag}
             onDrop={handleDrop}
             className={`
-              bg-white rounded-2xl border-2 border-dashed shadow-subtle p-16 text-center cursor-pointer transition-all
+              card p-12 text-center cursor-pointer transition-all duration-200
               ${dragActive 
-                ? 'border-gray-400 bg-gray-50' 
-                : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                ? 'border-accent bg-accent/5' 
+                : 'border-gray-200 hover:border-gray-300 hover:shadow-card'
               }
             `}
             onClick={() => fileInputRef.current?.click()}
@@ -140,46 +132,58 @@ export default function PolicyUpload({
               title="Upload insurance policy file (PDF, PNG, JPG)"
             />
             
-            <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
-              <span className="text-3xl">📄</span>
+            <div className="w-16 h-16 mx-auto mb-6 bg-gray-50 rounded-xl flex items-center justify-center">
+              <Upload className="w-8 h-8 text-gray-400" />
             </div>
             
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+            <h3 className="text-xl font-semibold text-heading mb-3">
               Drop your policy here
             </h3>
-            <p className="text-gray-600 mb-8 text-lg">
+            <p className="text-body mb-8">
               PDF, PNG, JPG up to 10MB
             </p>
             
-            <button className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all">
+            <button className="btn-primary">
               Choose File
             </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-6 p-4 bg-error/10 border-l-4 border-error rounded-r-xl text-error text-sm animate-stagger-2">
+          <div className="mt-6 p-4 bg-error/10 border-l-4 border-error rounded-r-xl text-error text-sm">
             {error}
           </div>
         )}
       </div>
 
       {/* Features Preview */}
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-stagger-3">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
-          <div className="text-3xl mb-4">💬</div>
-          <h4 className="font-semibold text-gray-900 mb-2">Ask Questions</h4>
-          <p className="text-sm text-gray-600">Get instant answers about your coverage</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="card p-8 text-center card-hover">
+          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
+            <FileText className="w-6 h-6 text-accent" />
+          </div>
+          <h4 className="font-semibold text-heading mb-2">Smart Analysis</h4>
+          <p className="text-sm text-body">
+            AI extracts key coverage details and identifies potential gaps
+          </p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
-          <div className="text-3xl mb-4">📸</div>
-          <h4 className="font-semibold text-gray-900 mb-2">Validate Bills</h4>
-          <p className="text-sm text-gray-600">Photo-scan bills for instant verification</p>
+        <div className="card p-8 text-center card-hover">
+          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
+            <CheckCircle className="w-6 h-6 text-accent" />
+          </div>
+          <h4 className="font-semibold text-heading mb-2">Bill Validation</h4>
+          <p className="text-sm text-body">
+            Photo-scan bills for instant verification and overcharge detection
+          </p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-8 text-center hover:shadow-card transition-all">
-          <div className="text-3xl mb-4">✨</div>
-          <h4 className="font-semibold text-gray-900 mb-2">Optimize</h4>
-          <p className="text-sm text-gray-600">Get AI recommendations to save money</p>
+        <div className="card p-8 text-center card-hover">
+          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
+            <Brain className="w-6 h-6 text-accent" />
+          </div>
+          <h4 className="font-semibold text-heading mb-2">AI Recommendations</h4>
+          <p className="text-sm text-body">
+            Get personalized suggestions to optimize your healthcare spending
+          </p>
         </div>
       </div>
     </div>
