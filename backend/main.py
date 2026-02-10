@@ -37,9 +37,7 @@ async def lifespan(app: FastAPI):
             "startup_time": datetime.now().isoformat(),
         },
     )
-
     yield
-
     uptime = time.time() - startup_time
     logger.info(
         "🛑 Shutting down MedFin API",
@@ -61,6 +59,9 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Performance middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 # Security middleware
 if settings.environment == "production":
     app.add_middleware(
@@ -68,26 +69,19 @@ if settings.environment == "production":
         allowed_hosts=["medfin.onrender.com", "localhost", "127.0.0.1"],
     )
 
-# Performance middleware
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     """Add security headers to all responses"""
     response = await call_next(request)
-
-    # Security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-
     if settings.environment == "production":
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains"
         )
-
     return response
 
 
@@ -97,12 +91,8 @@ async def log_requests(request: Request, call_next):
     correlation_id = get_correlation_id()
     request_id = get_request_id()
     start_time = time.time()
-
-    # Add correlation ID to request state
     request.state.correlation_id = correlation_id
     request.state.request_id = request_id
-
-    # Log request
     logger.info(
         "Request started",
         extra={
@@ -114,12 +104,9 @@ async def log_requests(request: Request, call_next):
             "client_ip": get_remote_address(request),
         },
     )
-
     try:
         response = await call_next(request)
         duration = time.time() - start_time
-
-        # Log response
         logger.info(
             "Request completed",
             extra={
@@ -129,10 +116,7 @@ async def log_requests(request: Request, call_next):
                 "duration": round(duration, 3),
             },
         )
-
-        # Add correlation ID to response headers
         response.headers["X-Correlation-ID"] = correlation_id
-
         return response
     except Exception as exc:
         duration = time.time() - start_time
@@ -149,28 +133,21 @@ async def log_requests(request: Request, call_next):
         raise
 
 
-# CORS must be added LAST so it's the outermost middleware
-# Ensure the Vercel frontend URL is always included
-origins = settings.allowed_origins
-if "https://medfin-phi.vercel.app" not in origins:
-    origins.append("https://medfin-phi.vercel.app")
-
+# CORS — added LAST so it is the outermost middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
 
-# Enhanced global exception handler
+# Global exception handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Handle all unhandled exceptions consistently"""
     correlation_id = getattr(request.state, "correlation_id", "unknown")
     request_id = getattr(request.state, "request_id", "unknown")
-
     logger.error(
         "Unhandled exception",
         extra={
@@ -181,7 +158,6 @@ async def global_exception_handler(request: Request, exc: Exception):
         },
         exc_info=True,
     )
-
     return JSONResponse(
         status_code=500,
         content={
@@ -193,10 +169,14 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Enhanced health checks
+# Health checks
+@app.get("/")
+async def root():
+    return {"status": "ok", "service": settings.app_name, "version": settings.app_version}
+
+
 @app.get("/health")
 def health():
-    """Basic health check"""
     return {
         "status": "healthy",
         "version": settings.app_version,
@@ -206,65 +186,37 @@ def health():
 
 @app.get("/health/ready")
 def readiness():
-    """Readiness probe - check if app can serve traffic"""
-    try:
-        # Check if we can make basic operations
-        test_dict = {"test": "ready"}
-        return {
-            "status": "ready",
-            "environment": settings.environment,
-            "timestamp": datetime.now().isoformat(),
-        }
-    except Exception as exc:
-        logger.error(f"Readiness check failed: {exc}")
-        return JSONResponse(
-            status_code=503,
-            content={
-                "status": "not_ready",
-                "error": str(exc),
-                "timestamp": datetime.now().isoformat(),
-            },
-        )
+    return {
+        "status": "ready",
+        "environment": settings.environment,
+        "timestamp": datetime.now().isoformat(),
+    }
 
 
 @app.get("/health/live")
 def liveness():
-    """Liveness probe - check if app is alive"""
     try:
-        # Basic process check
         process = psutil.Process(os.getpid())
         return {
             "status": "alive",
             "uptime": time.time() - process.create_time(),
-            "memory_usage": process.memory_info().rss / 1024 / 1024,  # MB
+            "memory_usage": process.memory_info().rss / 1024 / 1024,
             "cpu_percent": process.cpu_percent(),
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as exc:
         logger.error(f"Liveness check failed: {exc}")
-        return JSONResponse(
-            status_code=503,
-            content={
-                "status": "unhealthy",
-                "error": str(exc),
-                "timestamp": datetime.now().isoformat(),
-            },
-        )
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "error": str(exc)})
 
 
 @app.get("/api/v1/status")
 @limiter.limit("60/minute")
 async def get_system_status(request: Request):
-    """Get comprehensive system status"""
     correlation_id = getattr(request.state, "correlation_id", "unknown")
-
     try:
         process = psutil.Process(os.getpid())
         uptime = time.time() - process.create_time()
-
-        # Check external services (simplified email service check)
         email_status = "connected" if settings.resend_api_key else "not_configured"
-
         return {
             "status": "operational",
             "version": settings.app_version,
@@ -282,20 +234,11 @@ async def get_system_status(request: Request):
             },
         }
     except Exception as exc:
-        logger.error(
-            f"Status check failed: {exc}", extra={"correlation_id": correlation_id}
-        )
-        return JSONResponse(
-            status_code=503,
-            content={
-                "status": "degraded",
-                "error": "System status check failed",
-                "services": {"api": "degraded"},
-            },
-        )
+        logger.error(f"Status check failed: {exc}", extra={"correlation_id": correlation_id})
+        return JSONResponse(status_code=503, content={"status": "degraded", "error": "System status check failed"})
 
 
-# Import and include routers
+# Import and include ALL routers
 from app.routers.cost_estimation import router as cost_router
 from app.routers.insurance import router as insurance_router
 from app.routers.bills import router as bills_router
@@ -305,7 +248,6 @@ from app.routers.payment_plans import router as payment_plans_router
 from app.routers.feedback import router as feedback_router
 from app.routers.ai import router as ai_router
 
-# Include routers
 app.include_router(cost_router, prefix="/api/v1")
 app.include_router(insurance_router, prefix="/api/v1")
 app.include_router(bills_router, prefix="/api/v1")
