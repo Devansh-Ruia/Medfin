@@ -675,6 +675,7 @@ IMPORTANT GUIDELINES:
 - Include practical next steps
 - Format letter properly with appropriate tone
 - Make it actionable and specific to this denial
+- CRITICAL: Generate a clean, professional appeal letter with NO inline definitions, NO HTML tags, NO jargon explanations, and NO tooltip markup. The letter should read as a formal document ready to be printed and mailed to an insurance company. Use standard business letter formatting.
 """
         
         try:

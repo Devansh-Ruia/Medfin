@@ -69,7 +69,23 @@ export default function AppealTool({ policyData }: AppealToolProps) {
     }
   };
 
-  const downloadAsPDF = async () => {
+  const cleanLetterText = (text: string): string => {
+  // Remove all HTML span tags and their jargon content
+  // Pattern: matches <span ...>(...)</span> including nested spans
+  let cleaned = text;
+  // Repeatedly strip innermost spans first to handle nesting
+  while (cleaned.includes('<span')) {
+    cleaned = cleaned.replace(/<span[^>]*>\([^()]*\)<\/span>/g, '');
+    cleaned = cleaned.replace(/<span[^>]*>(.*?)<\/span>/g, '$1');
+  }
+  // Remove any remaining HTML tags
+  cleaned = cleaned.replace(/<[^>]+>/g, '');
+  // Clean up extra whitespace left behind
+  cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+  return cleaned;
+};
+
+const downloadAsPDF = async () => {
     if (!letterRef.current) return;
     
     try {
@@ -411,20 +427,20 @@ export default function AppealTool({ policyData }: AppealToolProps) {
               <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter.subject_line}</h4>
             </div>
 
-            <div ref={letterRef} className="bg-gray-50 rounded-xl p-6 appeal-letter-content">
+            <div ref={letterRef} className="p-8 bg-white text-black leading-relaxed" style={{ fontFamily: 'Times New Roman, serif', fontSize: '12pt', lineHeight: '1.6' }}>
               <ReactMarkdown
                 components={{
-                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
-                  h2: ({children}) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
-                  h3: ({children}) => <h3 className="text-lg font-semibold mb-2">{children}</h3>,
-                  p: ({children}) => <p className="mb-3 leading-relaxed">{children}</p>,
-                  strong: ({children}) => <strong className="font-bold">{children}</strong>,
-                  ul: ({children}) => <ul className="list-disc pl-6 mb-3">{children}</ul>,
-                  ol: ({children}) => <ol className="list-decimal pl-6 mb-3">{children}</ol>,
-                  li: ({children}) => <li className="mb-1">{children}</li>,
+                  h1: ({children}) => <h1 style={{ fontSize: '14pt', fontWeight: 'bold', marginBottom: '16px' }}>{children}</h1>,
+                  h2: ({children}) => <h2 style={{ fontSize: '13pt', fontWeight: 'bold', marginBottom: '12px' }}>{children}</h2>,
+                  h3: ({children}) => <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '10px' }}>{children}</h3>,
+                  p: ({children}) => <p style={{ marginBottom: '12px', lineHeight: '1.6' }}>{children}</p>,
+                  strong: ({children}) => <strong style={{ fontWeight: 'bold' }}>{children}</strong>,
+                  ul: ({children}) => <ul style={{ listStyleType: 'disc', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ul>,
+                  ol: ({children}) => <ol style={{ listStyleType: 'decimal', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ol>,
+                  li: ({children}) => <li style={{ marginBottom: '4px' }}>{children}</li>,
                 }}
               >
-                {replaceJargon(appealLetter.letter.letter_body)}
+                {cleanLetterText(appealLetter.letter.letter_body)}
               </ReactMarkdown>
             </div>
 
