@@ -134,19 +134,19 @@ async def list_models():
 
 @router.post("/analyze-policy")
 @limiter.limit("10/minute")
-async def analyze_policy(request: PolicyTextRequest, http_request: Request):
+async def analyze_policy(request: Request, body: PolicyTextRequest):
     """Analyze insurance policy text and extract all parameters."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     try:
-        result = await gemini_service.analyze_insurance_policy(request.policy_text)
+        result = await gemini_service.analyze_insurance_policy(body.policy_text)
         if "error" in result:
-            log_security_event("ai_analysis_failed", {"error": result["error"]}, http_request)
+            log_security_event("ai_analysis_failed", {"error": result["error"]}, request)
             raise HTTPException(status_code=500, detail=result["error"])
         return result
     except Exception as e:
-        log_security_event("ai_analysis_error", {"error": str(e)}, http_request)
+        log_security_event("ai_analysis_error", {"error": str(e)}, request)
         raise HTTPException(status_code=500, detail="Policy analysis failed")
 
 @router.post("/upload-policy")
@@ -256,34 +256,34 @@ async def upload_policy(request: Request, file: UploadFile = File(...)):
 
 @router.post("/ask-question")
 @limiter.limit("30/minute")
-async def ask_policy_question(request: QuestionRequest, http_request: Request):
+async def ask_policy_question(request: Request, body: QuestionRequest):
     """Ask a question about the insurance policy."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     try:
         result = await gemini_service.answer_policy_question(
-            request.question,
-            request.policy_data,
-            request.conversation_history
+            body.question,
+            body.policy_data,
+            body.conversation_history
         )
         if "error" in result:
-            log_security_event("question_failed", {"error": result["error"]}, http_request)
+            log_security_event("question_failed", {"error": result["error"]}, request)
             raise HTTPException(status_code=500, detail=result["error"])
         return result
     except Exception as e:
-        log_security_event("question_error", {"error": str(e)}, http_request)
+        log_security_event("question_error", {"error": str(e)}, request)
         raise HTTPException(status_code=500, detail="Failed to process question")
 
 @router.post("/validate-bill")
-async def validate_bill(request: BillValidationRequest):
+async def validate_bill(body: BillValidationRequest):
     """Validate a bill image against the policy."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     result = await gemini_service.validate_bill_against_policy(
-        request.bill_image_base64,
-        request.policy_data
+        body.bill_image_base64,
+        body.policy_data
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
@@ -354,44 +354,44 @@ async def upload_bill(
         raise HTTPException(status_code=500, detail=f"Failed to validate bill: {str(e)}")
 
 @router.post("/optimize-policy")
-async def optimize_policy(request: OptimizationRequest):
+async def optimize_policy(body: OptimizationRequest):
     """Get optimization recommendations for the policy."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     result = await gemini_service.recommend_policy_alternatives(
-        request.policy_data,
-        request.user_needs
+        body.policy_data,
+        body.user_needs
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
     return result
 
 @router.post("/pre-visit-checklist")
-async def generate_pre_visit_checklist(request: PreVisitRequest):
+async def generate_pre_visit_checklist(body: PreVisitRequest):
     """Generate a pre-visit checklist for a specific medical visit type."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     result = await gemini_service.generate_pre_visit_checklist(
-        request.visit_type,
-        request.policy_data,
-        request.provider_info
+        body.visit_type,
+        body.policy_data,
+        body.provider_info
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
     return result
 
 @router.post("/generate-appeal")
-async def generate_appeal_letter(request: AppealRequest):
+async def generate_appeal_letter(body: AppealRequest):
     """Generate an appeal letter for a denied claim."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     result = await gemini_service.generate_appeal_letter(
-        request.denial_info,
-        request.policy_data,
-        request.tone
+        body.denial_info,
+        body.policy_data,
+        body.tone
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
