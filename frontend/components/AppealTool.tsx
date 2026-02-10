@@ -85,6 +85,48 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   return cleaned;
 };
 
+const formatAppealLetter = (text: string): JSX.Element[] => {
+  if (!text) return [];
+  
+  // Split into paragraphs by double newlines, or by detecting section boundaries
+  let normalized = text
+    .replace(/\r\n/g, '\n')
+    // Force paragraph breaks before common letter sections
+    .replace(/\s*(Date:|RE:|Dear |To Whom|Sincerely,|Thank you for|Statement of Facts:|Argument for Coverage:|Relevant Regulations:|Requested Action:|Therefore,|We request that|Please provide)/g, '\n\n$1')
+    // Force break before numbered items like "1. "2. "
+    .replace(/\s+(\d+\.\s)/g, '\n$1')
+    // Collapse excessive newlines
+    .replace(/\n{3,}/g, '\n\n');
+
+  const paragraphs = normalized.split(/\n\n+/).filter(p => p.trim());
+
+  return paragraphs.map((para, index) => {
+    // Convert **bold** markdown to <strong> tags
+    const parts = para.split(/(\*\*[^*]+\*\*)/g);
+    const rendered = parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} style={{ fontWeight: 'bold' }}>{part.slice(2, -2)}</strong>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+
+    // Check if this is a header-like line (short, contains RE: or Date: etc.)
+    const isHeader = para.match(/^(Date:|RE:|Claim Number:|Patient|Policy|Group Number:|Service Date:|Amount Denied:|Denial Date:|Provider:)/);
+    
+    return (
+      <p 
+        key={index} 
+        style={{ 
+          marginBottom: isHeader ? '4px' : '16px',
+          lineHeight: '1.7',
+        }}
+      >
+        {rendered}
+      </p>
+    );
+  });
+};
+
 const formatLetterText = (text: string): string => {
   // Ensure double newlines between paragraphs
   let formatted = text
@@ -439,22 +481,20 @@ const downloadAsPDF = async () => {
               <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter.subject_line}</h4>
             </div>
 
-            <div ref={letterRef} className="p-8 bg-white text-black leading-relaxed" style={{ fontFamily: 'Times New Roman, serif', fontSize: '12pt', lineHeight: '1.8' }}>
-              <ReactMarkdown
-                components={{
-                  h1: ({children}) => <h1 style={{ fontSize: '14pt', fontWeight: 'bold', marginBottom: '16px' }}>{children}</h1>,
-                  h2: ({children}) => <h2 style={{ fontSize: '13pt', fontWeight: 'bold', marginBottom: '12px' }}>{children}</h2>,
-                  h3: ({children}) => <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '10px' }}>{children}</h3>,
-                  p: ({children}) => <p style={{ marginBottom: '16px', lineHeight: '1.8' }}>{children}</p>,
-                  strong: ({children}) => <strong style={{ fontWeight: 'bold' }}>{children}</strong>,
-                  ul: ({children}) => <ul style={{ listStyleType: 'disc', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ul>,
-                  ol: ({children}) => <ol style={{ listStyleType: 'decimal', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ol>,
-                  li: ({children}) => <li style={{ marginBottom: '4px' }}>{children}</li>,
-                }}
-              >
-                {formatLetterText(cleanLetterText(appealLetter.letter.letter_body))}
-              </ReactMarkdown>
-            </div>
+            <div 
+  ref={letterRef}
+  style={{
+    fontFamily: '"Times New Roman", "Georgia", serif',
+    fontSize: '12pt',
+    lineHeight: '1.7',
+    color: '#000',
+    backgroundColor: '#fff',
+    padding: '40px',
+    maxWidth: '800px',
+  }}
+>
+  {formatAppealLetter(cleanLetterText(appealLetter.letter.letter_body))}
+</div>
 
             {/* Attachments Needed */}
             {appealLetter.letter.attachments_needed.length > 0 && (
