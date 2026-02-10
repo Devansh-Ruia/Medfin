@@ -43,15 +43,8 @@ def sanitize_input(text: str) -> str:
     if not text:
         return ""
     
-    # Remove potentially dangerous characters
-    cleaned = nh3.clean(
-        text, 
-        strip=True,
-        tags=[],
-        attributes={},
-        styles=[],
-        protocols=[]
-    )
+    # Remove potentially dangerous characters using nh3
+    cleaned = nh3.clean(text, tags=set())
     
     # Remove any remaining script-like patterns
     cleaned = re.sub(r'[<>{}[\]]', '', cleaned)
