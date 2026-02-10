@@ -87,41 +87,108 @@ export default function AppealTool({ policyData }: AppealToolProps) {
 
 const formatAppealLetter = (text: string): JSX.Element[] => {
   if (!text) return [];
-  
-  // Split into paragraphs by double newlines, or by detecting section boundaries
-  let normalized = text
-    .replace(/\r\n/g, '\n')
-    // Force paragraph breaks before common letter sections
-    .replace(/\s*(Date:|RE:|Dear |To Whom|Sincerely,|Thank you for|Statement of Facts:|Argument for Coverage:|Relevant Regulations:|Requested Action:|Therefore,|We request that|Please provide)/g, '\n\n$1')
-    // Force break before numbered items like "1. "2. "
-    .replace(/\s+(\d+\.\s)/g, '\n$1')
-    // Collapse excessive newlines
-    .replace(/\n{3,}/g, '\n\n');
 
-  const paragraphs = normalized.split(/\n\n+/).filter(p => p.trim());
+  let cleaned = text
+    .replace(/\r\n/g, '\n');
+
+  // Force line breaks for header fields (each on its own line)
+  cleaned = cleaned
+    .replace(/(Patient Name:)/g, '\n$1')
+    .replace(/(Policy Number:)/g, '\n$1')
+    .replace(/(Policy Holder:)/g, '\n$1')
+    .replace(/(Patient ID:)/g, '\n$1')
+    .replace(/(Group Number:)/g, '\n$1')
+    .replace(/(Claim Number:)/g, '\n$1')
+    .replace(/(Date of Service:)/g, '\n$1')
+    .replace(/(Service Date:)/g, '\n$1')
+    .replace(/(Service Description:)/g, '\n$1')
+    .replace(/(Amount Denied:)/g, '\n$1')
+    .replace(/(Denial Date:)/g, '\n$1')
+    .replace(/(Provider:)/g, '\n$1');
+
+  // Force paragraph breaks before major sections
+  cleaned = cleaned
+    .replace(/\s*(RE:|Dear |To Whom It May Concern)/g, '\n\n$1')
+    .replace(/\s*(\*\*(?:Statement of Facts|Basis for Appeal|Argument for Coverage|Applicable Regulations|Relevant Regulations|Requested Action)[:\*]*)/g, '\n\n$1')
+    .replace(/\s*(Statement of Facts:|Basis for Appeal:|Argument for Coverage:|Applicable Regulations:|Relevant Regulations:|Requested Action:)/g, '\n\n$1')
+    .replace(/\s*(We request that|We respectfully|Therefore,|Thank you for|Please provide a written|We reserve all rights)/g, '\n\n$1')
+    .replace(/\s*(Sincerely,)/g, '\n\n$1');
+
+  // Force line breaks for numbered items
+  cleaned = cleaned.replace(/\s+(\d+\.\s+\*\*)/g, '\n$1');
+  cleaned = cleaned.replace(/\s+(\d+\.\s+[A-Z])/g, '\n$1');
+
+  // Force line breaks in signature block (after Sincerely)
+  cleaned = cleaned.replace(/(Sincerely,)\s*/g, '$1\n\n');
+  cleaned = cleaned.replace(/(\[Your [^\]]+\])\s*(?=\[Your)/g, '$1\n');
+  cleaned = cleaned.replace(/(\[Your [^\]]+\])\s*(?=\[)/g, '$1\n');
+
+  // Collapse excessive newlines
+  cleaned = cleaned.replace(/\n{4,}/g, '\n\n\n');
+
+  // Now split into blocks
+  // Single newlines become line breaks within a block
+  // Double newlines become paragraph separators
+  const paragraphs = cleaned.split(/\n\n+/).filter(p => p.trim());
 
   return paragraphs.map((para, index) => {
-    // Convert **bold** markdown to <strong> tags
-    const parts = para.split(/(\*\*[^*]+\*\*)/g);
-    const rendered = parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} style={{ fontWeight: 'bold' }}>{part.slice(2, -2)}</strong>;
-      }
-      return <span key={i}>{part}</span>;
-    });
+    // Split by single newlines within paragraph for line breaks
+    const lines = para.split('\n').filter(l => l.trim());
 
-    // Check if this is a header-like line (short, contains RE: or Date: etc.)
-    const isHeader = para.match(/^(Date:|RE:|Claim Number:|Patient|Policy|Group Number:|Service Date:|Amount Denied:|Denial Date:|Provider:)/);
-    
+    const renderLine = (line: string, lineKey: number): JSX.Element => {
+      // Convert **bold** to <strong> and strip any remaining **
+      const parts = line.split(/(\*\*[^*]+\*\*)/g);
+      const rendered = parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i} style={{ fontWeight: 'bold' }}>{part.slice(2, -2)}</strong>;
+        }
+        // Also catch any remaining stray ** 
+        const cleanPart = part.replace(/\*\*/g, '');
+        return <span key={i}>{cleanPart}</span>;
+      });
+      return <span key={lineKey}>{rendered}</span>;
+    };
+
+    // Check if this is a header-type block (contains field labels)
+    const isHeaderBlock = para.match(/^(Patient Name:|Date:|Policy Number:|Claim Number:)/m);
+    const isSignatureBlock = para.match(/Sincerely/);
+    const isNumberedList = para.match(/^\d+\.\s/m);
+
+    if (isHeaderBlock || isSignatureBlock) {
+      // Render each line separately with minimal spacing
+      return (
+        <div key={index} style={{ marginBottom: '16px' }}>
+          {lines.map((line, li) => (
+            <div key={li} style={{ lineHeight: '1.6' }}>
+              {renderLine(line, li)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (isNumberedList) {
+      // Render numbered items as separate lines
+      return (
+        <div key={index} style={{ marginBottom: '16px' }}>
+          {lines.map((line, li) => (
+            <div key={li} style={{ marginBottom: '8px', lineHeight: '1.7', paddingLeft: line.match(/^\d+\./) ? '0px' : '0' }}>
+              {renderLine(line, li)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Regular paragraph
     return (
-      <p 
-        key={index} 
-        style={{ 
-          marginBottom: isHeader ? '4px' : '16px',
-          lineHeight: '1.7',
-        }}
-      >
-        {rendered}
+      <p key={index} style={{ marginBottom: '16px', lineHeight: '1.7' }}>
+        {lines.map((line, li) => (
+          <span key={li}>
+            {renderLine(line, li)}
+            {li < lines.length - 1 && <br />}
+          </span>
+        ))}
       </p>
     );
   });
@@ -489,11 +556,11 @@ const downloadAsPDF = async () => {
     lineHeight: '1.7',
     color: '#000',
     backgroundColor: '#fff',
-    padding: '40px',
+    padding: '48px',
     maxWidth: '800px',
   }}
 >
-  {formatAppealLetter(cleanLetterText(appealLetter.letter.letter_body))}
+  {formatAppealLetter(appealLetter.letter.letter_body)}
 </div>
 
             {/* Attachments Needed */}
