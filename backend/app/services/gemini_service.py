@@ -676,6 +676,12 @@ IMPORTANT GUIDELINES:
 - Format letter properly with appropriate tone
 - Make it actionable and specific to this denial
 - CRITICAL: Generate a clean, professional appeal letter with NO inline definitions, NO HTML tags, NO jargon explanations, and NO tooltip markup. The letter should read as a formal document ready to be printed and mailed to an insurance company. Use standard business letter formatting.
+- Format the letter with clear structure using markdown:
+  - Use line breaks between paragraphs
+  - Use **bold** for section headers like "RE:", "Statement of Facts:", "Requested Action:"
+  - Use proper business letter spacing
+  - Separate the header block (date, address, RE line) from the body
+  - Put each paragraph on its own line with a blank line between paragraphs
 """
         
         try:

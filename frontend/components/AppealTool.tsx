@@ -85,6 +85,18 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   return cleaned;
 };
 
+const formatLetterText = (text: string): string => {
+  // Ensure double newlines between paragraphs
+  let formatted = text
+    // Normalize line endings
+    .replace(/\r\n/g, '\n')
+    // Add breaks before common letter sections
+    .replace(/(RE:|Dear |Sincerely,|To Whom It May Concern:|Date:|Patient Name:|Policy Number:|Group Number:|Claim Number:|Date of Service:|Provider:|Amount Denied:|Therefore,|We request|Thank you)/g, '\n\n$1')
+    // Collapse triple+ newlines to double
+    .replace(/\n{3,}/g, '\n\n');
+  return formatted.trim();
+};
+
 const downloadAsPDF = async () => {
     if (!letterRef.current) return;
     
@@ -427,20 +439,20 @@ const downloadAsPDF = async () => {
               <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter.subject_line}</h4>
             </div>
 
-            <div ref={letterRef} className="p-8 bg-white text-black leading-relaxed" style={{ fontFamily: 'Times New Roman, serif', fontSize: '12pt', lineHeight: '1.6' }}>
+            <div ref={letterRef} className="p-8 bg-white text-black leading-relaxed" style={{ fontFamily: 'Times New Roman, serif', fontSize: '12pt', lineHeight: '1.8' }}>
               <ReactMarkdown
                 components={{
                   h1: ({children}) => <h1 style={{ fontSize: '14pt', fontWeight: 'bold', marginBottom: '16px' }}>{children}</h1>,
                   h2: ({children}) => <h2 style={{ fontSize: '13pt', fontWeight: 'bold', marginBottom: '12px' }}>{children}</h2>,
                   h3: ({children}) => <h3 style={{ fontSize: '12pt', fontWeight: 'bold', marginBottom: '10px' }}>{children}</h3>,
-                  p: ({children}) => <p style={{ marginBottom: '12px', lineHeight: '1.6' }}>{children}</p>,
+                  p: ({children}) => <p style={{ marginBottom: '16px', lineHeight: '1.8' }}>{children}</p>,
                   strong: ({children}) => <strong style={{ fontWeight: 'bold' }}>{children}</strong>,
                   ul: ({children}) => <ul style={{ listStyleType: 'disc', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ul>,
                   ol: ({children}) => <ol style={{ listStyleType: 'decimal', paddingLeft: '24px', marginBottom: '12px' }}>{children}</ol>,
                   li: ({children}) => <li style={{ marginBottom: '4px' }}>{children}</li>,
                 }}
               >
-                {cleanLetterText(appealLetter.letter.letter_body)}
+                {formatLetterText(cleanLetterText(appealLetter.letter.letter_body))}
               </ReactMarkdown>
             </div>
 
