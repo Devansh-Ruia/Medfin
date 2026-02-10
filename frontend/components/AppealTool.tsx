@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { api, PolicyData, AppealLetter, DenialInfo } from '../lib/api';
 import { replaceJargon } from '../lib/jargonDictionary';
+import ReactMarkdown from 'react-markdown';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -17,6 +18,7 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const letterRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,16 +69,37 @@ export default function AppealTool({ policyData }: AppealToolProps) {
     }
   };
 
-  const downloadAsText = (content: string, filename: string) => {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const downloadAsPDF = async () => {
+    if (!letterRef.current) return;
+    
+    try {
+      // Dynamically import html2pdf to avoid SSR issues
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const opt = {
+        margin: [0.75, 0.75, 0.75, 0.75] as [number, number, number, number],
+        filename: 'appeal-letter.pdf',
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const }
+      };
+      
+      html2pdf().set(opt).from(letterRef.current).save();
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      // Fallback to text download if PDF generation fails
+      if (appealLetter) {
+        const blob = new Blob([appealLetter.letter.letter_body], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'appeal-letter.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    }
   };
 
   const reset = () => {
@@ -376,10 +399,10 @@ export default function AppealTool({ policyData }: AppealToolProps) {
                   📋 Copy
                 </button>
                 <button
-                  onClick={() => downloadAsText(appealLetter.letter.letter_body, 'appeal-letter.txt')}
+                  onClick={downloadAsPDF}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                 >
-                  💾 Download
+                  💾 Download PDF
                 </button>
               </div>
             </div>
@@ -388,11 +411,21 @@ export default function AppealTool({ policyData }: AppealToolProps) {
               <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter.subject_line}</h4>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div 
-                className="whitespace-pre-wrap text-gray-700 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: replaceJargon(appealLetter.letter.letter_body) }}
-              />
+            <div ref={letterRef} className="bg-gray-50 rounded-xl p-6 appeal-letter-content">
+              <ReactMarkdown
+                components={{
+                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-lg font-semibold mb-2">{children}</h3>,
+                  p: ({children}) => <p className="mb-3 leading-relaxed">{children}</p>,
+                  strong: ({children}) => <strong className="font-bold">{children}</strong>,
+                  ul: ({children}) => <ul className="list-disc pl-6 mb-3">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal pl-6 mb-3">{children}</ol>,
+                  li: ({children}) => <li className="mb-1">{children}</li>,
+                }}
+              >
+                {replaceJargon(appealLetter.letter.letter_body)}
+              </ReactMarkdown>
             </div>
 
             {/* Attachments Needed */}
