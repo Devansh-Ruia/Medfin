@@ -13,6 +13,7 @@ import {
   X,
   User
 } from 'lucide-react';
+import { event } from '../lib/analytics';
 
 interface SidebarProps {
   activeItem: string;
@@ -65,7 +66,10 @@ export default function Sidebar({ activeItem, onNavigate, isCollapsed = false, o
             return (
               <button
                 key={item.id}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => {
+                  onNavigate(item.id);
+                  event('navigate', { section: item.id });
+                }}
                 className={`nav-item w-full ${isActive ? 'nav-item-active' : ''} ${isCollapsed ? 'justify-center' : ''}`}
                 title={isCollapsed ? item.label : undefined}
               >

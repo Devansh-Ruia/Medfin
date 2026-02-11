@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { api, PolicyData, QuestionAnswer } from '../lib/api';
+import { event } from '../lib/analytics';
 
 interface EstimationToolProps {
   policyData: PolicyData;
@@ -265,6 +266,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    event('ask_question');
 
     try {
       const history = messages.map(m => ({ role: m.role, content: m.content }));

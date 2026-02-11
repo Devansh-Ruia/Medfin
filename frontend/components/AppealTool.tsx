@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { api, PolicyData, AppealLetter, DenialInfo } from '../lib/api';
 import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
+import { event } from '../lib/analytics';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -52,6 +53,7 @@ export default function AppealTool({ policyData }: AppealToolProps) {
     try {
       const result = await api.generateAppealLetter(denialInfo, policyData, tone);
       setAppealLetter(result);
+      event('generate_appeal');
     } catch (err) {
       console.error(err);
       setError('Failed to generate appeal letter. Please try again.');
@@ -222,6 +224,7 @@ const downloadAsPDF = async () => {
       };
       
       html2pdf().set(opt).from(letterRef.current).save();
+      event('download_appeal_pdf');
     } catch (error) {
       console.error('Failed to generate PDF:', error);
       // Fallback to text download if PDF generation fails

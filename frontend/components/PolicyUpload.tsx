@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { api, PolicyData } from '../lib/api';
 import { Upload, FileText, Brain, CheckCircle } from 'lucide-react';
+import { event } from '../lib/analytics';
 
 interface PolicyUploadProps {
   onPolicyUploaded: (data: PolicyData) => void;
@@ -42,6 +43,7 @@ export default function PolicyUpload({
       await new Promise(r => setTimeout(r, 300));
       
       onPolicyUploaded(result.policy_data);
+      event('upload_policy', { file_type: file.type });
     } catch (err) {
       console.error(err);
       setError('Failed to analyze policy. Please try again.');

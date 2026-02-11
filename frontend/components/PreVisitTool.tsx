@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api, PolicyData, PreVisitChecklist } from '../lib/api';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import { replaceJargon } from '../lib/jargonDictionary';
+import { event } from '../lib/analytics';
 
 interface PreVisitToolProps {
   policyData: PolicyData;
@@ -62,6 +63,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
       );
 
       setChecklist(result);
+      event('generate_checklist', { visit_type: actualVisitType });
     } catch (err) {
       console.error(err);
       setError('Failed to generate checklist. Please try again.');

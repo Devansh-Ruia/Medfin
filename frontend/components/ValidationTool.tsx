@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
+import { event } from '../lib/analytics';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -181,6 +182,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
     try {
       const response = await api.uploadBill(file, policyData);
       setResult(response);
+      event('upload_bill');
     } catch (err) {
       console.error(err);
       setError('Failed to analyze bill. Please try again.');
