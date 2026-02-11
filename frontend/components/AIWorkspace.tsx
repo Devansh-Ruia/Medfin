@@ -19,10 +19,11 @@ import { AlertCircle, Shield, FileText, MessageCircle, Receipt, Scale, TrendingU
 interface AIWorkspaceProps {
   policyData: PolicyData;
   onReset: () => void;
+  activeSection: string;
+  onNavigate: (item: string) => void;
 }
 
-export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'pre-visit' | 'estimation' | 'validation' | 'appeal' | 'optimization' | 'family'>('dashboard');
+export default function AIWorkspace({ policyData, onReset, activeSection, onNavigate }: AIWorkspaceProps) {
   const { getSavingsStats } = useSavings();
   const { getPendingActions } = useFamily();
 
@@ -71,7 +72,7 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
         </div>
 
         {/* Dashboard Content */}
-        {activeTab === 'dashboard' && (
+        {activeSection === 'policy' && (
           <div className="space-y-8">
             {/* Policy Header */}
             <div className="card p-6">
@@ -147,15 +148,15 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-heading mb-4">Quick Actions</h3>
               <div className="flex flex-wrap gap-4 text-sm">
-                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                <button onClick={() => onNavigate('ask-ai')} className="text-accent hover:text-accent/90 font-medium transition-colors">
                   <MessageCircle className="w-4 h-4 inline mr-1" />
                   Ask a question
                 </button>
-                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                <button onClick={() => onNavigate('bills')} className="text-accent hover:text-accent/90 font-medium transition-colors">
                   <Receipt className="w-4 h-4 inline mr-1" />
                   Validate a bill
                 </button>
-                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                <button onClick={() => onNavigate('pre-visit')} className="text-accent hover:text-accent/90 font-medium transition-colors">
                   <TrendingUp className="w-4 h-4 inline mr-1" />
                   Plan a visit
                 </button>
@@ -183,12 +184,12 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
         )}
 
         {/* Other Tabs - Direct Navigation */}
-        {activeTab === 'pre-visit' && <PreVisitTool policyData={policyData} />}
-        {activeTab === 'estimation' && <EstimationTool policyData={policyData} />}
-        {activeTab === 'validation' && <ValidationTool policyData={policyData} />}
-        {activeTab === 'appeal' && <AppealTool policyData={policyData} />}
-        {activeTab === 'optimization' && <OptimizationTool policyData={policyData} />}
-        {activeTab === 'family' && <FamilyDashboard policyData={policyData} />}
+        {activeSection === 'pre-visit' && <PreVisitTool policyData={policyData} />}
+        {activeSection === 'ask-ai' && <EstimationTool policyData={policyData} />}
+        {activeSection === 'bills' && <ValidationTool policyData={policyData} />}
+        {activeSection === 'appeal' && <AppealTool policyData={policyData} />}
+        {activeSection === 'optimize' && <OptimizationTool policyData={policyData} />}
+        {activeSection === 'family' && <FamilyDashboard policyData={policyData} />}
       </div>
     </div>
   );

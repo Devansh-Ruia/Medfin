@@ -95,6 +95,8 @@ export default function Home() {
               <AIWorkspace 
                 policyData={policyData} 
                 onReset={handleReset}
+                activeSection={activeNav}
+                onNavigate={handleNavigate}
               />
             )}
           </div>
