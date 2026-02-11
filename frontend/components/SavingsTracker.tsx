@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api, PolicyData } from '../lib/api';
 import MarkdownRenderer from './MarkdownRenderer';
+import { TrendingUp, AlertCircle, CheckCircle, FileText, Receipt } from 'lucide-react';
 
 export interface SavingsEvent {
   id: string;
@@ -27,9 +28,6 @@ interface SavingsTrackerProps {
 }
 
 export default function SavingsTracker({ stats, onAddSavings, compact = false }: SavingsTrackerProps) {
-  const [showHistory, setShowHistory] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-
   const categoryLabels = {
     billing_error: 'Billing Errors Caught',
     appeal_won: 'Appeals Won',
@@ -39,11 +37,11 @@ export default function SavingsTracker({ stats, onAddSavings, compact = false }:
   };
 
   const categoryIcons = {
-    billing_error: '🔍',
-    appeal_won: '⚖️',
-    network_savings: '🏥',
-    rx_savings: '💊',
-    denial_prevented: '🛡️'
+    billing_error: AlertCircle,
+    appeal_won: CheckCircle,
+    network_savings: TrendingUp,
+    rx_savings: FileText,
+    denial_prevented: Receipt
   };
 
   const categoryColors = {
@@ -56,115 +54,15 @@ export default function SavingsTracker({ stats, onAddSavings, compact = false }:
 
   if (compact) {
     return (
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-4 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm opacity-75">Total Savings</p>
-            <p className="text-2xl font-bold">${stats.totalSaved.toLocaleString()}</p>
-          </div>
-          <div className="text-3xl">💰</div>
-        </div>
+      <div className="text-sm text-muted text-center">
+        Estimated savings: ${stats.totalSaved.toLocaleString()}  •  Time saved: ~{stats.estimatedTimeSaved} hours
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-medium opacity-90">Your MedFin Savings</h3>
-          <p className="text-sm opacity-75">Money saved using our tools</p>
-        </div>
-        <div className="text-3xl">💰</div>
-      </div>
-      
-      <div className="text-5xl font-bold mb-6">
-        ${stats.totalSaved.toLocaleString()}
-      </div>
-      
-      {/* Savings by Category */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {Object.entries(categoryLabels).map(([key, label]) => {
-          const amount = stats.savingsByCategory[key] || 0;
-          if (amount === 0) return null;
-          
-          return (
-            <div key={key} className="bg-white/10 rounded-xl p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{categoryIcons[key as keyof typeof categoryIcons]}</span>
-                <p className="text-sm opacity-75">{label}</p>
-              </div>
-              <p className="text-xl font-semibold">
-                ${amount.toLocaleString()}
-              </p>
-            </div>
-          );
-        })}
-        
-        {/* Time Saved */}
-        <div className="bg-white/10 rounded-xl p-3">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">⏰</span>
-            <p className="text-sm opacity-75">Time Saved</p>
-          </div>
-          <p className="text-xl font-semibold">
-            ~{stats.estimatedTimeSaved} hours
-          </p>
-        </div>
-      </div>
-      
-      {/* Action Buttons */}
-      <div className="space-y-2">
-        <button 
-          onClick={() => setShowHistory(!showHistory)}
-          className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition"
-        >
-          {showHistory ? 'Hide' : 'View'} Savings History
-        </button>
-        
-        {onAddSavings && (
-          <button 
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition"
-          >
-            Log New Savings
-          </button>
-        )}
-      </div>
-      
-      {/* Savings History */}
-      {showHistory && stats.savingsHistory.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-white/20">
-          <h4 className="font-medium mb-3">Recent Savings</h4>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {stats.savingsHistory.slice(0, 10).map((event) => (
-              <div key={event.id} className="bg-white/10 rounded-lg p-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span>{categoryIcons[event.category]}</span>
-                      <span className="text-sm font-medium">{categoryLabels[event.category]}</span>
-                    </div>
-                    <MarkdownRenderer className="text-sm opacity-90">{event.description}</MarkdownRenderer>
-                    <p className="text-xs opacity-75 mt-1">{new Date(event.date).toLocaleDateString()}</p>
-                  </div>
-                  <div className="text-lg font-semibold">
-                    ${event.amountSaved.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Add Savings Form */}
-      {showAddForm && onAddSavings && (
-        <SavingsForm 
-          onSubmit={onAddSavings}
-          onClose={() => setShowAddForm(false)}
-        />
-      )}
+    <div className="text-sm text-muted text-center">
+      Estimated savings: ${stats.totalSaved.toLocaleString()}  •  Time saved: ~{stats.estimatedTimeSaved} hours
     </div>
   );
 }

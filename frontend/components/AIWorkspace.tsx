@@ -14,28 +14,17 @@ import PrivacyPanel from './PrivacyPanel';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useSavings } from '../contexts/SavingsContext';
 import { useFamily } from '../contexts/FamilyContext';
+import { AlertCircle, Shield, FileText, MessageCircle, Receipt, Scale, TrendingUp } from 'lucide-react';
 
 interface AIWorkspaceProps {
   policyData: PolicyData;
   onReset: () => void;
 }
 
-type TabType = 'dashboard' | 'pre-visit' | 'estimation' | 'validation' | 'appeal' | 'optimization' | 'family';
-
 export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
-  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pre-visit' | 'estimation' | 'validation' | 'appeal' | 'optimization' | 'family'>('dashboard');
   const { getSavingsStats } = useSavings();
   const { getPendingActions } = useFamily();
-
-  const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', description: 'Overview & savings' },
-    { id: 'pre-visit', label: 'Plan a Visit', icon: '�', description: 'Pre-visit checklist' },
-    { id: 'estimation', label: 'Ask AI', icon: '💬', description: 'Coverage questions' },
-    { id: 'validation', label: 'Validate Bill', icon: '📸', description: 'Check your bills' },
-    { id: 'appeal', label: 'Appeal Denial', icon: '⚖️', description: 'Fight denied claims' },
-    { id: 'optimization', label: 'Optimize', icon: '✨', description: 'Save money' },
-    { id: 'family', label: 'Family', icon: '👨‍👩‍👧‍👦', description: 'Manage family' },
-  ];
 
   const savingsStats = getSavingsStats();
   const pendingActions = getPendingActions();
@@ -44,16 +33,16 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-lg border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="page-container py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
-                <span className="text-white text-lg">🏥</span>
+                <span className="text-white text-lg">M</span>
               </div>
               <div>
-                <h1 className="font-semibold text-xl text-gray-900">MedFin</h1>
-                <p className="text-sm text-gray-500">
+                <h1 className="font-semibold text-xl text-heading">MedFin</h1>
+                <p className="text-sm text-muted">
                   {policyData.insurance_company || 'Policy'} • {policyData.plan_name || 'Analyzed'}
                 </p>
               </div>
@@ -61,7 +50,7 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
             {/* Actions */}
             <button
               onClick={onReset}
-              className="text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors"
+              className="text-muted hover:text-heading text-sm font-medium transition-colors"
             >
               Upload New Policy
             </button>
@@ -69,95 +58,137 @@ export default function AIWorkspace({ policyData, onReset }: AIWorkspaceProps) {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="page-container py-8">
         {/* AI Status Indicator */}
-        <div className="flex items-center gap-4 mb-8 animate-fade-in">
+        <div className="flex items-center gap-4 mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-            <span className="text-gray-600">AI Ready</span>
+            <div className="w-2 h-2 bg-accent rounded-full"></div>
+            <span className="text-muted">AI Ready</span>
           </div>
-          <span className="text-sm text-gray-500">
-            Policy Score: <span className="font-semibold text-gray-900">{policyData.policy_strength_score || 'N/A'}/100</span>
+          <span className="text-sm text-muted">
+            Policy Score: <span className="font-semibold text-heading">{policyData.policy_strength_score || 'N/A'}/100</span>
           </span>
         </div>
 
-        {/* Policy Summary Card */}
-        <div className="mb-8 animate-stagger-1">
-          <PolicySummary policyData={policyData} />
-        </div>
+        {/* Dashboard Content */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+            {/* Policy Header */}
+            <div className="card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-lg font-semibold text-heading mb-1">
+                    Policy: {policyData.insurance_company || 'Insurance Company 1'} • {policyData.plan_name || 'Plan Option 1'}
+                  </h2>
+                  <span className="text-muted">Score: {policyData.policy_strength_score || '72'}/100</span>
+                </div>
+                <button className="text-accent hover:text-accent/90 text-sm font-medium transition-colors">
+                  Upload New Policy
+                </button>
+              </div>
 
-        {/* Tabs */}
-        <div className="animate-stagger-2">
-          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
-                className={`
-                  flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${activeTab === tab.id
-                    ? 'bg-black text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                  }
-                `}
-              >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+              {/* Policy Details - Inline List Style */}
+              <div className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted">Deductible</span>
+                  <span className="font-semibold text-heading">
+                    ${(policyData.annual_deductible_individual || 500).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted">Out-of-Pocket Max</span>
+                  <span className="font-semibold text-heading">
+                    ${(policyData.out_of_pocket_max_individual || 2500).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-muted">PCP Copay</span>
+                  <span className="font-semibold text-heading">
+                    ${policyData.copay_primary_care || 35}
+                  </span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-muted">Coinsurance</span>
+                  <span className="font-semibold text-heading">
+                    {policyData.coinsurance_in_network || 20}%
+                  </span>
+                </div>
+              </div>
+
+              <button className="text-accent hover:text-accent/90 text-sm font-medium transition-colors mt-4">
+                Show Full Policy Details
               </button>
-            ))}
-          </div>
+            </div>
 
-          {/* Tab Content */}
-          <div className="mt-6 animate-stagger-3">
-            {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                <SavingsTracker stats={savingsStats} />
-                {pendingActions.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">🔔 Pending Actions</h3>
-                    <div className="space-y-3">
-                      {pendingActions.slice(0, 5).map((action, i) => (
-                        <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                          <div className={`w-2 h-2 rounded-full ${
-                            action.priority === 'high' ? 'bg-red-500' :
-                            action.priority === 'medium' ? 'bg-amber-500' : 'bg-green-500'
-                          }`} />
-                          <div className="flex-1">
-                            <MarkdownRenderer className="text-sm font-medium text-gray-900">{action.description}</MarkdownRenderer>
-                            <p className="text-xs text-gray-500">{action.memberName} • {action.actionType}</p>
-                          </div>
-                        </div>
-                      ))}
+            {/* Pending Actions - Task List Style */}
+            {pendingActions.length > 0 && (
+              <div className="card p-6">
+                <h3 className="text-lg font-semibold text-heading mb-4 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-muted" />
+                  Pending Actions
+                </h3>
+                <div className="space-y-2">
+                  {pendingActions.slice(0, 5).map((action, i) => (
+                    <div 
+                      key={i} 
+                      className="flex items-center gap-3 p-3 rounded-lg border-l-4 border-accent hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <MarkdownRenderer className="text-sm font-medium text-heading">{action.description}</MarkdownRenderer>
+                        <p className="text-xs text-muted">{action.memberName} • {action.actionType}</p>
+                      </div>
                     </div>
-                  </div>
-                )}
-                <PrivacyPanel 
-                  onClearData={() => {/* Handle clear */}}
-                  onExportData={() => {/* Handle export */}}
-                  onImportData={(data) => {/* Handle import */}}
-                />
+                  ))}
+                </div>
               </div>
             )}
-            {activeTab === 'pre-visit' && (
-              <PreVisitTool policyData={policyData} />
-            )}
-            {activeTab === 'estimation' && (
-              <EstimationTool policyData={policyData} />
-            )}
-            {activeTab === 'validation' && (
-              <ValidationTool policyData={policyData} />
-            )}
-            {activeTab === 'appeal' && (
-              <AppealTool policyData={policyData} />
-            )}
-            {activeTab === 'optimization' && (
-              <OptimizationTool policyData={policyData} />
-            )}
-            {activeTab === 'family' && (
-              <FamilyDashboard policyData={policyData} />
-            )}
+
+            {/* Quick Actions */}
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-heading mb-4">Quick Actions</h3>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                  <MessageCircle className="w-4 h-4 inline mr-1" />
+                  Ask a question
+                </button>
+                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                  <Receipt className="w-4 h-4 inline mr-1" />
+                  Validate a bill
+                </button>
+                <button className="text-accent hover:text-accent/90 font-medium transition-colors">
+                  <TrendingUp className="w-4 h-4 inline mr-1" />
+                  Plan a visit
+                </button>
+              </div>
+            </div>
+
+            {/* Privacy Controls - Minimal Banner */}
+            <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-muted" />
+                <span className="text-sm text-muted">
+                  Your data is processed locally and never stored.
+                </span>
+              </div>
+              <button className="text-accent hover:text-accent/90 text-sm font-medium transition-colors">
+                Learn more
+              </button>
+            </div>
+
+            {/* Footer Stats - Inline */}
+            <div className="text-center text-sm text-muted">
+              Estimated savings: ${savingsStats.totalSaved.toLocaleString()}  •  Time saved: ~{savingsStats.estimatedTimeSaved} hours
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Other Tabs - Direct Navigation */}
+        {activeTab === 'pre-visit' && <PreVisitTool policyData={policyData} />}
+        {activeTab === 'estimation' && <EstimationTool policyData={policyData} />}
+        {activeTab === 'validation' && <ValidationTool policyData={policyData} />}
+        {activeTab === 'appeal' && <AppealTool policyData={policyData} />}
+        {activeTab === 'optimization' && <OptimizationTool policyData={policyData} />}
+        {activeTab === 'family' && <FamilyDashboard policyData={policyData} />}
       </div>
     </div>
   );
