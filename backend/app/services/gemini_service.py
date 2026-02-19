@@ -10,6 +10,9 @@ import io
 # Primary: Groq
 from groq import Groq
 
+# Search: Tavily
+from tavily import TavilyClient
+
 # Fallback: Gemini (only for search-grounded queries)
 import google.generativeai as genai
 from ..core.config import settings
@@ -21,7 +24,10 @@ class AIService:
         # Primary: Groq
         self.groq_client = Groq(api_key=settings.groq_api_key) if settings.groq_api_key else None
         
-        # Fallback: Gemini (only for search-grounded queries)
+        # Search: Tavily
+        self.tavily_client = TavilyClient(api_key=settings.tavily_api_key) if settings.tavily_api_key else None
+        
+        # Keep existing Gemini setup for image OCR only
         gemini_key = os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
         if gemini_key:
             genai.configure(api_key=gemini_key)
@@ -29,7 +35,7 @@ class AIService:
         else:
             self.gemini_configured = False
         
-        self.model_name = "llama-3.3-70b-versatile"  # Groq model
+        self.model_name = "llama-3.3-70b-versatile"
     
     def is_configured(self) -> bool:
         return self.groq_client is not None
@@ -195,49 +201,93 @@ Return as JSON:
             return {"error": str(e)}
 
     async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
-        """Answer a question that may need general/external knowledge, using Groq."""
+        """Answer a question using Tavily web search + Groq."""
         try:
+            # Step 1: Search the web with Tavily
+            search_context = ""
+            sources = []
+            
+            if self.tavily_client:
+                try:
+                    search_results = self.tavily_client.search(
+                        query=question,
+                        search_depth="basic",
+                        max_results=5,
+                        include_answer=False,
+                    )
+                    
+                    # Build context from search results
+                    for result in search_results.get("results", []):
+                        title = result.get("title", "")
+                        content = result.get("content", "")
+                        url = result.get("url", "")
+                        
+                        search_context += f"\n\nSOURCE: {title}\nURL: {url}\n{content}"
+                        sources.append({"title": title, "url": url})
+                        
+                except Exception as search_err:
+                    logger.warning(f"Tavily search failed, proceeding without: {search_err}")
+            
+            # Step 2: Build prompt with search results as context
             policy_context = json.dumps(policy_data, indent=2) if policy_data else "No policy uploaded"
+            
+            system_prompt = """You are a healthcare financial advisor. Answer the user's question using the provided web search results AND their insurance policy details.
 
-            system_prompt = """You are a healthcare financial advisor with broad knowledge of the US healthcare system, hospitals, insurance plans, and medical costs.
+Rules:
+- Use SPECIFIC names, numbers, rankings, and concrete data from the search results
+- Do NOT be vague — cite specific information from the sources
+- Relate the answer to the user's insurance policy when relevant
+- If the search results don't fully answer the question, say so honestly
+- Reference which sources your information comes from"""
 
-When answering questions about recommendations, rankings, or comparisons:
-- Give SPECIFIC names, numbers, and concrete recommendations
-- Do NOT be vague — provide actual hospital names, plan names, cost figures
-- Draw on your knowledge of major healthcare systems, hospital rankings, average procedure costs, and insurance market data
-- Explain how the answer relates to the user's specific insurance policy if relevant
-- Note that your information may not reflect the very latest changes
+            user_prompt = f"""USER'S INSURANCE POLICY:
+{policy_context}
 
-The user has this insurance policy:
-""" + policy_context
+WEB SEARCH RESULTS:
+{search_context if search_context else "No search results available."}
 
+USER QUESTION: {question}"""
+
+            # Step 3: Send to Groq with search context
             messages = [{"role": "system", "content": system_prompt}]
-
+            
             if conversation_history:
                 for msg in conversation_history[-5:]:
                     messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
-
-            messages.append({"role": "user", "content": question})
-
+            
+            messages.append({"role": "user", "content": user_prompt})
+            
             response_text = self._call_groq("", "", messages)
-
-            # Try to parse as JSON first
+            
+            # Try to parse as JSON first (in case Groq returns structured response)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
                 try:
-                    return json.loads(response_text[start:end])
+                    result = json.loads(response_text[start:end])
+                    result["sources"] = sources
+                    result["search_grounded"] = bool(sources)
+                    return result
                 except json.JSONDecodeError:
                     pass
-
+            
             return {
                 "answer": response_text,
-                "sources": [],
-                "search_grounded": False
+                "sources": sources,
+                "search_grounded": bool(sources)
             }
+            
         except Exception as e:
-            logger.error(f"Web search fallback failed: {e}")
-            return {"error": str(e), "search_grounded": False}
+            logger.error(f"Web search answer failed: {e}")
+            # Fall back to Groq without search
+            try:
+                fallback = self._call_groq(
+                    "You are a healthcare financial advisor. Answer based on your knowledge.",
+                    question
+                )
+                return {"answer": fallback, "sources": [], "search_grounded": False}
+            except Exception as fallback_err:
+                return {"error": str(fallback_err), "search_grounded": False}
 
     async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate a medical bill against insurance policy."""

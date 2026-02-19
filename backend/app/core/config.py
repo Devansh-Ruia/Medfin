@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     
     # AI Services
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
+    tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
     
     # Logging
     log_level: str = "INFO"
