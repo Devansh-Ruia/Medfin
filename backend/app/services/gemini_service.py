@@ -441,7 +441,7 @@ User question: {question}"""
             # Use OLD SDK with search grounding enabled
             model = genai.GenerativeModel(
                 model_name="gemini-2.5-flash",
-                tools="google_search_retrieval"
+                tools="google_search"
             )
             response = model.generate_content(prompt)
             answer_text = response.text
