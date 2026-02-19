@@ -461,6 +461,8 @@ export interface QuestionAnswer {
   warnings: string[];
   follow_up_questions: string[];
   confidence: number;
+  sources?: Array<{ title: string; url: string }>;
+  search_grounded?: boolean;
 }
 
 export interface OptimizationResult {

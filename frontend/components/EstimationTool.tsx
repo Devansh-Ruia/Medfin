@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { api, PolicyData, QuestionAnswer } from '../lib/api';
 import { event } from '../lib/analytics';
+import { Globe } from 'lucide-react';
 
 interface EstimationToolProps {
   policyData: PolicyData;
@@ -12,6 +13,8 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   data?: QuestionAnswer;
+  sources?: Array<{ title: string; url: string }>;
+  search_grounded?: boolean;
 }
 
 // Markdown parsing functions
@@ -140,7 +143,12 @@ const ConfidenceMeter = ({ confidence }: { confidence: number }) => {
 };
 
 // AI Response Card Component
-const AIResponseCard = ({ data, onFollowUp }: { data: QuestionAnswer; onFollowUp: (question: string) => void }) => {
+const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: { 
+  data: QuestionAnswer; 
+  sources?: Array<{ title: string; url: string }>;
+  search_grounded?: boolean;
+  onFollowUp: (question: string) => void; 
+}) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -149,6 +157,33 @@ const AIResponseCard = ({ data, onFollowUp }: { data: QuestionAnswer; onFollowUp
       <div className="prose prose-sm max-w-none">
         {parseMarkdown(data.answer)}
       </div>
+      
+      {/* Web Search Indicator */}
+      {search_grounded && (
+        <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
+          <Globe className="w-3 h-3" /> Includes web results
+        </span>
+      )}
+      
+      {/* Sources */}
+      {sources && sources.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <p className="text-xs text-gray-400 mb-1">Sources</p>
+          <div className="flex flex-col gap-1">
+            {sources.map((source, i) => (
+              <a 
+                key={i}
+                href={source.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-accent hover:underline truncate"
+              >
+                {source.title || source.url}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Estimated Costs */}
       {data.estimated_costs && data.estimated_costs.length > 0 && (
@@ -276,6 +311,8 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
         role: 'assistant',
         content: response.answer,
         data: response,
+        sources: response.sources,
+        search_grounded: response.search_grounded,
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
@@ -323,7 +360,12 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
                   : 'bg-gray-50 rounded-bl-md border border-gray-100'
               }`}>
                 {msg.data ? (
-                  <AIResponseCard data={msg.data} onFollowUp={handleSend} />
+                  <AIResponseCard 
+                    data={msg.data} 
+                    sources={msg.sources}
+                    search_grounded={msg.search_grounded}
+                    onFollowUp={handleSend} 
+                  />
                 ) : (
                   <p className={msg.role === 'user' ? 'text-white' : 'text-gray-700'}>{msg.content}</p>
                 )}

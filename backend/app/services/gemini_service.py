@@ -399,6 +399,75 @@ If you cannot read the bill, return the JSON structure with null/empty values an
             logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
+    def _needs_web_search(self, question: str) -> bool:
+        """Determine if a question needs real-time web data vs policy data."""
+        # Keywords that indicate user wants real-world/external information
+        web_indicators = [
+            'best', 'top', 'ranking', 'recommend', 'compare', 'average cost',
+            'how much does', 'cheapest', 'most affordable', 'near me',
+            'hospital', 'provider', 'doctor', 'clinic', 'reviews',
+            'in my area', 'in california', 'in texas', 'in new york',  # location-based
+            'latest', 'recent', 'news', 'update', 'current',
+            'what is the average', 'how much is', 'market rate',
+            'which plan', 'best plan', 'best insurance',
+            'alternative', 'options for', 'where can i',
+        ]
+        question_lower = question.lower()
+        return any(indicator in question_lower for indicator in web_indicators)
+
+    async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+        """Answer a question using Google Search grounding + policy context."""
+        try:
+            policy_context = json.dumps(policy_data, indent=2) if policy_data else "No policy uploaded"
+            
+            history_text = ""
+            if conversation_history:
+                for msg in conversation_history[-5:]:  # Last 5 messages for context
+                    history_text += f"\n{msg['role'].upper()}: {msg['content']}"
+            
+            prompt = f"""You are a healthcare financial advisor. The user has an insurance policy with these details:
+{policy_context}
+
+CONVERSATION HISTORY:{history_text}
+
+The user is asking a question that may require current real-world information from the internet.
+Provide a specific, detailed answer using current web data. Include:
+- Specific names, rankings, or numbers (not vague generalities)
+- Sources or basis for your recommendations when possible
+- How to answer relates to their specific policy/coverage if relevant
+
+User question: {question}"""
+
+            # Use OLD SDK with search grounding enabled
+            model = genai.GenerativeModel(
+                model_name="gemini-2.5-flash",
+                tools="google_search_retrieval"
+            )
+            response = model.generate_content(prompt)
+            answer_text = response.text
+
+            # Extract grounding metadata if available
+            sources = []
+            if hasattr(response, 'candidates') and response.candidates:
+                candidate = response.candidates[0]
+                if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
+                    metadata = candidate.grounding_metadata
+                    if hasattr(metadata, 'grounding_chunks'):
+                        for chunk in metadata.grounding_chunks:
+                            if hasattr(chunk, 'web') and chunk.web:
+                                sources.append({
+                                    "title": getattr(chunk.web, 'title', ''),
+                                    "url": getattr(chunk.web, 'uri', '')
+                                })
+
+            return {
+                "answer": answer_text,
+                "sources": sources,
+                "search_grounded": True
+            }
+        except Exception as e:
+            return {"error": str(e), "search_grounded": False}
+
     async def answer_policy_question(
         self, 
         question: str, 
@@ -407,6 +476,11 @@ If you cannot read the bill, return the JSON structure with null/empty values an
     ) -> Dict[str, Any]:
         """Answer questions about the insurance policy."""
         
+        # Check if this question needs web search
+        if self._needs_web_search(question):
+            return await self.answer_with_web_search(question, policy_data, conversation_history)
+        
+        # Continue with existing policy-only logic
         history_text = ""
         if conversation_history:
             for msg in conversation_history[-5:]:  # Last 5 messages for context
