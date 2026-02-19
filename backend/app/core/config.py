@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     resend_api_key: str = os.getenv("RESEND_API_KEY", "")
     feedback_email: str = "ruiadevansh@gmail.com"
     
+    # AI Services
+    groq_api_key: str = os.getenv("GROQ_API_KEY", "")
+    
     # Logging
     log_level: str = "INFO"
     

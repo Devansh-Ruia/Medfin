@@ -1,423 +1,209 @@
-import google.generativeai as genai
 import os
 import json
-import base64
 import logging
+import base64
 import traceback
 from typing import Optional, Dict, Any, List
 from PIL import Image
 import io
 
-class GeminiService:
+# Primary: Groq
+from groq import Groq
+
+# Fallback: Gemini (only for search-grounded queries)
+import google.generativeai as genai
+from ..core.config import settings
+
+logger = logging.getLogger(__name__)
+
+class AIService:
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
-        if api_key:
-            genai.configure(api_key=api_key)
-            self.client = genai
+        # Primary: Groq
+        self.groq_client = Groq(api_key=settings.groq_api_key) if settings.groq_api_key else None
+        
+        # Fallback: Gemini (only for search-grounded queries)
+        gemini_key = os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
+        if gemini_key:
+            genai.configure(api_key=gemini_key)
+            self.gemini_configured = True
         else:
-            self.client = None
+            self.gemini_configured = False
+        
+        self.model_name = "llama-3.3-70b-versatile"  # Groq model
     
     def is_configured(self) -> bool:
-        return self.client is not None
+        return self.groq_client is not None
+    
+    def _call_groq(self, system_prompt: str, user_prompt: str, messages: List[Dict] = None) -> str:
+        """Make a call to Groq API."""
+        if not self.groq_client:
+            raise Exception("Groq client not configured")
+        
+        if messages:
+            # Use provided messages array
+            response = self.groq_client.chat.completions.create(
+                messages=messages,
+                model=self.model_name,
+                temperature=0.3,
+                max_tokens=4096,
+            )
+        else:
+            # Use system/user prompt format
+            response = self.groq_client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                model=self.model_name,
+                temperature=0.3,
+                max_tokens=4096,
+            )
+        return response.choices[0].message.content
+    
+    def _needs_web_search(self, question: str) -> bool:
+        """Determine if a question needs real-time web data."""
+        web_indicators = [
+            'best', 'top', 'ranking', 'recommend', 'compare',
+            'average cost', 'how much does', 'cheapest', 'near me',
+            'hospital', 'provider', 'doctor', 'clinic', 'reviews',
+            'latest', 'recent', 'news', 'current',
+            'which plan', 'best plan', 'best insurance',
+            'where can i', 'find a',
+        ]
+        q = question.lower()
+        return any(ind in q for ind in web_indicators)
 
     async def analyze_insurance_policy(self, policy_text: str) -> Dict[str, Any]:
         """Extract and analyze all parameters from an insurance policy."""
         
-        prompt = """You are an expert insurance analyst. Analyze this insurance policy document and extract parameters in a FLAT JSON structure.
+        system_prompt = """You are an expert insurance analyst. Analyze this insurance policy document and extract parameters in a FLAT JSON structure.
 
 IMPORTANT: Return a flat JSON object with these EXACT keys. Do NOT use nested objects.
 
 MONETARY VALUES: Return as NUMBERS (e.g., 500, not "$500")
-PERCENTAGES: Return as NUMBERS (e.g., 20, not "20%")
-BOOLEANS: Use true/false, not "Yes"/"No"
-ARRAYS: Use [] for empty arrays, null for missing values
 
-REQUIRED KEYS:
-{
-  "policy_number": "string or null",
-  "policy_holder_name": "string or null", 
-  "insurance_company": "string or null",
-  "plan_name": "string or null",
-  "plan_type": "PPO/HMO/EPO/POS/HDHP or null",
-  
-  "annual_deductible_individual": "number or null",
-  "annual_deductible_family": "number or null",
-  "out_of_pocket_max_individual": "number or null", 
-  "out_of_pocket_max_family": "number or null",
-  "lifetime_maximum": "number or null",
-  
-  "copay_primary_care": "number or null",
-  "copay_specialist": "number or null",
-  "copay_urgent_care": "number or null",
-  "copay_emergency": "number or null",
-  
-  "coinsurance_in_network": "number or null",
-  "coinsurance_out_of_network": "number or null",
-  
-  "prescription_copay_generic": "number or null",
-  "prescription_copay_brand": "number or null", 
-  "prescription_copay_specialty": "number or null",
-  
-  "preventive_care_covered": "boolean or null",
-  "mental_health_covered": "boolean or null",
-  "substance_abuse_covered": "boolean or null",
-  "maternity_coverage": "boolean or null",
-  "pediatric_coverage": "boolean or null",
-  "adult_dental_covered": "boolean or null",
-  "adult_vision_covered": "boolean or null",
-  "physical_therapy_visits": "number or null",
-  "chiropractic_visits": "number or null",
-  
-  "referral_required": "boolean or null",
-  "hsa_eligible": "boolean or null",
-  "fsa_eligible": "boolean or null",
-  "telehealth_covered": "boolean or null",
-  
-  "excluded_services": ["array of strings or empty array"],
-  "coverage_gaps": ["array of strings or empty array"], 
-  "key_benefits": ["array of strings or empty array"],
-  "recommendations": ["array of strings or empty array"],
-  
-  "policy_strength_score": "number 1-100 or null"
-}
+Required keys:
+- individual_deductible: number
+- family_deductible: number
+- individual_oop_max: number
+- family_oop_max: number
+- primary_care_copay: number
+- specialist_copay: number
+- urgent_care_copay: number
+- er_copay: number
+- prescription_copay: number
+- coinsurance: number (as decimal, e.g., 0.2 for 20%)
+- has_hsa: boolean
+- has_fsa: boolean
+- network_type: string ("PPO", "HMO", "EPO", "POS")
+- referral_required: boolean
+- preauth_required: boolean
+- mental_health_coverage: boolean
+- preventive_care_coverage: boolean
+- maternity_coverage: boolean
+- dental_coverage: boolean
+- vision_coverage: boolean
+- prescription_coverage: boolean
+- out_of_network_coverage: boolean
+- emergency_coverage: boolean
+- urgent_care_coverage: boolean
 
-POLICY DOCUMENT:
-"""
-        
-        try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(
-                prompt + policy_text,
-                generation_config=genai.types.GenerationConfig(
-                    response_mime_type="application/json"
-                )
-            )
-            
-            # Parse JSON response
-            result = json.loads(response.text)
-            
-            # Normalize the data to ensure correct types
-            return self._normalize_policy_data(result)
-            
-        except Exception as e:
-            return {"error": str(e)}
-
-    def _normalize_policy_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Normalize policy data to ensure correct data types."""
-        normalized = {}
-        
-        # Monetary fields that should be numbers
-        monetary_fields = [
-            'annual_deductible_individual', 'annual_deductible_family',
-            'out_of_pocket_max_individual', 'out_of_pocket_max_family',
-            'lifetime_maximum', 'copay_primary_care', 'copay_specialist',
-            'copay_urgent_care', 'copay_emergency', 'prescription_copay_generic',
-            'prescription_copay_brand', 'prescription_copay_specialty',
-            'physical_therapy_visits', 'chiropractic_visits'
-        ]
-        
-        # Percentage fields that should be numbers
-        percentage_fields = [
-            'coinsurance_in_network', 'coinsurance_out_of_network'
-        ]
-        
-        # Boolean fields
-        boolean_fields = [
-            'preventive_care_covered', 'mental_health_covered',
-            'substance_abuse_covered', 'maternity_coverage', 'pediatric_coverage',
-            'adult_dental_covered', 'adult_vision_covered', 'referral_required',
-            'hsa_eligible', 'fsa_eligible', 'telehealth_covered'
-        ]
-        
-        # Array fields
-        array_fields = [
-            'excluded_services', 'coverage_gaps', 'key_benefits', 'recommendations'
-        ]
-        
-        for key, value in data.items():
-            if key in monetary_fields:
-                # Convert monetary strings like "$500" to numbers like 500
-                if isinstance(value, str):
-                    # Remove currency symbols and convert to number
-                    clean_value = value.replace('$', '').replace(',', '').strip()
-                    try:
-                        normalized[key] = float(clean_value)
-                    except ValueError:
-                        normalized[key] = None
-                elif isinstance(value, (int, float)):
-                    normalized[key] = value
-                else:
-                    normalized[key] = None
-                    
-            elif key in percentage_fields:
-                # Convert percentage strings like "20%" to numbers like 20
-                if isinstance(value, str):
-                    clean_value = value.replace('%', '').strip()
-                    try:
-                        normalized[key] = float(clean_value)
-                    except ValueError:
-                        normalized[key] = None
-                elif isinstance(value, (int, float)):
-                    normalized[key] = value
-                else:
-                    normalized[key] = None
-                    
-            elif key in boolean_fields:
-                # Convert various boolean representations to actual booleans
-                if isinstance(value, bool):
-                    normalized[key] = value
-                elif isinstance(value, str):
-                    lower_value = value.lower().strip()
-                    if lower_value in ['true', 'yes', 'y', 'covered', 'included']:
-                        normalized[key] = True
-                    elif lower_value in ['false', 'no', 'n', 'not covered', 'excluded']:
-                        normalized[key] = False
-                    else:
-                        normalized[key] = None
-                else:
-                    normalized[key] = None
-                    
-            elif key in array_fields:
-                # Ensure array fields are always arrays
-                if isinstance(value, list):
-                    normalized[key] = value
-                elif value is None:
-                    normalized[key] = []
-                else:
-                    normalized[key] = [str(value)]
-                    
-            elif key == 'policy_strength_score':
-                # Ensure policy strength score is a number
-                if isinstance(value, (int, float)):
-                    normalized[key] = value
-                elif isinstance(value, str):
-                    try:
-                        normalized[key] = float(value)
-                    except ValueError:
-                        normalized[key] = None
-                else:
-                    normalized[key] = None
-                    
-            else:
-                # String fields - keep as is or convert to string
-                if value is None:
-                    normalized[key] = None
-                else:
-                    normalized[key] = str(value)
-        
-        return normalized
-
-    async def validate_bill_against_policy(
-        self, 
-        bill_image_base64: str, 
-        policy_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Analyze a bill image and validate against the insurance policy."""
-        import logging
-        logger = logging.getLogger(__name__)
-        
-        logger.info("=== VALIDATE BILL START ===")
-        
-        # Simplified prompt that's more likely to return valid JSON
-        prompt = f"""Analyze this medical bill image and validate it against the insurance policy.
-
-POLICY DETAILS:
-{json.dumps(policy_data, indent=2)}
-
-Extract bill information and validate charges. Return ONLY valid JSON (no markdown, no explanation):
-
-{{
-  "bill_extracted": {{
-    "provider_name": "string or null",
-    "service_date": "string or null", 
-    "total_charges": 0,
-    "patient_responsibility": 0,
-    "line_items": []
-  }},
-  "validation_results": {{
-    "services_covered": [],
-    "services_not_covered": [],
-    "deductible_applied_correctly": true,
-    "copays_correct": true,
-    "coinsurance_correct": true
-  }},
-  "issues_found": [],
-  "financial_summary": {{
-    "billed_amount": 0,
-    "expected_insurance_payment": 0,
-    "expected_patient_responsibility": 0,
-    "actual_patient_responsibility": 0,
-    "potential_savings": 0
-  }},
-  "recommendations": [],
-  "confidence_score": 50
-}}
-
-If you cannot read the bill, return the JSON structure with null/empty values and confidence_score of 10."""
+If a value is not found in policy, use null for numbers and false for booleans."""
 
         try:
-            # Step 1: Decode base64
-            logger.info("Step 1: Decoding base64 image")
-            try:
-                image_data = base64.b64decode(bill_image_base64)
-                logger.info(f"Decoded {len(image_data)} bytes")
-            except Exception as e:
-                logger.error(f"Base64 decode failed: {e}")
-                return {"error": f"Invalid image data: {str(e)}"}
+            response_text = self._call_groq(system_prompt, policy_text)
             
-            # Step 2: Open image with PIL
-            logger.info("Step 2: Opening image with PIL")
-            try:
-                image = Image.open(io.BytesIO(image_data))
-                logger.info(f"Image: size={image.size}, format={image.format}, mode={image.mode}")
-                
-                # Convert RGBA/P to RGB (Gemini may not support all modes)
-                if image.mode in ('RGBA', 'P', 'LA', 'L'):
-                    logger.info(f"Converting {image.mode} to RGB")
-                    if image.mode == 'P':
-                        image = image.convert('RGBA')
-                    if image.mode in ('RGBA', 'LA'):
-                        # Create white background for transparency
-                        background = Image.new('RGB', image.size, (255, 255, 255))
-                        if image.mode == 'RGBA':
-                            background.paste(image, mask=image.split()[3])
-                        else:
-                            background.paste(image, mask=image.split()[1])
-                        image = background
-                    elif image.mode == 'L':
-                        image = image.convert('RGB')
-                    logger.info(f"Converted to mode: {image.mode}")
-                    
-            except Exception as e:
-                logger.error(f"PIL image open failed: {e}")
-                return {"error": f"Cannot process image: {str(e)}"}
-            
-            # Step 3: Call Gemini Vision API
-            logger.info("Step 3: Calling Gemini Vision API")
-            try:
-                model = genai.GenerativeModel('gemini-2.5-flash')
-                response = model.generate_content(
-                    [prompt, image],
-                    generation_config=genai.types.GenerationConfig(
-                        temperature=0.1,  # Lower temperature for more consistent JSON
-                    )
-                )
-                
-                if not response or not response.text:
-                    logger.error("Gemini returned empty response")
-                    return {"error": "AI returned empty response"}
-                    
-                text = response.text
-                logger.info(f"Gemini response length: {len(text)}")
-                logger.info(f"Gemini response preview: {text[:500]}...")
-                
-            except Exception as e:
-                logger.error(f"Gemini API call failed: {type(e).__name__}: {e}")
-                return {"error": f"AI analysis failed: {str(e)}"}
-            
-            # Step 4: Parse JSON from response
-            logger.info("Step 4: Parsing JSON response")
-            try:
-                # Remove markdown code blocks if present
-                clean_text = text.strip()
-                if clean_text.startswith("```json"):
-                    clean_text = clean_text[7:]
-                if clean_text.startswith("```"):
-                    clean_text = clean_text[3:]
-                if clean_text.endswith("```"):
-                    clean_text = clean_text[:-3]
-                clean_text = clean_text.strip()
-                
-                # Find JSON object
-                start = clean_text.find('{')
-                end = clean_text.rfind('}') + 1
-                
-                if start == -1 or end <= start:
-                    logger.error(f"No JSON object found in response")
-                    logger.error(f"Full response: {text}")
-                    return {
-                        "error": "AI response was not valid JSON",
-                        "raw_response": text[:1000],
-                        # Return a default structure so the frontend doesn't break
-                        "bill_extracted": {"provider_name": None, "total_charges": 0},
-                        "validation_results": {
-                            "services_covered": [],
-                            "services_not_covered": [],
-                            "deductible_applied_correctly": None,
-                            "copays_correct": None,
-                            "coinsurance_correct": None
-                        },
-                        "issues_found": ["Could not analyze bill - please try with a clearer image"],
-                        "financial_summary": {
-                            "billed_amount": 0,
-                            "expected_insurance_payment": 0,
-                            "expected_patient_responsibility": 0,
-                            "actual_patient_responsibility": 0,
-                            "potential_savings": 0
-                        },
-                        "recommendations": ["Try uploading a clearer image of the bill"],
-                        "confidence_score": 0
-                    }
-                
-                json_str = clean_text[start:end]
-                result = json.loads(json_str)
-                logger.info(f"JSON parsed successfully, keys: {list(result.keys())}")
-                
-                logger.info("=== VALIDATE BILL SUCCESS ===")
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                result = json.loads(response_text[start:end])
                 return result
-                
-            except json.JSONDecodeError as e:
-                logger.error(f"JSON parse failed: {e}")
-                logger.error(f"Attempted to parse: {clean_text[:500] if 'clean_text' in dir() else text[:500]}")
-                return {
-                    "error": f"Could not parse AI response as JSON: {str(e)}",
-                    "raw_response": text[:1000],
-                    "bill_extracted": {"provider_name": None, "total_charges": 0},
-                    "validation_results": {
-                        "services_covered": [],
-                        "services_not_covered": [],
-                        "deductible_applied_correctly": None,
-                        "copays_correct": None,
-                        "coinsurance_correct": None
-                    },
-                    "issues_found": ["AI response was malformed - please try again"],
-                    "financial_summary": {
-                        "billed_amount": 0,
-                        "expected_insurance_payment": 0,
-                        "expected_patient_responsibility": 0,
-                        "actual_patient_responsibility": 0,
-                        "potential_savings": 0
-                    },
-                    "recommendations": ["Try uploading again or use a different image"],
-                    "confidence_score": 0
-                }
+            else:
+                logger.warning("Could not extract JSON from Groq response")
+                return {"error": "Could not parse policy analysis"}
                 
         except Exception as e:
-            logger.error(f"=== VALIDATE BILL FAILED ===")
-            logger.error(f"Unexpected error: {type(e).__name__}: {e}")
-            import traceback
+            logger.error(f"=== POLICY ANALYSIS FAILED ===")
+            logger.error(f"Error: {type(e).__name__}: {e}")
             logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
-    def _needs_web_search(self, question: str) -> bool:
-        """Determine if a question needs real-time web data vs policy data."""
-        # Keywords that indicate user wants real-world/external information
-        web_indicators = [
-            'best', 'top', 'ranking', 'recommend', 'compare', 'average cost',
-            'how much does', 'cheapest', 'most affordable', 'near me',
-            'hospital', 'provider', 'doctor', 'clinic', 'reviews',
-            'in my area', 'in california', 'in texas', 'in new york',  # location-based
-            'latest', 'recent', 'news', 'update', 'current',
-            'what is the average', 'how much is', 'market rate',
-            'which plan', 'best plan', 'best insurance',
-            'alternative', 'options for', 'where can i',
-        ]
-        question_lower = question.lower()
-        return any(indicator in question_lower for indicator in web_indicators)
+    async def answer_policy_question(
+        self, 
+        question: str, 
+        policy_data: Dict[str, Any],
+        conversation_history: List[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
+        """Answer questions about the insurance policy."""
+        
+        # Check if this question needs web search
+        if self._needs_web_search(question):
+            return await self.answer_with_web_search(question, policy_data, conversation_history)
+        
+        # Continue with policy-only logic using Groq
+        system_prompt = """You are an expert insurance advisor helping a patient understand their insurance policy. Be helpful, clear, and specific.
+
+Provide a clear, helpful answer that:
+1. Directly answers their question using policy details
+2. Cites specific numbers/limits from their policy when relevant
+3. Explains any medical billing terms in simple language
+4. Warns about any gotchas or things to watch out for
+5. Suggests follow-up questions they might want to ask
+
+If the question involves cost estimation, provide:
+- Estimated cost breakdown
+- What they'll pay vs insurance
+- Whether deductible applies
+- Any prior authorization needed
+
+Return as JSON:
+{
+  "answer": "detailed answer text",
+  "relevant_policy_details": ["list of relevant policy points"],
+  "estimated_costs": {} or null if not applicable,
+  "warnings": ["any important warnings"],
+  "follow_up_questions": ["suggested follow-up questions"],
+  "confidence": 1-100
+}"""
+
+        try:
+            # Build messages array with conversation history
+            messages = [{"role": "system", "content": system_prompt}]
+            
+            # Add policy context
+            policy_context = f"INSURANCE POLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
+            messages.append({"role": "system", "content": policy_context})
+            
+            # Add conversation history
+            if conversation_history:
+                for msg in conversation_history[-5:]:  # Last 5 messages for context
+                    messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+            
+            # Add current question
+            messages.append({"role": "user", "content": question})
+
+            response_text = self._call_groq("", "", messages)
+            
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                return json.loads(response_text[start:end])
+            return {"answer": response_text, "confidence": 70}
+        except Exception as e:
+            return {"error": str(e)}
 
     async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         """Answer a question using Google Search grounding + policy context."""
         try:
+            if not self.gemini_configured:
+                # Fall back to Groq without search
+                return {
+                    "answer": self._call_groq("You are a healthcare financial advisor.", question),
+                    "search_grounded": False
+                }
+            
             policy_context = json.dumps(policy_data, indent=2) if policy_data else "No policy uploaded"
             
             history_text = ""
@@ -438,7 +224,7 @@ Provide a specific, detailed answer using current web data. Include:
 
 User question: {question}"""
 
-            # Use OLD SDK with search grounding enabled
+            # Use Gemini with search grounding enabled
             model = genai.GenerativeModel(
                 model_name="gemini-2.5-flash",
                 tools="google_search"
@@ -468,68 +254,171 @@ User question: {question}"""
         except Exception as e:
             return {"error": str(e), "search_grounded": False}
 
-    async def answer_policy_question(
-        self, 
-        question: str, 
-        policy_data: Dict[str, Any],
-        conversation_history: List[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
-        """Answer questions about the insurance policy."""
+    async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate a medical bill against insurance policy."""
         
-        # Check if this question needs web search
-        if self._needs_web_search(question):
-            return await self.answer_with_web_search(question, policy_data, conversation_history)
+        try:
+            # Decode and process image (keep existing logic for now)
+            image_data = base64.b64decode(bill_image_base64)
+            image = Image.open(io.BytesIO(image_data))
+            
+            # For now, use Gemini for OCR since Groq vision models might be different
+            if not self.gemini_configured:
+                return {"error": "Image processing requires Gemini configuration"}
+            
+            # Use Gemini for OCR
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            response = model.generate_content([
+                "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
+                image
+            ])
+            
+            bill_text = response.text
+            
+            # Now use Groq for analysis
+            system_prompt = """You are a medical billing expert. Analyze this medical bill against insurance policy and identify potential issues.
+
+Extract these details from bill:
+- patient_name: string
+- date_of_service: string
+- provider_name: string
+- services: array of objects with service_name, charge_code, amount
+- total_charge: number
+- insurance_paid: number
+- patient_responsibility: number
+
+Then validate against policy:
+- in_network_status: "in_network", "out_of_network", or "unknown"
+- coverage_determination: "fully_covered", "partially_covered", "not_covered", or "needs_review"
+- estimated_patient_cost: number
+- potential_savings: array of strings with optimization suggestions
+- warnings: array of strings with billing concerns
+
+Return as JSON with all these fields."""
+
+            bill_context = f"BILL TEXT:\n{bill_text}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
+            response_text = self._call_groq(system_prompt, bill_context)
+            
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                return json.loads(response_text[start:end])
+            return {"error": "Could not parse bill validation"}
+                
+        except Exception as e:
+            logger.error(f"=== BILL VALIDATION FAILED ===")
+            logger.error(f"Error: {type(e).__name__}: {e}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            return {"error": str(e)}
+
+    async def generate_appeal_letter(self, denial_info: Dict[str, Any], policy_data: Dict[str, Any], tone: str = "professional") -> Dict[str, Any]:
+        """Generate an appeal letter for a denied claim."""
         
-        # Continue with existing policy-only logic
-        history_text = ""
-        if conversation_history:
-            for msg in conversation_history[-5:]:  # Last 5 messages for context
-                history_text += f"\n{msg['role'].upper()}: {msg['content']}"
-        
-        prompt = f"""You are an expert insurance advisor helping a patient understand their insurance policy. Be helpful, clear, and specific.
+        system_prompt = f"""You are a healthcare insurance appeals specialist. Write a compelling appeal letter for a denied claim.
 
-INSURANCE POLICY DETAILS:
-{json.dumps(policy_data, indent=2)}
+Tone: {tone}
 
-CONVERSATION HISTORY:{history_text}
+Include these elements:
+1. Clear statement of what was denied and why
+2. Reference to specific policy provisions that support coverage
+3. Medical necessity justification
+4. Request for reconsideration with specific action requested
+5. Professional closing with contact information
 
-USER QUESTION: {question}
-
-Provide a clear, helpful answer that:
-1. Directly answers their question using policy details
-2. Cites specific numbers/limits from their policy when relevant
-3. Explains any medical billing terms in simple language
-4. Warns about any gotchas or things to watch out for
-5. Suggests follow-up questions they might want to ask
-
-If the question involves cost estimation, provide:
-- Estimated cost breakdown
-- What they'll pay vs insurance
-- Whether deductible applies
-- Any prior authorization needed
+Structure the letter properly with:
+- Patient information
+- Claim details
+- Appeal argument
+- Supporting evidence
+- Requested resolution
 
 Return as JSON:
 {{
-  "answer": "detailed answer text",
-  "relevant_policy_details": ["list of relevant policy points"],
-  "estimated_costs": {{}} or null if not applicable,
-  "warnings": ["any important warnings"],
-  "follow_up_questions": ["suggested follow-up questions"],
-  "confidence": 1-100
-}}
-"""
-        
+  "letter": {{
+    "patient_name": "name",
+    "claim_number": "number",
+    "date_of_service": "date",
+    "provider": "provider name",
+    "denial_reason": "reason",
+    "letter_body": "full letter text",
+    "supporting_documents": ["list of suggested documents"]
+  }},
+  "success_probability": 1-100,
+  "next_steps": ["list of recommended actions"]
+}}"""
+
         try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(prompt)
-            text = response.text
+            context = f"DENIAL INFO:\n{json.dumps(denial_info, indent=2)}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
+            response_text = self._call_groq(system_prompt, context)
             
-            start = text.find('{')
-            end = text.rfind('}') + 1
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
             if start != -1 and end > start:
-                return json.loads(text[start:end])
-            return {"answer": text, "confidence": 70}
+                return json.loads(response_text[start:end])
+            return {"error": "Could not parse appeal letter"}
+                
         except Exception as e:
+            logger.error(f"=== APPEAL LETTER GENERATION FAILED ===")
+            logger.error(f"Error: {type(e).__name__}: {e}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            return {"error": str(e)}
+
+    async def generate_pre_visit_checklist(self, visit_type: str, policy_data: Dict[str, Any], provider_info: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Generate a pre-visit checklist based on policy and visit type."""
+        
+        system_prompt = """You are a healthcare navigation specialist. Create a comprehensive pre-visit checklist for a medical appointment.
+
+Generate a checklist that includes:
+1. Insurance verification steps
+2. Required documents and ID
+3. Payment preparation (copays, deductibles)
+4. Pre-authorization requirements
+5. Questions to ask the provider
+6. Post-visit follow-up actions
+
+Tailor the checklist based on:
+- Visit type (primary care, specialist, urgent care, etc.)
+- Insurance policy requirements
+- Provider network status
+
+Return as JSON:
+{
+  "checklist": {
+    "before_visit": ["list of tasks before appointment"],
+    "bring_to_visit": ["list of documents/items to bring"],
+    "questions_to_ask": ["list of questions for provider"],
+    "payment_prep": ["list of payment-related preparations"],
+    "after_visit": ["list of follow-up actions"]
+  },
+  "estimated_costs": {
+    "copay": number,
+    "coinsurance": number,
+    "deductible_remaining": number
+  },
+  "network_status": "in_network" or "out_of_network",
+  "authorization_required": boolean
+}"""
+
+        try:
+            context = f"VISIT TYPE: {visit_type}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
+            if provider_info:
+                context += f"\n\nPROVIDER INFO:\n{json.dumps(provider_info, indent=2)}"
+            
+            response_text = self._call_groq(system_prompt, context)
+            
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                return json.loads(response_text[start:end])
+            return {"error": "Could not parse pre-visit checklist"}
+                
+        except Exception as e:
+            logger.error(f"=== PRE-VISIT CHECKLIST GENERATION FAILED ===")
+            logger.error(f"Error: {type(e).__name__}: {e}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
     async def recommend_policy_alternatives(
@@ -539,13 +428,7 @@ Return as JSON:
     ) -> Dict[str, Any]:
         """Recommend optimizations or alternative policies."""
         
-        prompt = f"""You are an expert insurance advisor. Analyze this patient's current insurance policy and their healthcare needs to provide optimization recommendations.
-
-CURRENT POLICY:
-{json.dumps(current_policy, indent=2)}
-
-USER HEALTHCARE NEEDS:
-{json.dumps(user_needs, indent=2)}
+        system_prompt = """You are an expert insurance advisor. Analyze this patient's current insurance policy and their healthcare needs to provide optimization recommendations.
 
 Provide comprehensive recommendations:
 
@@ -566,210 +449,50 @@ Provide comprehensive recommendations:
    - Coverage they're paying for but not using
 
 4. **Alternative Plan Types**:
-   - Would they benefit from a different plan type (HMO vs PPO, HDHP, etc.)?
-   - Estimated savings with alternatives
-   - Trade-offs of each option
-
-5. **Action Items**:
-   - Immediate steps to optimize current plan
-   - Questions to ask during next open enrollment
-   - Things to track/document before switching
+   - HMO vs PPO vs EPO recommendations
+   - High-deductible plan options
+   - Medicare/Medicaid considerations if applicable
 
 Return as JSON:
-{{
+{
   "current_plan_rating": 1-100,
-  "fit_for_needs": "good/fair/poor",
+  "fit_for_needs": "assessment of how well current plan fits",
   "annual_potential_savings": number,
   "optimizations": [
-    {{
-      "category": "string",
-      "recommendation": "string",
+    {
+      "category": "premiums|coverage|network|medications",
+      "recommendation": "specific recommendation",
       "potential_savings": number,
-      "effort_level": "low/medium/high",
-      "priority": 1-5
-    }}
+      "effort_level": "low|medium|high"
+    }
   ],
   "alternative_plans": [
-    {{
-      "plan_type": "string",
-      "why_consider": "string",
-      "estimated_premium_change": number,
-      "coverage_trade_offs": "string",
-      "best_for": "string"
-    }}
-  ],
-  "action_items": [
-    {{
-      "action": "string",
-      "timeline": "string",
-      "priority": 1-5
-    }}
-  ],
-  "summary": "string"
-}}
-"""
-        
-        try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(prompt)
-            text = response.text
-            
-            start = text.find('{')
-            end = text.rfind('}') + 1
-            if start != -1 and end > start:
-                return json.loads(text[start:end])
-            return {"error": "Could not generate recommendations", "raw_response": text}
-        except Exception as e:
-            return {"error": str(e)}
-
-    async def generate_pre_visit_checklist(
-        self,
-        visit_type: str,
-        policy_data: Dict[str, Any],
-        provider_info: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """Generate a comprehensive pre-visit checklist for a specific medical visit type."""
-        
-        prompt = f"""You are a healthcare financial advisor. Based on this insurance policy, generate a comprehensive pre-visit checklist for: {visit_type}
-
-POLICY DETAILS:
-{json.dumps(policy_data, indent=2)}
-
-PROVIDER INFO (if any):
-{json.dumps(provider_info, indent=2) if provider_info else "Not specified"}
-
-Generate a JSON response with this exact structure:
-{{
-  "visit_type": "{visit_type}",
-  "estimated_costs": {{
-    "typical_range_low": number,
-    "typical_range_high": number,
-    "your_cost_low": number,
-    "your_cost_high": number,
-    "deductible_applies": boolean,
-    "deductible_remaining": number or null,
-    "coinsurance_rate": number,
-    "copay_if_applicable": number or null
-  }},
-  "prior_authorization": {{
-    "likely_required": boolean,
-    "reason": "string explaining why or why not",
-    "how_to_obtain": "string with specific steps",
-    "typical_timeline": "string (e.g., 3-5 business days)",
-    "consequence_if_skipped": "string explaining risks"
-  }},
-  "questions_to_ask_provider": ["list of 4-6 specific questions to ask the doctor/office"],
-  "questions_to_ask_insurance": ["list of 2-3 questions to call insurance about"],
-  "documents_to_request_after": ["list of documents to get after the visit"],
-  "network_warnings": ["potential out-of-network issues to watch for"],
-  "money_saving_tips": ["3-5 specific tips based on this policy"],
-  "coverage_summary": "2-3 sentence plain English summary of what this visit will cost"
-}}
-
-IMPORTANT GUIDELINES:
-- Use realistic cost ranges based on national averages for this visit type
-- Calculate actual patient responsibility based on their specific policy terms
-- Consider deductible status, copays, and coinsurance
-- Be specific about prior authorization requirements
-- Include practical, actionable advice
-- Use plain English - no insurance jargon without explanation
-- All monetary values should be numbers (not strings with $)
-"""
-        
-        try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(prompt)
-            text = response.text
-            
-            start = text.find('{')
-            end = text.rfind('}') + 1
-            if start != -1 and end > start:
-                return json.loads(text[start:end])
-            return {"error": "Could not generate pre-visit checklist", "raw_response": text}
-        except Exception as e:
-            return {"error": str(e)}
-
-    async def generate_appeal_letter(
-        self,
-        denial_info: Dict[str, Any],
-        policy_data: Dict[str, Any],
-        tone: str = "professional"  # professional, firm, escalation
-    ) -> Dict[str, Any]:
-        """Generate a compelling appeal letter for a denied claim."""
-        
-        prompt = f"""You are an expert healthcare advocate and insurance appeals specialist. 
-Generate a compelling appeal letter for this denied claim.
-
-DENIAL INFORMATION:
-{json.dumps(denial_info, indent=2)}
-
-PATIENT'S POLICY DETAILS:
-{json.dumps(policy_data, indent=2)}
-
-TONE: {tone}
-
-Your task:
-1. Analyze why the denial may be incorrect based on the policy language
-2. Identify specific policy sections that support coverage
-3. Reference applicable federal/state regulations
-4. Create a professional appeal letter that:
-   - States the facts clearly
-   - Cites specific policy language
-   - Explains medical necessity
-   - References relevant laws (ACA, ERISA, state regulations)
-   - Requests specific action and timeline
-   - Mentions external review rights
-
-Return JSON with this exact structure:
-{{
-  "analysis": {{
-    "denial_weakness": "string explaining why their denial is likely wrong",
-    "supporting_policy_language": ["list of specific policy quotes that support coverage"],
-    "applicable_regulations": ["list of laws/regulations that apply"],
-    "success_likelihood": "High/Medium/Low",
-    "success_reasoning": "string explaining the likelihood assessment"
-  }},
-  "letter": {{
-    "subject_line": "string with proper appeal subject line",
-    "letter_body": "string with full formatted letter text including salutation and closing",
-    "attachments_needed": ["list of documents to include with appeal"],
-    "deadline": "string explaining when to submit by (usually 180 days from denial)"
-  }},
-  "next_steps": [
-    "string explaining step 1 if this appeal is denied",
-    "string explaining how to request external review",
-    "string explaining state insurance commissioner contact if needed"
+    {
+      "plan_type": "HMO|PPO|EPO|HDHP",
+      "provider": "suggested insurance company",
+      "estimated_monthly_premium": number,
+      "pros": ["list of advantages"],
+      "cons": ["list of disadvantages"]
+    }
   ]
-}}
+}"""
 
-IMPORTANT GUIDELINES:
-- Be thorough and professional
-- Cite specific policy language when possible
-- Reference real regulations (ACA, No Surprises Act, state laws)
-- Include practical next steps
-- Format letter properly with appropriate tone
-- Make it actionable and specific to this denial
-- CRITICAL: Generate a clean, professional appeal letter with NO inline definitions, NO HTML tags, NO jargon explanations, and NO tooltip markup. The letter should read as a formal document ready to be printed and mailed to an insurance company. Use standard business letter formatting.
-- Format the letter with clear structure using markdown:
-  - Use line breaks between paragraphs
-  - Use **bold** for section headers like "RE:", "Statement of Facts:", "Requested Action:"
-  - Use proper business letter spacing
-  - Separate the header block (date, address, RE line) from the body
-  - Put each paragraph on its own line with a blank line between paragraphs
-"""
-        
         try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            response = model.generate_content(prompt)
-            text = response.text
+            context = f"CURRENT POLICY:\n{json.dumps(current_policy, indent=2)}\n\nUSER NEEDS:\n{json.dumps(user_needs, indent=2)}"
+            response_text = self._call_groq(system_prompt, context)
             
-            start = text.find('{')
-            end = text.rfind('}') + 1
+            # Try to extract JSON from response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
             if start != -1 and end > start:
-                return json.loads(text[start:end])
-            return {"error": "Could not generate appeal letter", "raw_response": text}
+                return json.loads(response_text[start:end])
+            return {"error": "Could not parse policy recommendations"}
+                
         except Exception as e:
+            logger.error(f"=== POLICY OPTIMIZATION FAILED ===")
+            logger.error(f"Error: {type(e).__name__}: {e}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
-# Singleton instance
-gemini_service = GeminiService()
+# Module-level instantiation to maintain compatibility
+gemini_service = AIService()
