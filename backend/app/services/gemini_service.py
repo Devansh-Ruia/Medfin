@@ -195,63 +195,48 @@ Return as JSON:
             return {"error": str(e)}
 
     async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
-        """Answer a question using Google Search grounding + policy context."""
+        """Answer a question that may need general/external knowledge, using Groq."""
         try:
-            if not self.gemini_configured:
-                # Fall back to Groq without search
-                return {
-                    "answer": self._call_groq("You are a healthcare financial advisor.", question),
-                    "search_grounded": False
-                }
-            
             policy_context = json.dumps(policy_data, indent=2) if policy_data else "No policy uploaded"
-            
-            history_text = ""
+
+            system_prompt = """You are a healthcare financial advisor with broad knowledge of the US healthcare system, hospitals, insurance plans, and medical costs.
+
+When answering questions about recommendations, rankings, or comparisons:
+- Give SPECIFIC names, numbers, and concrete recommendations
+- Do NOT be vague — provide actual hospital names, plan names, cost figures
+- Draw on your knowledge of major healthcare systems, hospital rankings, average procedure costs, and insurance market data
+- Explain how the answer relates to the user's specific insurance policy if relevant
+- Note that your information may not reflect the very latest changes
+
+The user has this insurance policy:
+""" + policy_context
+
+            messages = [{"role": "system", "content": system_prompt}]
+
             if conversation_history:
-                for msg in conversation_history[-5:]:  # Last 5 messages for context
-                    history_text += f"\n{msg['role'].upper()}: {msg['content']}"
-            
-            prompt = f"""You are a healthcare financial advisor. The user has an insurance policy with these details:
-{policy_context}
+                for msg in conversation_history[-5:]:
+                    messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
 
-CONVERSATION HISTORY:{history_text}
+            messages.append({"role": "user", "content": question})
 
-The user is asking a question that may require current real-world information from the internet.
-Provide a specific, detailed answer using current web data. Include:
-- Specific names, rankings, or numbers (not vague generalities)
-- Sources or basis for your recommendations when possible
-- How to answer relates to their specific policy/coverage if relevant
+            response_text = self._call_groq("", "", messages)
 
-User question: {question}"""
-
-            # Use Gemini with search grounding enabled
-            model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash",
-                tools="google_search"
-            )
-            response = model.generate_content(prompt)
-            answer_text = response.text
-
-            # Extract grounding metadata if available
-            sources = []
-            if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
-                if hasattr(candidate, 'grounding_metadata') and candidate.grounding_metadata:
-                    metadata = candidate.grounding_metadata
-                    if hasattr(metadata, 'grounding_chunks'):
-                        for chunk in metadata.grounding_chunks:
-                            if hasattr(chunk, 'web') and chunk.web:
-                                sources.append({
-                                    "title": getattr(chunk.web, 'title', ''),
-                                    "url": getattr(chunk.web, 'uri', '')
-                                })
+            # Try to parse as JSON first
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                try:
+                    return json.loads(response_text[start:end])
+                except json.JSONDecodeError:
+                    pass
 
             return {
-                "answer": answer_text,
-                "sources": sources,
-                "search_grounded": True
+                "answer": response_text,
+                "sources": [],
+                "search_grounded": False
             }
         except Exception as e:
+            logger.error(f"Web search fallback failed: {e}")
             return {"error": str(e), "search_grounded": False}
 
     async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any]) -> Dict[str, Any]:
