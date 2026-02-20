@@ -322,14 +322,50 @@ Extract these details from bill:
 - insurance_paid: number
 - patient_responsibility: number
 
-Then validate against policy:
-- in_network_status: "in_network", "out_of_network", or "unknown"
-- coverage_determination: "fully_covered", "partially_covered", "not_covered", or "needs_review"
-- estimated_patient_cost: number
-- potential_savings: array of strings with optimization suggestions
-- warnings: array of strings with billing concerns
+Then validate against policy and identify specific issues with actionable solutions.
 
-Return as JSON with all these fields."""
+Return as JSON with these fields:
+{
+  "patient_name": "string",
+  "date_of_service": "string",
+  "provider_name": "string",
+  "services": [
+    {
+      "service_name": "string",
+      "charge_code": "string or null",
+      "billed_amount": number,
+      "expected_amount": number or null,
+      "status": "correct" | "overcharge" | "error" | "needs_review"
+    }
+  ],
+  "total_charge": number,
+  "insurance_paid": number or null,
+  "patient_responsibility": number,
+  "in_network_status": "in_network" | "out_of_network" | "unknown",
+  "coverage_determination": "fully_covered" | "partially_covered" | "not_covered" | "needs_review",
+  "estimated_patient_cost": number,
+  "issues": [
+    {
+      "type": "overcharge" | "billing_error" | "coverage_gap" | "duplicate" | "not_covered" | "coding_error",
+      "severity": "high" | "medium" | "low",
+      "description": "Clear description of problem",
+      "solution": "Specific, actionable step-by-step solution. Include who to call, what to say, what to reference (CPT codes, policy sections, etc.)",
+      "potential_savings": number or null
+    }
+  ],
+  "summary": {
+    "total_issues_found": number,
+    "total_potential_savings": number,
+    "overall_assessment": "brief 1-2 sentence summary"
+  }
+}
+
+For each issue, solution MUST be specific and actionable:
+- Include WHO to contact (billing dept, insurance company, provider)
+- Include WHAT to say or request (itemized bill, dispute, appeal)
+- Include reference numbers when possible (CPT codes, policy sections)
+- Include expected amounts or typical cost ranges when relevant
+- Relate to user's specific policy terms"""
 
             bill_context = f"BILL TEXT:\n{bill_text}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
             response_text = self._call_groq(system_prompt, bill_context)

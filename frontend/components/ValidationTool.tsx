@@ -310,18 +310,88 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
               </div>
             </div>
 
-            {/* Issues Found */}
-            {result.issues_found && result.issues_found.length > 0 && (
-              <div className="mb-6 bg-error/10 border-l-4 border-error rounded-r-xl p-4">
-                <h4 className="text-sm font-medium text-error mb-3">⚠️ Issues Found</h4>
-                <ul className="text-sm text-error space-y-2">
-                  {result.issues_found.map((issue, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-error mt-0.5">•</span>
-                      <FormattedText text={issue} />
-                    </li>
+            {/* Issues Section */}
+            {(() => {
+              // Normalize old format to new format for backward compatibility
+              const issues = result.issues || (result.issues_found || []).map((w: any) => ({
+                type: 'billing_error' as const,
+                severity: 'medium' as const,
+                description: typeof w === 'string' ? w : w.description || '',
+                solution: typeof w === 'string' ? 'Contact your provider billing department to discuss this charge.' : w.solution || '',
+                potential_savings: null
+              }));
+
+              return issues && issues.length > 0 && (
+                <div className="space-y-4 mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Issues Found ({issues.length})
+                  </h3>
+                  {issues.map((issue, index) => (
+                    <div 
+                      key={index} 
+                      className="border border-gray-200 rounded-xl overflow-hidden"
+                    >
+                      {/* Issue Header */}
+                      <div className={`px-4 py-3 flex items-start gap-3 ${
+                        issue.severity === 'high' ? 'bg-red-50 border-l-4 border-red-500' :
+                        issue.severity === 'medium' ? 'bg-yellow-50 border-l-4 border-yellow-500' :
+                        'bg-blue-50 border-l-4 border-blue-500'
+                      }`}>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`text-xs font-medium uppercase tracking-wide ${
+                              issue.severity === 'high' ? 'text-red-700' :
+                              issue.severity === 'medium' ? 'text-yellow-700' :
+                              'text-blue-700'
+                            }`}>
+                              {issue.severity} • {issue.type.replace(/_/g, ' ')}
+                            </span>
+                            {issue.potential_savings && (
+                              <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                                Save ${issue.potential_savings}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {issue.description}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Solution - directly below issue */}
+                      <div className="px-4 py-3 bg-white border-t border-gray-100">
+                        <div className="flex items-start gap-2">
+                          <span className="text-accent mt-0.5">→</span>
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                              What to do
+                            </p>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {issue.solution}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
+              );
+            })()}
+
+            {/* Summary Section */}
+            {result.summary && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-900">
+                    {result.summary.total_issues_found} issue{result.summary.total_issues_found !== 1 ? 's' : ''} found
+                  </span>
+                  {result.summary.total_potential_savings > 0 && (
+                    <span className="text-sm font-semibold text-green-700">
+                      Potential savings: ${result.summary.total_potential_savings}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">{result.summary.overall_assessment}</p>
               </div>
             )}
 

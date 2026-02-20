@@ -442,7 +442,16 @@ export interface BillValidationResult {
     copays_correct: boolean;
     coinsurance_correct: boolean;
   };
-  issues_found: string[];
+  // New format - issues with solutions
+  issues?: Array<{
+    type: 'overcharge' | 'billing_error' | 'coverage_gap' | 'duplicate' | 'not_covered' | 'coding_error';
+    severity: 'high' | 'medium' | 'low';
+    description: string;
+    solution: string;
+    potential_savings: number | null;
+  }>;
+  // Legacy format - for backward compatibility
+  issues_found?: string[];
   financial_summary: {
     billed_amount: number;
     expected_insurance_payment: number;
@@ -452,6 +461,12 @@ export interface BillValidationResult {
   };
   recommendations: string[];
   confidence_score: number;
+  // New summary format
+  summary?: {
+    total_issues_found: number;
+    total_potential_savings: number;
+    overall_assessment: string;
+  };
 }
 
 export interface QuestionAnswer {
