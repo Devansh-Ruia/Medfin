@@ -129,7 +129,7 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
               <div>
                 <h1 className="font-semibold text-xl text-heading">MedFin</h1>
                 <p className="text-sm text-muted">
-                  {policyData ? `${policyData.insurance_company || 'Policy'} • ${policyData.plan_name || 'Analyzed'}` : 'No policy uploaded'}
+                  {policyData ? `${policyData?.insurance_company || 'Policy'} • ${policyData?.plan_name || 'Analyzed'}` : 'No policy uploaded'}
                 </p>
               </div>
             </div>
@@ -153,22 +153,22 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
           </div>
           {policyData && (
             <span className="text-sm text-muted">
-              Policy Score: <span className="font-semibold text-heading">{policyData.policy_strength_score || 'N/A'}/100</span>
+              Policy Score: <span className="font-semibold text-heading">{policyData?.policy_strength_score || 'N/A'}/100</span>
             </span>
           )}
         </div>
 
         {/* Dashboard Content */}
-        {activeSection === 'policy' && (
+        {activeSection === 'policy' && policyData && (
           <div className="space-y-8">
             {/* Policy Header */}
             <div className="card p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-semibold text-heading mb-1">
-                    Policy: {policyData.insurance_company || 'Insurance Company 1'} • {policyData.plan_name || 'Plan Option 1'}
+                    Policy: {policyData?.insurance_company || 'Insurance Company 1'} • {policyData?.plan_name || 'Plan Option 1'}
                   </h2>
-                  <span className="text-muted">Score: {policyData.policy_strength_score || '72'}/100</span>
+                  <span className="text-muted">Score: {policyData?.policy_strength_score || '72'}/100</span>
                 </div>
                 <button className="text-accent hover:text-accent/90 text-sm font-medium transition-colors">
                   Upload New Policy
@@ -180,25 +180,25 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-muted">Deductible</span>
                   <span className="font-semibold text-heading">
-                    ${(policyData.annual_deductible_individual || 500).toLocaleString()}
+                    ${(policyData?.annual_deductible_individual || 500).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-muted">Out-of-Pocket Max</span>
                   <span className="font-semibold text-heading">
-                    ${(policyData.out_of_pocket_max_individual || 2500).toLocaleString()}
+                    ${(policyData?.out_of_pocket_max_individual || 2500).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-muted">PCP Copay</span>
                   <span className="font-semibold text-heading">
-                    ${policyData.copay_primary_care || 35}
+                    ${policyData?.copay_primary_care || 35}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-muted">Coinsurance</span>
                   <span className="font-semibold text-heading">
-                    {policyData.coinsurance_in_network || 20}%
+                    {policyData?.coinsurance_in_network || 20}%
                   </span>
                 </div>
               </div>
