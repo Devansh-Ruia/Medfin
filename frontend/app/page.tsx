@@ -56,13 +56,14 @@ export default function Home() {
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
           <div className="page-container py-6">
-            {!policyData ? (
+            {activeNav === 'policy' && !policyData && (
               <PolicyUpload 
                 onPolicyUploaded={handlePolicyUploaded}
                 isAnalyzing={isAnalyzing}
                 setIsAnalyzing={setIsAnalyzing}
               />
-            ) : (
+            )}
+            {(policyData || activeNav !== 'policy') && (
               <AIWorkspace 
                 policyData={policyData} 
                 onReset={handleReset}

@@ -16,8 +16,93 @@ import { useSavings } from '../contexts/SavingsContext';
 import { useFamily } from '../contexts/FamilyContext';
 import { AlertCircle, Shield, FileText, MessageCircle, Receipt, Scale, TrendingUp } from 'lucide-react';
 
+const ToolPreview = ({ tool, onUploadPolicy }: { tool: string, onUploadPolicy: () => void }) => {
+  const previews: Record<string, { title: string; description: string; features: string[] }> = {
+    'ask-ai': {
+      title: 'Ask AI',
+      description: 'Ask questions about your insurance coverage in plain English and get clear, specific answers based on your actual policy.',
+      features: [
+        '"Am I covered for an MRI?"',
+        '"What\'s my specialist copay?"',
+        '"Does my plan cover physical therapy?"',
+        '"Do I need prior authorization for surgery?"',
+      ]
+    },
+    'bills': {
+      title: 'Bill Validation',
+      description: 'Upload a photo of your medical bill and the AI checks every charge against your policy — flagging overcharges, billing errors, and showing you exactly what to do about each issue.',
+      features: [
+        'Line-by-line charge validation',
+        'Overcharge and duplicate detection',
+        'Specific solutions for each issue found',
+        'Expected vs actual cost comparison',
+      ]
+    },
+    'appeal': {
+      title: 'Appeal Letters',
+      description: 'Upload a claim denial letter and get a professional appeal letter generated in seconds — formatted as a PDF, ready to print and mail.',
+      features: [
+        'Automatic denial reason extraction',
+        'ERISA and ACA regulation citations',
+        'Professional formatting with proper structure',
+        'Download as print-ready PDF',
+      ]
+    },
+    'pre-visit': {
+      title: 'Pre-Visit Planning',
+      description: 'Select your visit type and get a personalized checklist of what to verify, bring, and ask — tailored to your specific coverage.',
+      features: [
+        'Coverage verification steps',
+        'Documents to bring',
+        'Questions to ask your provider',
+        'Cost estimates based on your policy',
+      ]
+    },
+    'optimize': {
+      title: 'Policy Optimization',
+      description: 'Get recommendations on how to optimize your coverage, reduce costs, and make the most of your insurance plan.',
+      features: [
+        'Coverage gap analysis',
+        'Cost reduction opportunities',
+        'HSA/FSA optimization',
+        'Alternative plan recommendations',
+      ]
+    },
+  };
+
+  const preview = previews[tool];
+  if (!preview) return null;
+
+  return (
+    <div className="max-w-lg mx-auto text-center py-16">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-3">{preview.title}</h2>
+      <p className="text-gray-500 mb-8 leading-relaxed">{preview.description}</p>
+      
+      <div className="text-left bg-white border border-gray-200 rounded-xl p-6 mb-8">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">What you can do</p>
+        <div className="space-y-2">
+          {preview.features.map((feature, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">→</span>
+              <span className="text-sm text-gray-700">{feature}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <button
+        onClick={onUploadPolicy}
+        className="bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent/90 transition-colors"
+      >
+        Upload a policy to get started
+      </button>
+      <p className="text-xs text-gray-400 mt-3">Upload your insurance policy PDF to unlock this tool</p>
+    </div>
+  );
+};
+
 interface AIWorkspaceProps {
-  policyData: PolicyData;
+  policyData: PolicyData | null;
   onReset: () => void;
   activeSection: string;
   onNavigate: (item: string) => void;
@@ -44,7 +129,7 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
               <div>
                 <h1 className="font-semibold text-xl text-heading">MedFin</h1>
                 <p className="text-sm text-muted">
-                  {policyData.insurance_company || 'Policy'} • {policyData.plan_name || 'Analyzed'}
+                  {policyData ? `${policyData.insurance_company || 'Policy'} • ${policyData.plan_name || 'Analyzed'}` : 'No policy uploaded'}
                 </p>
               </div>
             </div>
@@ -66,9 +151,11 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
             <div className="w-2 h-2 bg-accent rounded-full"></div>
             <span className="text-muted">AI Ready</span>
           </div>
-          <span className="text-sm text-muted">
-            Policy Score: <span className="font-semibold text-heading">{policyData.policy_strength_score || 'N/A'}/100</span>
-          </span>
+          {policyData && (
+            <span className="text-sm text-muted">
+              Policy Score: <span className="font-semibold text-heading">{policyData.policy_strength_score || 'N/A'}/100</span>
+            </span>
+          )}
         </div>
 
         {/* Dashboard Content */}
@@ -184,12 +271,36 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
         )}
 
         {/* Other Tabs - Direct Navigation */}
-        {activeSection === 'pre-visit' && <PreVisitTool policyData={policyData} />}
-        {activeSection === 'ask-ai' && <EstimationTool policyData={policyData} />}
-        {activeSection === 'bills' && <ValidationTool policyData={policyData} />}
-        {activeSection === 'appeal' && <AppealTool policyData={policyData} />}
-        {activeSection === 'optimize' && <OptimizationTool policyData={policyData} />}
-        {activeSection === 'family' && <FamilyDashboard policyData={policyData} />}
+        {activeSection === 'pre-visit' && (
+          policyData 
+            ? <PreVisitTool policyData={policyData} />
+            : <ToolPreview tool="pre-visit" onUploadPolicy={() => onNavigate('policy')} />
+        )}
+        {activeSection === 'ask-ai' && (
+          policyData 
+            ? <EstimationTool policyData={policyData} />
+            : <ToolPreview tool="ask-ai" onUploadPolicy={() => onNavigate('policy')} />
+        )}
+        {activeSection === 'bills' && (
+          policyData 
+            ? <ValidationTool policyData={policyData} />
+            : <ToolPreview tool="bills" onUploadPolicy={() => onNavigate('policy')} />
+        )}
+        {activeSection === 'appeal' && (
+          policyData 
+            ? <AppealTool policyData={policyData} />
+            : <ToolPreview tool="appeal" onUploadPolicy={() => onNavigate('policy')} />
+        )}
+        {activeSection === 'optimize' && (
+          policyData 
+            ? <OptimizationTool policyData={policyData} />
+            : <ToolPreview tool="optimize" onUploadPolicy={() => onNavigate('policy')} />
+        )}
+        {activeSection === 'family' && (
+          policyData 
+            ? <FamilyDashboard policyData={policyData} />
+            : <ToolPreview tool="optimize" onUploadPolicy={() => onNavigate('policy')} />
+        )}
       </div>
     </div>
   );
