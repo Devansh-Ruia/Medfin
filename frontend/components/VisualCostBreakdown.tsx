@@ -1,5 +1,7 @@
 'use client';
 
+import { DollarSign, PartyPopper } from 'lucide-react';
+
 interface CostBreakdownProps {
   totalCost: number;
   deductiblePortion: number;
@@ -126,7 +128,7 @@ export default function VisualCostBreakdown({
       {/* Summary */}
       <div className={`mt-3 pt-3 border-t border-gray-200`}>
         <p className={`${compact ? 'text-base' : 'text-lg'} font-bold text-gray-900`}>
-          💰 You pay: ${yourTotal.toLocaleString()}
+          <DollarSign className="w-6 h-6" /> You pay: ${yourTotal.toLocaleString()}
           {!compact && (
             <span className="text-sm font-normal text-gray-600 ml-2">
               ({yourPercent.toFixed(1)}% of total)
@@ -148,7 +150,7 @@ export default function VisualCostBreakdown({
             </div>
             {progressToMax >= 100 && (
               <p className="text-xs text-purple-600 font-medium mt-1">
-                🎉 You've reached your out-of-pocket max! Insurance pays 100% for covered services.
+                <PartyPopper className="w-4 h-4" /> You've reached your out-of-pocket max! Insurance pays 100% for covered services.
               </p>
             )}
           </div>

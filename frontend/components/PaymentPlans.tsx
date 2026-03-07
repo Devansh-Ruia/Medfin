@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api, MedicalBill, PaymentPlanOption } from '../lib/api';
 import MarkdownRenderer from './MarkdownRenderer';
+import { Star } from 'lucide-react';
 
 interface PaymentPlansProps {
   bills: MedicalBill[];
@@ -134,7 +135,7 @@ export default function PaymentPlans({ bills, monthlyIncome }: PaymentPlansProps
       {recommended && (
         <div className="card border-2 border-green-300">
           <div className="flex items-center space-x-2 mb-4">
-            <span className="text-2xl">⭐</span>
+            <Star className="w-6 h-6 text-yellow-500" />
             <h3 className="text-lg font-semibold text-green-900">Recommended Plan</h3>
           </div>
           <div className="p-4 bg-green-50 rounded-lg">

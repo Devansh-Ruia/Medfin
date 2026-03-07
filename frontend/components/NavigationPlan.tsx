@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api, NavigationPlan as NavigationPlanType, InsuranceInfo, MedicalBill } from '../lib/api';
 import MarkdownRenderer from './MarkdownRenderer';
+import { ClipboardCopy } from 'lucide-react';
 
 interface NavigationPlanProps {
   insuranceInfo: InsuranceInfo;
@@ -196,7 +197,7 @@ export default function NavigationPlan({
 
       {bills.length === 0 && (
         <div className="card text-center py-12">
-          <div className="text-6xl mb-4">📋</div>
+          <ClipboardCopy className="w-16 h-16 text-gray-400" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No Bills Added</h3>
           <p className="text-gray-600 mb-4">
             Add your medical bills in the Bill Analysis tab to generate a navigation plan

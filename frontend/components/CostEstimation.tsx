@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api, InsuranceInfo, CostEstimate } from '../lib/api';
 import MarkdownRenderer from './MarkdownRenderer';
+import { DollarSign } from 'lucide-react';
 
 interface CostEstimationProps {
   insuranceInfo: InsuranceInfo;
@@ -183,7 +184,7 @@ export default function CostEstimation({ insuranceInfo }: CostEstimationProps) {
 
           {!estimate && !loading && (
             <div className="card text-center py-12">
-              <div className="text-6xl mb-4">💰</div>
+              <DollarSign className="w-16 h-16 text-emerald-500" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Ready to Estimate</h3>
               <p className="text-gray-600">
                 Select a medical service to see estimated costs

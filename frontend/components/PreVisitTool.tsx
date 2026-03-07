@@ -5,6 +5,7 @@ import { api, PolicyData, PreVisitChecklist } from '../lib/api';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import { replaceJargon } from '../lib/jargonDictionary';
 import { event } from '../lib/analytics';
+import { Lightbulb, DollarSign, ClipboardCopy, AlertTriangle } from 'lucide-react';
 
 interface PreVisitToolProps {
   policyData: PolicyData;
@@ -213,7 +214,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
           <div className="relative w-24 h-24 mx-auto mb-8">
             <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
             <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-              <span className="text-3xl animate-bounce">📋</span>
+              <ClipboardCopy className="w-8 h-8 text-gray-400 animate-bounce" />
             </div>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Creating Your Checklist...</h3>
@@ -246,7 +247,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Cost Breakdown */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">💰 Estimated Costs</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5" /> Estimated Costs</h4>
             
             <div className="mb-4">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
@@ -269,7 +270,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
               </p>
               {checklist.estimated_costs.deductible_applies && (
                 <p className="text-sm text-gray-600 mt-1">
-                  Your deductible remaining: ${checklist.estimated_costs.deductible_remaining?.toLocaleString() || 'Unknown'}
+                  You've reached your out-of-pocket max! Insurance pays 100% for covered services. Your deductible remaining: ${checklist.estimated_costs.deductible_remaining?.toLocaleString() || 'Unknown'}
                 </p>
               )}
             </div>
@@ -278,7 +279,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
           {/* Prior Authorization */}
           {checklist.prior_authorization.likely_required && (
             <div className="bg-amber-50 border-l-4 border-amber-400 rounded-r-xl p-6">
-              <h4 className="text-lg font-semibold text-amber-800 mb-3">⚠️ Prior Authorization Required</h4>
+              <h4 className="text-lg font-semibold text-amber-800 mb-3 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Prior Authorization Required</h4>
               <div className="space-y-2 text-amber-700">
                 <p><strong>Why:</strong> {checklist.prior_authorization.reason}</p>
                 <p><strong>How to obtain:</strong> {checklist.prior_authorization.how_to_obtain}</p>
@@ -358,7 +359,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Money-Saving Tips */}
           <div className="bg-emerald-50 border-l-4 border-emerald-400 rounded-r-xl p-6">
-            <h4 className="text-lg font-semibold text-emerald-800 mb-4">💡 Money-Saving Tips</h4>
+            <h4 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2"><Lightbulb className="w-5 h-5" /> Money-Saving Tips</h4>
             <ul className="space-y-2">
               {checklist.money_saving_tips.map((tip, i) => (
                 <li key={i} className="flex gap-2">

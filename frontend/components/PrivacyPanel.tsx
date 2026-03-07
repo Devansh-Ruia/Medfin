@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Shield } from 'lucide-react';
 
 interface PrivacyPanelProps {
   onClearData?: () => void;
@@ -47,7 +48,7 @@ export default function PrivacyPanel({ onClearData, onExportData, onImportData }
   return (
     <div className="bg-gray-50 rounded-xl p-6">
       <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span className="text-xl">🔒</span>
+        <Shield className="w-5 h-5" />
         Your Privacy Controls
       </h3>
       

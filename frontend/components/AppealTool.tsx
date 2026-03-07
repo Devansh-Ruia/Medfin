@@ -5,6 +5,7 @@ import { api, PolicyData, AppealLetter, DenialInfo } from '../lib/api';
 import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
 import { event } from '../lib/analytics';
+import { BarChart3, Rocket, Clock, FileText, ClipboardCopy } from 'lucide-react';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -467,7 +468,7 @@ const downloadAsPDF = async () => {
           {/* Analysis Section */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">📊 Appeal Analysis</h3>
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Appeal Analysis</h3>
               <button
                 onClick={reset}
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition"
@@ -530,13 +531,13 @@ const downloadAsPDF = async () => {
           {/* Appeal Letter */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">📝 Your Appeal Letter</h3>
+              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><FileText className="w-5 h-5" /> Your Appeal Letter</h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => copyToClipboard(appealLetter.letter.letter_body)}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                 >
-                  📋 Copy
+                  <ClipboardCopy className="w-4 h-4" /> Copy
                 </button>
                 <button
                   onClick={downloadAsPDF}
@@ -584,14 +585,14 @@ const downloadAsPDF = async () => {
             {/* Deadline */}
             <div className="mt-4 p-4 bg-amber-50 rounded-xl">
               <p className="text-amber-800">
-                <strong>⏰ Deadline:</strong> {appealLetter.letter.deadline}
+                <strong className="flex items-center gap-2"><Clock className="w-4 h-4" /> Deadline:</strong> {appealLetter.letter.deadline}
               </p>
             </div>
           </div>
 
           {/* Next Steps */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">🚀 Next Steps</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2"><Rocket className="w-5 h-5" /> Next Steps</h3>
             <ol className="space-y-3">
               {appealLetter.next_steps.map((step, i) => (
                 <li key={i} className="flex gap-3">
@@ -610,7 +611,7 @@ const downloadAsPDF = async () => {
           {/* Extracted Info (for upload method) */}
           {extractedInfo && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">📋 Extracted Information</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2"><ClipboardCopy className="w-5 h-5" /> Extracted Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-gray-700">Service:</span>

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { api, PolicyData, QuestionAnswer } from '../lib/api';
 import { event } from '../lib/analytics';
-import { Globe } from 'lucide-react';
+import { Globe, DollarSign, AlertTriangle } from 'lucide-react';
 
 interface EstimationToolProps {
   policyData: PolicyData;
@@ -189,7 +189,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       {data.estimated_costs && data.estimated_costs.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-            <span>💰</span> Estimated Costs
+            <DollarSign className="w-5 h-5" /> Estimated Costs
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {data.estimated_costs.map((cost: any, i: number) => (
@@ -206,7 +206,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       {data.warnings && data.warnings.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
           <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
-            <span>⚠️</span> Important Notes
+            <AlertTriangle className="w-4 h-4" /> Important Notes
           </h4>
           <ul className="space-y-2">
             {data.warnings.map((warning: string, i: number) => (

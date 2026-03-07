@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
 import { event } from '../lib/analytics';
+import { Search, Lightbulb } from 'lucide-react';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -237,7 +238,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
           <div className="relative w-24 h-24 mx-auto mb-8">
             <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
             <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-              <span className="text-3xl animate-bounce">🔍</span>
+              <span className="text-3xl animate-bounce"><Search className="w-8 h-8" /></span>
             </div>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Analyzing your bill...</h3>
@@ -398,7 +399,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
             {/* Recommendations */}
             {result.recommendations && result.recommendations.length > 0 && (
               <div className="bg-info/10 border-l-4 border-info rounded-r-xl p-4">
-                <h4 className="text-sm font-medium text-info mb-3">💡 Recommendations</h4>
+                <h4 className="text-sm font-medium text-info mb-3 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> Recommendations</h4>
                 <ul className="text-sm text-info space-y-2">
                   {result.recommendations.map((rec, i) => (
                     <li key={i} className="flex gap-2">

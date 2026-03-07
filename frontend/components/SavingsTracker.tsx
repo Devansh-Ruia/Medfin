@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { api, PolicyData } from '../lib/api';
 import MarkdownRenderer from './MarkdownRenderer';
-import { TrendingUp, AlertCircle, CheckCircle, FileText, Receipt } from 'lucide-react';
+import { TrendingUp, AlertCircle, CheckCircle, FileText, Receipt, DollarSign } from 'lucide-react';
 
 export interface SavingsEvent {
   id: string;
@@ -176,7 +176,7 @@ export function SavingsPrompt({ suggestedAmount, category, onConfirm, onSkip }: 
 
   return (
     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mt-4">
-      <p className="text-emerald-800 font-medium mb-2">💰 Did this save you money?</p>
+      <p className="text-emerald-800 font-medium mb-2 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Did this save you money?</p>
       <p className="text-emerald-600 text-sm mb-4">
         Based on this activity, you may have saved around ${suggestedAmount}
       </p>
