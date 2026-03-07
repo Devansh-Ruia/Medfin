@@ -72,11 +72,6 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
-      {
-        source: '/dashboard',
-        destination: '/',
-        permanent: true,
-      },
     ];
   },
   
