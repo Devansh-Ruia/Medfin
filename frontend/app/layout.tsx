@@ -6,6 +6,7 @@ import { SavingsProvider } from '../contexts/SavingsContext'
 import { FamilyProvider } from '../contexts/FamilyContext'
 import ErrorBoundary from '../components/ErrorBoundary'
 import ToastProvider from '../components/providers/ToastProvider'
+import DisclaimerBanner from '../components/DisclaimerBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -61,6 +62,8 @@ export default function RootLayout({
           <ErrorBoundary>
             <FamilyProvider>
               <SavingsProvider>
+                {/* DisclaimerBanner sits at the root because every route can be a first visit */}
+                <DisclaimerBanner />
                 {children}
               </SavingsProvider>
             </FamilyProvider>
