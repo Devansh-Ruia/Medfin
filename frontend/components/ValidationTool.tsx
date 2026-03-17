@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
 import { event } from '../lib/analytics';
-import { Search, Lightbulb } from 'lucide-react';
+import { Search, Lightbulb, Check, ArrowRight } from 'lucide-react';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -13,7 +13,7 @@ interface ValidationToolProps {
 const formatInlineMarkdown = (text: string): string => {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-sm">$1</code>');
+    .replace(/`(.*?)`/g, '<code class="bg-[#F9F8F6] px-1 py-0.5 rounded-none text-sm">$1</code>');
 };
 
 const parseMarkdownText = (text: string): JSX.Element[] => {
@@ -32,7 +32,7 @@ const parseMarkdownText = (text: string): JSX.Element[] => {
             <ul key={`list-${index}`} className="space-y-1 mb-4">
               {currentList.items.map((item, i) => (
                 <li key={i} className="flex gap-2">
-                  <span className="text-gray-400">•</span>
+                  <span className="text-[#6B6B6B]">•</span>
                   <span dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(item) }} />
                 </li>
               ))}
@@ -108,7 +108,7 @@ const parseMarkdownText = (text: string): JSX.Element[] => {
         <ul key="final-list" className="space-y-1 mb-4">
           {currentList.items.map((item, i) => (
             <li key={i} className="flex gap-2">
-              <span className="text-gray-400">•</span>
+              <span className="text-[#6B6B6B]">•</span>
               <span dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(item) }} />
             </li>
           ))}
@@ -133,7 +133,7 @@ const FormattedText = ({ text }: { text: string }) => {
 
 // Confidence Meter Component
 function ConfidenceMeter({ value }: { value: number }) {
-  const color = value >= 80 ? 'bg-emerald-500' : value >= 60 ? 'bg-amber-500' : 'bg-red-500';
+  const color = value >= 80 ? 'bg-[#0A6640]' : value >= 60 ? 'bg-[#D97706]' : 'bg-[#C0392B]';
   
   const getWidthClass = () => {
     if (value >= 90) return 'w-[90%]';
@@ -150,10 +150,10 @@ function ConfidenceMeter({ value }: { value: number }) {
   
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-[#E5E2DC] rounded-none overflow-hidden">
         <div className={`h-full ${color} transition-all ${getWidthClass()}`} />
       </div>
-      <span className="text-sm font-medium text-gray-700">{value}%</span>
+      <span className="text-sm font-medium text-[#0D0D0D]">{value}%</span>
     </div>
   );
 }
@@ -206,7 +206,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
       {!result && !loading && (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="bg-white rounded-2xl border-2 border-dashed border-gray-200 shadow-subtle p-16 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all"
+          className="bg-white border-2 border-dashed border-[#E5E2DC] p-16 text-center cursor-pointer hover:border-[#6B6B6B] hover:bg-[#F9F8F6] transition-all rounded-none"
         >
           <input
             ref={fileInputRef}
@@ -219,14 +219,13 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
             title="Upload bill photo for validation"
           />
           
-          <div className="text-6xl mb-6">📸</div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+          <h3 className="text-2xl font-bold text-[#0D0D0D] mb-3">
             Take a Photo of Your Bill
           </h3>
-          <p className="text-gray-600 mb-8 text-lg">
+          <p className="text-[#6B6B6B] mb-8 text-lg">
             AI will extract the details and validate against your policy
           </p>
-          <button className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all">
+          <button className="px-6 py-3 bg-[#0D0D0D] text-white rounded-none font-medium hover:bg-[#1A1A1A] transition-all">
             Upload Bill Photo
           </button>
         </div>
@@ -234,79 +233,64 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
       {/* Loading State */}
       {loading && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-16 text-center">
+        <div className="bg-white border border-[#E5E2DC] p-16 text-center rounded-none">
           <div className="relative w-24 h-24 mx-auto mb-8">
-            <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
-            <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+            <div className="absolute inset-0 bg-[#F9F8F6] rounded-none animate-pulse"></div>
+            <div className="absolute inset-2 bg-white rounded-none flex items-center justify-center">
               <span className="text-3xl animate-bounce"><Search className="w-8 h-8" /></span>
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Analyzing your bill...</h3>
-          <p className="text-gray-600">AI is extracting charges and validating against your policy</p>
+          <h3 className="text-2xl font-bold text-[#0D0D0D] mb-3">Analyzing your bill...</h3>
+          <p className="text-[#6B6B6B]">AI is extracting charges and validating against your policy</p>
         </div>
       )}
 
       {/* Results */}
       {result && (
         <div className="space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-              <p className="text-sm text-gray-500 mb-1">Billed Amount</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ${(result.financial_summary?.billed_amount || 0).toLocaleString()}
-              </p>
+          {/* Summary Header */}
+          {result.financial_summary && (
+            <div className="text-sm text-[#6B6B6B] mb-6">
+              Billed: ${(result.financial_summary?.billed_amount || 0).toLocaleString()} / Expected: ${(result.financial_summary?.expected_patient_responsibility || 0).toLocaleString()} / Potential savings: ${(result.financial_summary?.potential_savings || 0).toLocaleString()}
             </div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-              <p className="text-sm text-gray-500 mb-1">Your Responsibility</p>
-              <p className="text-2xl font-bold text-gray-900">
-                ${(result.financial_summary?.actual_patient_responsibility || 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-              <p className="text-sm text-gray-500 mb-1">Expected Amount</p>
-              <p className="text-2xl font-bold text-emerald-600">
-                ${(result.financial_summary?.expected_patient_responsibility || 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-              <p className="text-sm text-gray-500 mb-1">Potential Savings</p>
-              <p className="text-2xl font-bold text-blue-600">
-                ${(result.financial_summary?.potential_savings || 0).toLocaleString()}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Validation Results */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Validation Results</h3>
+          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+            <h3 className="text-xl font-bold text-[#0D0D0D] mb-6">Validation Results</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className={`p-4 rounded-xl text-center ${
-                result.validation_results?.deductible_applied_correctly 
-                  ? 'bg-emerald-50 text-emerald-700' 
-                  : 'bg-red-50 text-red-700'
-              }`}>
-                <p className="text-2xl">{result.validation_results?.deductible_applied_correctly ? '✓' : '✗'}</p>
-                <p className="text-sm font-medium">Deductible</p>
+              <div className="p-4 rounded-none text-center">
+                <p className="text-2xl">
+                  {result.validation_results?.deductible_applied_correctly ? (
+                    <span className="text-[#0A6640]"><Check className="w-6 h-6" /></span>
+                  ) : (
+                    <span className="text-[#C0392B]">—</span>
+                  )}
+                </p>
+                <p className="text-sm font-medium text-[#0D0D0D]">Deductible</p>
               </div>
-              <div className={`p-4 rounded-xl text-center ${
-                result.validation_results?.copays_correct 
-                  ? 'bg-emerald-50 text-emerald-700' 
-                  : 'bg-red-50 text-red-700'
-              }`}>
-                <p className="text-2xl">{result.validation_results?.copays_correct ? '✓' : '✗'}</p>
-                <p className="text-sm font-medium">Copays</p>
+              <div className="p-4 rounded-none text-center">
+                <p className="text-2xl">
+                  {result.validation_results?.copays_correct ? (
+                    <span className="text-[#0A6640]"><Check className="w-6 h-6" /></span>
+                  ) : (
+                    <span className="text-[#C0392B]">—</span>
+                  )}
+                </p>
+                <p className="text-sm font-medium text-[#0D0D0D]">Copays</p>
               </div>
-              <div className={`p-4 rounded-xl text-center ${
-                result.validation_results?.coinsurance_correct 
-                  ? 'bg-emerald-50 text-emerald-700' 
-                  : 'bg-red-50 text-red-700'
-              }`}>
-                <p className="text-2xl">{result.validation_results?.coinsurance_correct ? '✓' : '✗'}</p>
-                <p className="text-sm font-medium">Coinsurance</p>
+              <div className="p-4 rounded-none text-center">
+                <p className="text-2xl">
+                  {result.validation_results?.coinsurance_correct ? (
+                    <span className="text-[#0A6640]"><Check className="w-6 h-6" /></span>
+                  ) : (
+                    <span className="text-[#C0392B]">—</span>
+                  )}
+                </p>
+                <p className="text-sm font-medium text-[#0D0D0D]">Coinsurance</p>
               </div>
-              <div className="p-4 rounded-xl text-center bg-blue-50 text-blue-700">
+              <div className="p-4 rounded-none text-center bg-[#F9F8F6] text-[#0D0D0D]">
                 <ConfidenceMeter value={result.confidence_score || 0} />
               </div>
             </div>
@@ -324,50 +308,50 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
               return issues && issues.length > 0 && (
                 <div className="space-y-4 mt-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-[#0D0D0D]">
                     Issues Found ({issues.length})
                   </h3>
                   {issues.map((issue, index) => (
                     <div 
                       key={index} 
-                      className="border border-gray-200 rounded-xl overflow-hidden"
+                      className="border border-[#E5E2DC] rounded-none overflow-hidden"
                     >
                       {/* Issue Header */}
                       <div className={`px-4 py-3 flex items-start gap-3 ${
-                        issue.severity === 'high' ? 'bg-red-50 border-l-4 border-red-500' :
-                        issue.severity === 'medium' ? 'bg-yellow-50 border-l-4 border-yellow-500' :
-                        'bg-blue-50 border-l-4 border-blue-500'
+                        issue.severity === 'high' ? 'bg-[#FDF2F2] border-l-4 border-[#C0392B]' :
+                        issue.severity === 'medium' ? 'bg-[#FFFBEB] border-l-4 border-[#D97706]' :
+                        'bg-[#F9F8F6] border-l-4 border-[#6B6B6B]'
                       }`}>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-xs font-medium uppercase tracking-wide ${
-                              issue.severity === 'high' ? 'text-red-700' :
-                              issue.severity === 'medium' ? 'text-yellow-700' :
-                              'text-blue-700'
+                            <span className={`text-xs tracking-widest font-medium uppercase ${
+                              issue.severity === 'high' ? 'text-[#C0392B]' :
+                              issue.severity === 'medium' ? 'text-[#D97706]' :
+                              'text-[#6B6B6B]'
                             }`}>
-                              {issue.severity} • {issue.type.replace(/_/g, ' ')}
+                              {issue.severity} / {issue.type.replace(/_/g, ' ')}
                             </span>
                             {issue.potential_savings && (
-                              <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
-                                Save ${issue.potential_savings}
+                              <span className="text-xs font-semibold text-[#0A6640]">
+                                Save up to ${issue.potential_savings}
                               </span>
                             )}
                           </div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-semibold text-[#0D0D0D] mt-1">
                             {issue.description}
                           </p>
                         </div>
                       </div>
                       
                       {/* Solution - directly below issue */}
-                      <div className="px-4 py-3 bg-white border-t border-gray-100">
+                      <div className="px-4 py-3 bg-white border-t border-[#E5E2DC]">
                         <div className="flex items-start gap-2">
-                          <span className="text-accent mt-0.5">→</span>
+                          <ArrowRight className="w-3 h-3 text-[#0A6640] mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                              What to do
+                            <p className="text-xs tracking-widest text-[#6B6B6B] uppercase mb-1">
+                              WHAT TO DO
                             </p>
-                            <p className="text-sm text-gray-700 leading-relaxed">
+                            <p className="text-sm text-[#6B6B6B] leading-relaxed">
                               {issue.solution}
                             </p>
                           </div>
@@ -381,29 +365,29 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
             {/* Summary Section */}
             {result.summary && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+              <div className="mt-6 p-4 bg-[#F9F8F6] rounded-none">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-medium text-[#0D0D0D]">
                     {result.summary.total_issues_found} issue{result.summary.total_issues_found !== 1 ? 's' : ''} found
                   </span>
                   {result.summary.total_potential_savings > 0 && (
-                    <span className="text-sm font-semibold text-green-700">
+                    <span className="text-sm font-semibold text-[#0A6640]">
                       Potential savings: ${result.summary.total_potential_savings}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-600">{result.summary.overall_assessment}</p>
+                <p className="text-sm text-[#6B6B6B]">{result.summary.overall_assessment}</p>
               </div>
             )}
 
             {/* Recommendations */}
             {result.recommendations && result.recommendations.length > 0 && (
-              <div className="bg-info/10 border-l-4 border-info rounded-r-xl p-4">
-                <h4 className="text-sm font-medium text-info mb-3 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> Recommendations</h4>
-                <ul className="text-sm text-info space-y-2">
+              <div className="bg-[#E8F5EE] border-l-4 border-[#0A6640] rounded-none p-4">
+                <h4 className="text-sm font-medium text-[#0A6640] mb-3 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> Recommendations</h4>
+                <ul className="text-sm text-[#0A6640] space-y-2">
                   {result.recommendations.map((rec, i) => (
                     <li key={i} className="flex gap-2">
-                      <span className="text-info mt-0.5">•</span>
+                      <ArrowRight className="w-3 h-3 text-[#0A6640] mt-0.5 flex-shrink-0" />
                       <FormattedText text={rec} />
                     </li>
                   ))}
@@ -414,17 +398,17 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
           {/* Collapsible Bill Details */}
           {result.bill_extracted && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle overflow-hidden">
+            <div className="bg-white border border-[#E5E2DC] rounded-none overflow-hidden">
               <button
                 onClick={() => setShowBillDetails(!showBillDetails)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#F9F8F6] transition-colors"
               >
-                <span className="font-semibold text-gray-900">Extracted Bill Details</span>
+                <span className="font-semibold text-[#0D0D0D]">Extracted Bill Details</span>
                 <span className={`transition-transform ${showBillDetails ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showBillDetails && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <pre className="mt-4 p-4 bg-gray-50 rounded-xl text-sm overflow-x-auto">
+                <div className="px-6 pb-6 border-t border-[#E5E2DC]">
+                  <pre className="mt-4 p-4 bg-[#F9F8F6] rounded-none text-sm overflow-x-auto">
                     {JSON.stringify(result.bill_extracted, null, 2)}
                   </pre>
                 </div>
@@ -434,7 +418,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
           <button
             onClick={reset}
-            className="w-full py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all"
+            className="w-full py-3 border border-[#E5E2DC] bg-white text-[#0D0D0D] text-sm px-6 py-3 rounded-none font-medium hover:bg-[#F9F8F6] transition-all"
           >
             Validate Another Bill
           </button>
@@ -442,8 +426,8 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
       )}
 
       {error && (
-        <div className="bg-error/10 border-l-4 border-error rounded-r-xl p-4 text-error">
-          {error}
+        <div className="bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none p-4 text-[#C0392B]">
+          The request failed. Check your connection and try again.
           <button onClick={reset} className="ml-4 underline hover:no-underline">Try again</button>
         </div>
       )}

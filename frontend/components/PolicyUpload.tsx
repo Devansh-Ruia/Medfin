@@ -83,30 +83,30 @@ export default function PolicyUpload({
     <div className="content-container py-12">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-heading mb-4">
+        <h2 className="text-2xl font-bold text-[#0D0D0D] mb-4">
           Upload your insurance policy
-        </h1>
-        <p className="text-lg text-body max-w-2xl mx-auto">
-          Let AI analyze your coverage details, deductibles, and find opportunities to save money on healthcare costs.
+        </h2>
+        <p className="text-sm text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed">
+          MedFin will extract your deductibles, copays, network rules, and exclusions. The document is processed in memory and never stored.
         </p>
       </div>
 
       {/* Upload Area */}
-      <div className="max-w-2xl mx-auto mb-16">
+      <div className="max-w-2xl mx-auto">
         {isAnalyzing ? (
-          <div className="card p-12 text-center">
+          <div className="bg-white p-12 text-center border border-[#E5E2DC] rounded-none">
             <div className="relative w-20 h-20 mx-auto mb-6">
-              <div className="absolute inset-0 bg-accent/10 rounded-full animate-pulse"></div>
-              <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                <Brain className="w-8 h-8 text-accent animate-pulse" />
+              <div className="absolute inset-0 bg-[#E8F5EE] rounded-none animate-pulse"></div>
+              <div className="absolute inset-2 bg-white rounded-none flex items-center justify-center">
+                <Brain className="w-8 h-8 text-[#0A6640] animate-pulse" />
               </div>
             </div>
-            <h3 className="text-xl font-semibold text-heading mb-3">
+            <h3 className="text-xl font-semibold text-[#0D0D0D] mb-3">
               AI is analyzing your policy
             </h3>
-            <p className="text-body mb-6">{progress}</p>
-            <div className="w-full bg-gray-100 rounded-full h-2">
-              <div className="bg-accent h-2 rounded-full animate-pulse w-3/5 transition-all duration-300"></div>
+            <p className="text-sm text-[#6B6B6B] mb-6">{progress}</p>
+            <div className="w-full bg-[#F9F8F6] rounded-none h-2">
+              <div className="bg-[#0A6640] h-2 rounded-none animate-pulse w-3/5 transition-all duration-300"></div>
             </div>
           </div>
         ) : (
@@ -116,10 +116,10 @@ export default function PolicyUpload({
             onDragOver={handleDrag}
             onDrop={handleDrop}
             className={`
-              card p-12 text-center cursor-pointer transition-all duration-200
+              bg-white p-12 text-center cursor-pointer transition-all duration-200 border rounded-none
               ${dragActive 
-                ? 'border-accent bg-accent/5' 
-                : 'border-gray-200 hover:border-gray-300 hover:shadow-card'
+                ? 'border-[#0A6640] bg-[#E8F5EE]' 
+                : 'border-[#E5E2DC] hover:border-[#6B6B6B]'
               }
             `}
             onClick={() => fileInputRef.current?.click()}
@@ -134,59 +134,28 @@ export default function PolicyUpload({
               title="Upload insurance policy file (PDF, PNG, JPG)"
             />
             
-            <div className="w-16 h-16 mx-auto mb-6 bg-gray-50 rounded-xl flex items-center justify-center">
-              <Upload className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 mx-auto mb-6 bg-[#F9F8F6] rounded-none flex items-center justify-center">
+              <Upload className="w-8 h-8 text-[#6B6B6B]" />
             </div>
             
-            <h3 className="text-xl font-semibold text-heading mb-3">
-              Drop your policy here
+            <h3 className="text-xl font-semibold text-[#0D0D0D] mb-3">
+              Drop your PDF or image here
             </h3>
-            <p className="text-body mb-8">
+            <p className="text-sm text-[#6B6B6B] mb-8">
               PDF, PNG, JPG up to 10MB
             </p>
             
-            <button className="btn-primary">
+            <button className="bg-[#0D0D0D] text-white text-sm px-6 py-3 rounded-none hover:bg-[#1A1A1A] transition-colors">
               Choose File
             </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-6 p-4 bg-error/10 border-l-4 border-error rounded-r-xl text-error text-sm">
+          <div className="mt-6 p-4 bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none text-[#C0392B] text-sm">
             {error}
           </div>
         )}
-      </div>
-
-      {/* Features Preview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-        <div className="card p-8 text-center card-hover">
-          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
-            <FileText className="w-6 h-6 text-accent" />
-          </div>
-          <h4 className="font-semibold text-heading mb-2">Smart Analysis</h4>
-          <p className="text-sm text-body">
-            AI extracts key coverage details and identifies potential gaps
-          </p>
-        </div>
-        <div className="card p-8 text-center card-hover">
-          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
-            <CheckCircle className="w-6 h-6 text-accent" />
-          </div>
-          <h4 className="font-semibold text-heading mb-2">Bill Validation</h4>
-          <p className="text-sm text-body">
-            Photo-scan bills for instant verification and overcharge detection
-          </p>
-        </div>
-        <div className="card p-8 text-center card-hover">
-          <div className="w-12 h-12 mx-auto mb-4 bg-accent/10 rounded-xl flex items-center justify-center">
-            <Brain className="w-6 h-6 text-accent" />
-          </div>
-          <h4 className="font-semibold text-heading mb-2">AI Recommendations</h4>
-          <p className="text-sm text-body">
-            Get personalized suggestions to optimize your healthcare spending
-          </p>
-        </div>
       </div>
     </div>
   );

@@ -33,22 +33,25 @@ const navigationItems = [
 
 export default function Sidebar({ activeItem, onNavigate, isCollapsed = false, onToggleCollapse }: SidebarProps) {
   return (
-    <div className={`bg-white border-r border-gray-100 flex flex-col ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+    <div className={`bg-white border-r border-[#E5E2DC] flex flex-col ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center justify-between">
+      <div className="p-4 border-b border-[#E5E2DC]">
+        <div className={`flex items-center justify-between ${isCollapsed ? 'justify-center' : ''}`}>
           <div className={`flex items-center gap-2 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#0A6640] rounded-none flex items-center justify-center">
               <span className="text-white font-bold text-sm">M</span>
             </div>
             {!isCollapsed && (
-              <span className="text-heading font-semibold text-lg">MedFin</span>
+              <div>
+                <span className="text-[#0D0D0D] font-semibold text-lg">MedFin</span>
+                <span className="text-[#0A6640] font-semibold text-lg">AI</span>
+              </div>
             )}
           </div>
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-all duration-200"
+              className="p-1.5 text-[#6B6B6B] hover:text-[#0D0D0D] rounded-none hover:bg-[#F9F8F6] transition-all duration-200"
             >
               {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
             </button>
@@ -70,7 +73,11 @@ export default function Sidebar({ activeItem, onNavigate, isCollapsed = false, o
                   onNavigate(item.id);
                   event('navigate', { section: item.id });
                 }}
-                className={`nav-item w-full ${isActive ? 'nav-item-active' : ''} ${isCollapsed ? 'justify-center' : ''}`}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+                  isActive 
+                    ? 'bg-[#E8F5EE] text-[#0A6640] font-medium border-l-2 border-[#0A6640]' 
+                    : 'text-[#6B6B6B] hover:bg-[#F9F8F6]'
+                } ${isCollapsed ? 'justify-center' : ''}`}
                 title={isCollapsed ? item.label : undefined}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
@@ -82,12 +89,12 @@ export default function Sidebar({ activeItem, onNavigate, isCollapsed = false, o
       </nav>
 
       {/* Footer */}
-      <div className="p-2 border-t border-gray-100">
-        <button className={`nav-item w-full ${isCollapsed ? 'justify-center' : ''}`}>
+      <div className="p-2 border-t border-[#E5E2DC]">
+        <button className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-[#6B6B6B] hover:bg-[#F9F8F6] transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
           <Settings className="w-5 h-5 flex-shrink-0" />
           {!isCollapsed && <span>Settings</span>}
         </button>
-        <button className={`nav-item w-full ${isCollapsed ? 'justify-center' : ''}`}>
+        <button className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-[#6B6B6B] hover:bg-[#F9F8F6] transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
           <User className="w-5 h-5 flex-shrink-0" />
           {!isCollapsed && <span>Account</span>}
         </button>

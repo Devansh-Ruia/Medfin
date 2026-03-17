@@ -5,7 +5,7 @@ import { api, PolicyData, AppealLetter, DenialInfo } from '../lib/api';
 import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
 import { event } from '../lib/analytics';
-import { BarChart3, Rocket, Clock, FileText, ClipboardCopy } from 'lucide-react';
+import { BarChart3, Rocket, Clock, FileText, ClipboardCopy, Upload, PenLine } from 'lucide-react';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -253,10 +253,10 @@ const downloadAsPDF = async () => {
 
   const getSuccessColor = (likelihood: string) => {
     switch (likelihood) {
-      case 'High': return 'text-emerald-600 bg-emerald-50';
-      case 'Medium': return 'text-amber-600 bg-amber-50';
-      case 'Low': return 'text-red-600 bg-red-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'High': return 'text-[#0A6640] bg-[#E8F5EE]';
+      case 'Medium': return 'text-[#D97706] bg-[#FFFBEB]';
+      case 'Low': return 'text-[#C0392B] bg-[#FDF2F2]';
+      default: return 'text-[#6B6B6B] bg-[#F9F8F6]';
     }
   };
 
@@ -264,29 +264,29 @@ const downloadAsPDF = async () => {
     <div className="space-y-6">
       {/* Input Method Selection */}
       {!appealLetter && !loading && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Appeal a Denied Claim</h3>
+        <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <h3 className="text-xl font-bold text-[#0D0D0D] mb-6">Appeal a Denied Claim</h3>
           
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setInputMethod('upload')}
-              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 py-3 px-4 border text-sm rounded-none font-medium transition-all ${
                 inputMethod === 'upload'
-                  ? 'bg-black text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'border-[#0D0D0D] bg-[#0D0D0D] text-white'
+                  : 'border-[#E5E2DC] bg-white text-[#6B6B6B]'
               }`}
             >
-              📷 Upload Denial Letter
+              <Upload className="w-4 h-4 inline mr-2" />Upload Denial Letter
             </button>
             <button
               onClick={() => setInputMethod('manual')}
-              className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 py-3 px-4 border text-sm rounded-none font-medium transition-all ${
                 inputMethod === 'manual'
-                  ? 'bg-black text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'border-[#0D0D0D] bg-[#0D0D0D] text-white'
+                  : 'border-[#E5E2DC] bg-white text-[#6B6B6B]'
               }`}
             >
-              ✏️ Enter Manually
+              <PenLine className="w-4 h-4 inline mr-2" />Enter Manually
             </button>
           </div>
 
@@ -295,7 +295,7 @@ const downloadAsPDF = async () => {
             <div className="space-y-4">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all"
+                className="border-2 border-dashed border-[#E5E2DC] rounded-none p-8 text-center cursor-pointer hover:border-[#6B6B6B] hover:bg-[#F9F8F6] transition-all"
               >
                 <input
                   ref={fileInputRef}
@@ -305,11 +305,11 @@ const downloadAsPDF = async () => {
                   className="hidden"
                   aria-label="Upload denial letter"
                 />
-                <div className="text-4xl mb-4">📄</div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                <Upload className="w-12 h-12 text-[#6B6B6B] mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-[#0D0D0D] mb-2">
                   Upload Your Denial Letter
                 </h4>
-                <p className="text-gray-600">
+                <p className="text-[#6B6B6B]">
                   AI will extract the details and generate a professional appeal letter
                 </p>
               </div>
@@ -321,7 +321,7 @@ const downloadAsPDF = async () => {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                     Service Description *
                   </label>
                   <input
@@ -329,27 +329,27 @@ const downloadAsPDF = async () => {
                     value={denialInfo.service_description || ''}
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, service_description: e.target.value }))}
                     placeholder="e.g., MRI of left knee"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Service description"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                     Service Date
                   </label>
                   <input
                     type="date"
                     value={denialInfo.service_date || ''}
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, service_date: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Service date"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount Denied ($)
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
+                    Amount Denied
                   </label>
                   <input
                     type="number"
@@ -357,13 +357,13 @@ const downloadAsPDF = async () => {
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, amount_denied: parseFloat(e.target.value) || undefined }))}
                     placeholder="0.00"
                     step="0.01"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Amount denied"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                     Denial Code (if provided)
                   </label>
                   <input
@@ -371,14 +371,14 @@ const downloadAsPDF = async () => {
                     value={denialInfo.denial_code || ''}
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, denial_code: e.target.value }))}
                     placeholder="e.g., 50, 96, 97"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Denial code"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                   Denial Reason *
                 </label>
                 <textarea
@@ -386,14 +386,14 @@ const downloadAsPDF = async () => {
                   onChange={(e) => setDenialInfo(prev => ({ ...prev, denial_reason: e.target.value }))}
                   placeholder="e.g., Not medically necessary, Experimental treatment, Out of network"
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                   aria-label="Denial reason"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                     Insurance Company
                   </label>
                   <input
@@ -401,13 +401,13 @@ const downloadAsPDF = async () => {
                     value={denialInfo.insurer_name || ''}
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, insurer_name: e.target.value }))}
                     placeholder="e.g., Aetna, Blue Cross"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Insurance company name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                     Claim Number
                   </label>
                   <input
@@ -415,31 +415,31 @@ const downloadAsPDF = async () => {
                     value={denialInfo.claim_number || ''}
                     onChange={(e) => setDenialInfo(prev => ({ ...prev, claim_number: e.target.value }))}
                     placeholder="e.g., CLM123456789"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                     aria-label="Claim number"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#0D0D0D] mb-1">
                   Appeal Tone
                 </label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value as 'professional' | 'firm' | 'escalation')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full px-4 py-3 border border-[#E5E2DC] rounded-none text-sm"
                   aria-label="Appeal tone"
                 >
-                  <option value="professional">Professional - Standard business tone</option>
-                  <option value="firm">Firm - More assertive, confident tone</option>
-                  <option value="escalation">Escalation - Strong tone for final appeals</option>
+                  <option value="professional">Professional</option>
+                  <option value="firm">Firm</option>
+                  <option value="escalation">Escalation</option>
                 </select>
               </div>
 
               <button
                 onClick={handleManualSubmit}
-                className="w-full py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all"
+                className="w-full py-4 bg-[#0D0D0D] text-white text-sm px-8 py-4 rounded-none font-medium"
               >
                 Generate Appeal Letter
               </button>
@@ -450,15 +450,15 @@ const downloadAsPDF = async () => {
 
       {/* Loading State */}
       {loading && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-16 text-center">
+        <div className="bg-white border border-[#E5E2DC] rounded-none p-16 text-center">
           <div className="relative w-24 h-24 mx-auto mb-8">
-            <div className="absolute inset-0 bg-gray-100 rounded-full animate-pulse"></div>
-            <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-              <span className="text-3xl animate-bounce">⚖️</span>
+            <div className="absolute inset-0 bg-[#F9F8F6] rounded-none animate-pulse"></div>
+            <div className="absolute inset-2 bg-white rounded-none flex items-center justify-center">
+              <span className="text-3xl animate-bounce"><FileText className="w-8 h-8" /></span>
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3">Generating Your Appeal...</h3>
-          <p className="text-gray-600">AI is analyzing your denial and creating a compelling appeal letter</p>
+          <h3 className="text-2xl font-bold text-[#0D0D0D] mb-3">Generating Your Appeal...</h3>
+          <p className="text-[#6B6B6B]">AI is analyzing your denial and creating a compelling appeal letter</p>
         </div>
       )}
 
@@ -638,8 +638,8 @@ const downloadAsPDF = async () => {
       )}
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-400 rounded-r-xl p-4 text-red-700">
-          {error}
+        <div className="bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none p-4 text-[#C0392B]">
+          The request failed. Check your connection and try again.
           <button onClick={reset} className="ml-4 underline hover:no-underline">Try again</button>
         </div>
       )}
