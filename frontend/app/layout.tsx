@@ -11,10 +11,24 @@ import DisclaimerBanner from '../components/DisclaimerBanner'
 const inter = Inter({ subsets: ['latin'] })
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1, // prevents double-tap zoom on form inputs in iOS
+  userScalable: false,
+  themeColor: '#0D0D0D',
+}
+
 export const metadata: Metadata = {
   title: 'MedFin AI | Decode Your Insurance, Catch Billing Errors, Stop Overpaying',
   description:
     'MedFin AI reads your insurance policy in seconds, validates medical bills for overcharges, and tells you exactly what your plan covers. No jargon. No data stored. Free.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'MedFin AI',
+  },
   openGraph: {
     title: 'MedFin AI | Healthcare Financial Navigator',
     description:
@@ -29,25 +43,11 @@ export const metadata: Metadata = {
     description: 'AI that reads your insurance policy so you actually understand what you are paying for.',
   },
   robots: { index: true, follow: true },
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'MedFin AI',
-  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
     apple: '/icons/icon-192.png',
   },
-}
-
-export const viewport: Viewport = {
-  themeColor: '#0D0D0D',
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 }
 
 export default function RootLayout({

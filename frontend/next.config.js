@@ -1,3 +1,13 @@
+// next-pwa wraps the config so we do not have to manage the service worker ourselves
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  // sw is excluded from the bundle analyzer -- it is a runtime concern, not a build one
+  buildExcludes: [/middleware-manifest\.json$/],
+})
+
 /** @type {import('next').NextConfig} */
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -12,19 +22,19 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
+
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['react-markdown', 'sonner'],
   },
-  
+
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  
+
   async headers() {
     return [
       {
@@ -71,7 +81,7 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Redirects for common typos and old routes
   async redirects() {
     return [
@@ -82,7 +92,7 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Webpack configuration for bundle optimization
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Optimize bundle size
@@ -107,10 +117,10 @@ const nextConfig = {
         },
       };
     }
-    
+
     return config;
   },
-  
+
   poweredByHeader: false,
 };
 
