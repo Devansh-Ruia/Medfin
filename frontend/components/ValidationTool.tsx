@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
 import { event } from '../lib/analytics';
 import { Search, Lightbulb, Check, ArrowRight } from 'lucide-react';
+import BillCaptureInput from './BillCaptureInput';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -164,12 +165,14 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [showBillDetails, setShowBillDetails] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    await handleBillFile(file);
+  };
 
+  const handleBillFile = async (file: File) => {
     // Show preview
     const reader = new FileReader();
     reader.onload = (e) => setPreview(e.target?.result as string);
@@ -197,38 +200,13 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
     setPreview(null);
     setError(null);
     setShowBillDetails(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
     <div className="space-y-6">
       {/* Upload Area */}
       {!result && !loading && (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="bg-white border-2 border-dashed border-[#E5E2DC] p-16 text-center cursor-pointer hover:border-[#6B6B6B] hover:bg-[#F9F8F6] transition-all rounded-none"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleFileSelect}
-            className="hidden"
-            aria-label="Upload bill photo for validation"
-            title="Upload bill photo for validation"
-          />
-          
-          <h3 className="text-2xl font-bold text-[#0D0D0D] mb-3">
-            Take a Photo of Your Bill
-          </h3>
-          <p className="text-[#6B6B6B] mb-8 text-lg">
-            AI will extract the details and validate against your policy
-          </p>
-          <button className="px-6 py-3 bg-[#0D0D0D] text-white rounded-none font-medium hover:bg-[#1A1A1A] transition-all">
-            Upload Bill Photo
-          </button>
-        </div>
+        <BillCaptureInput onFileSelected={handleBillFile} />
       )}
 
       {/* Loading State */}
