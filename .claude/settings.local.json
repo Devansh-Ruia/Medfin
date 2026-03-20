@@ -4,7 +4,9 @@
       "Bash(git reset:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(NODE_OPTIONS=--stack-trace-limit=50 npm run build)",
+      "Bash(echo \"EXIT CODE: $?\")"
     ]
   }
 }
