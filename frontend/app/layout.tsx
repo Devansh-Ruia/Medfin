@@ -7,6 +7,7 @@ import { FamilyProvider } from '../contexts/FamilyContext'
 import ErrorBoundary from '../components/ErrorBoundary'
 import ToastProvider from '../components/providers/ToastProvider'
 import DisclaimerBanner from '../components/DisclaimerBanner'
+import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration'
 
 const inter = Inter({ subsets: ['latin'] })
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -76,6 +77,7 @@ export default function RootLayout({
         </>
       )}
       <body className={`${inter.className} antialiased`}>
+        <ServiceWorkerRegistration />
         <ToastProvider>
           <ErrorBoundary>
             <FamilyProvider>

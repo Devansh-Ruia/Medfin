@@ -1,11 +1,3 @@
-// next-pwa wraps the config so we do not have to manage the service worker ourselves
-const withPWA = require('@ducanh2912/next-pwa').default({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Remove console logs in production
@@ -114,4 +106,4 @@ const nextConfig = {
   poweredByHeader: false,
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = nextConfig;
