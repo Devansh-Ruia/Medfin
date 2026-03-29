@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { api, PolicyData } from '../lib/api';
 import { Upload, FileText, Brain, CheckCircle } from 'lucide-react';
 import { event } from '../lib/analytics';
+import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 
 interface PolicyUploadProps {
   onPolicyUploaded: (data: PolicyData) => void;
@@ -44,6 +45,16 @@ export default function PolicyUpload({
       
       onPolicyUploaded(result.policy_data);
       event('upload_policy', { file_type: file.type });
+
+      const granted = await requestNotificationPermission();
+      if (granted) {
+        const score = result.policy_data.policy_strength_score;
+        const issueCount = result.policy_data.coverage_gaps?.length ?? 0;
+        sendLocalNotification(
+          'Policy analysis complete',
+          `Your plan scored ${score}/100. ${issueCount} coverage gap${issueCount !== 1 ? 's' : ''} identified.`
+        );
+      }
     } catch (err) {
       console.error(err);
       setError('Failed to analyze policy. Please try again.');

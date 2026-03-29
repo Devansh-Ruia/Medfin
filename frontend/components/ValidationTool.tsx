@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
 import { event } from '../lib/analytics';
+import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 import { Search, Lightbulb, Check, ArrowRight } from 'lucide-react';
 import BillCaptureInput from './BillCaptureInput';
 
@@ -187,6 +188,17 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
       const response = await api.uploadBill(file, policyData);
       setResult(response);
       event('upload_bill');
+
+      const granted = await requestNotificationPermission();
+      if (granted) {
+        const issuesFound = response.summary?.total_issues_found ?? response.issues?.length ?? 0;
+        sendLocalNotification(
+          'Bill validation complete',
+          issuesFound > 0
+            ? `${issuesFound} issue${issuesFound > 1 ? 's' : ''} found on your bill.`
+            : 'No billing errors detected.'
+        );
+      }
     } catch (err) {
       console.error(err);
       setError('Failed to analyze bill. Please try again.');

@@ -9,7 +9,10 @@
       "Bash(echo \"EXIT CODE: $?\")",
       "Bash(npm view:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx --no-install tsc --noEmit)"
     ]
   }
 }
