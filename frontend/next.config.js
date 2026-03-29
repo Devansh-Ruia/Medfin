@@ -10,70 +10,13 @@ const nextConfig = {
     optimizePackageImports: ['react-markdown', 'sonner'],
   },
 
-  // Image optimization
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-  },
+  // Static export for Capacitor native shell
+  output: 'export',
+  trailingSlash: true,
+  images: { unoptimized: true },
 
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
-      {
-        source: '/api/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
-          },
-        ],
-      },
-    ];
-  },
-
-  // Redirects for common typos and old routes
-  async redirects() {
-    return [
-      {
-        source: '/policy',
-        destination: '/',
-        permanent: true,
-      },
-    ];
-  },
+  // Note: headers() and redirects() removed -- not supported with output: 'export'
+  // Security headers should be configured on the hosting server or in the native app
 
   // Webpack configuration for bundle optimization
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {

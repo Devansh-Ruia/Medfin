@@ -12,7 +12,9 @@
       "Bash(git push:*)",
       "Bash(xargs grep:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx --no-install tsc --noEmit)"
+      "Bash(npx --no-install tsc --noEmit)",
+      "Bash(npx next:*)",
+      "Bash(npx cap:*)"
     ]
   }
 }
