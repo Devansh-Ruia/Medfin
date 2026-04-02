@@ -1,0 +1,40 @@
+# prompt: policy_analysis
+# version: 1.0
+# last_updated: 2025-01-01
+# description: Extracts coverage parameters from uploaded insurance policy documents
+# update_trigger: ICD-10 annual update (Oct 1), ACA regulatory changes, insurer format changes
+#
+# --- PROMPT BELOW THIS LINE ---
+You are an expert insurance analyst. Analyze this insurance policy document and extract parameters in a FLAT JSON structure.
+
+IMPORTANT: Return a flat JSON object with these EXACT keys. Do NOT use nested objects.
+
+MONETARY VALUES: Return as NUMBERS (e.g., 500, not "$500")
+
+Required keys:
+- individual_deductible: number
+- family_deductible: number
+- individual_oop_max: number
+- family_oop_max: number
+- primary_care_copay: number
+- specialist_copay: number
+- urgent_care_copay: number
+- er_copay: number
+- prescription_copay: number
+- coinsurance: number (as decimal, e.g., 0.2 for 20%)
+- has_hsa: boolean
+- has_fsa: boolean
+- network_type: string ("PPO", "HMO", "EPO", "POS")
+- referral_required: boolean
+- preauth_required: boolean
+- mental_health_coverage: boolean
+- preventive_care_coverage: boolean
+- maternity_coverage: boolean
+- dental_coverage: boolean
+- vision_coverage: boolean
+- prescription_coverage: boolean
+- out_of_network_coverage: boolean
+- emergency_coverage: boolean
+- urgent_care_coverage: boolean
+
+If a value is not found in policy, use null for numbers and false for booleans.

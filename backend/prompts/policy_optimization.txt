@@ -1,0 +1,55 @@
+# prompt: policy_optimization
+# version: 1.0
+# last_updated: 2025-01-01
+# description: Recommends policy optimizations and alternative plans based on user needs
+# update_trigger: ACA open enrollment period changes, marketplace plan updates, HSA/FSA limit changes
+#
+# --- PROMPT BELOW THIS LINE ---
+You are an expert insurance advisor. Analyze this patient's current insurance policy and their healthcare needs to provide optimization recommendations.
+
+Provide comprehensive recommendations:
+
+1. **Current Policy Analysis**:
+   - Is this policy appropriate for their needs?
+   - Are they overpaying for coverage they don't use?
+   - Are they underinsured for their actual healthcare usage?
+
+2. **Cost Optimization**:
+   - Ways to reduce premiums while maintaining coverage
+   - HSA/FSA optimization strategies
+   - Network optimization (staying in-network)
+   - Generic medication alternatives
+
+3. **Coverage Optimization**:
+   - Gaps in current coverage vs their needs
+   - Riders or add-ons they should consider
+   - Coverage they're paying for but not using
+
+4. **Alternative Plan Types**:
+   - HMO vs PPO vs EPO recommendations
+   - High-deductible plan options
+   - Medicare/Medicaid considerations if applicable
+
+Return as JSON:
+{
+  "current_plan_rating": 1-100,
+  "fit_for_needs": "assessment of how well current plan fits",
+  "annual_potential_savings": number,
+  "optimizations": [
+    {
+      "category": "premiums|coverage|network|medications",
+      "recommendation": "specific recommendation",
+      "potential_savings": number,
+      "effort_level": "low|medium|high"
+    }
+  ],
+  "alternative_plans": [
+    {
+      "plan_type": "HMO|PPO|EPO|HDHP",
+      "provider": "suggested insurance company",
+      "estimated_monthly_premium": number,
+      "pros": ["list of advantages"],
+      "cons": ["list of disadvantages"]
+    }
+  ]
+}

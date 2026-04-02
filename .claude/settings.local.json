@@ -25,7 +25,12 @@
       "Bash(node -e \"console.log\\(require\\(''next-intl/package.json''\\).version\\)\")",
       "Bash(node -e \":*)",
       "Bash(NODE_OPTIONS='--stack-trace-limit=50' npx next build)",
-      "Bash(ls C:/Users/super/Downloads/Desktop/medfin-1/frontend/node_modules/next-intl/server*)"
+      "Bash(ls C:/Users/super/Downloads/Desktop/medfin-1/frontend/node_modules/next-intl/server*)",
+      "Bash(python -c \"from app.core.ai_provider import get_provider; print\\(''Provider loaded:'', get_provider\\(\\).__class__.__name__\\)\")",
+      "Bash(python -c \"from app.core.prompt_loader import load_prompt; p = load_prompt\\(''policy_analysis''\\); print\\(''Prompt loaded, length:'', len\\(p\\)\\)\")",
+      "Bash(python -c \"from app.core.failure_logger import log_ai_error; log_ai_error\\(''test'', Exception\\(''test error''\\)\\); print\\(''Logger works''\\)\")",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)"
     ]
   }
 }
