@@ -4,8 +4,17 @@
 
 @layer base {
   /* Capacitor runs in a WebView -- this prevents content from hiding behind the notch and home indicator */
+  /* System font stack extended for CJK and Devanagari scripts
+     This avoids a separate font download for scripts the OS already has */
   body {
     @apply bg-gray-50 text-gray-900;
+    font-family:
+      'Inter', 'Geist',
+      'Noto Sans Devanagari',   /* Hindi fallback */
+      'PingFang SC',             /* macOS/iOS Mandarin */
+      'Microsoft YaHei',         /* Windows Mandarin */
+      system-ui,
+      sans-serif;
     font-feature-settings: 'rlig' 1, 'calt' 1;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);

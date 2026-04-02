@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { api, PolicyData } from '../lib/api';
 import { Upload, FileText, Brain, CheckCircle } from 'lucide-react';
 import { event } from '../lib/analytics';
@@ -12,11 +13,12 @@ interface PolicyUploadProps {
   setIsAnalyzing: (value: boolean) => void;
 }
 
-export default function PolicyUpload({ 
-  onPolicyUploaded, 
-  isAnalyzing, 
-  setIsAnalyzing 
+export default function PolicyUpload({
+  onPolicyUploaded,
+  isAnalyzing,
+  setIsAnalyzing
 }: PolicyUploadProps) {
+  const t = useTranslations('dashboard')
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<string>('');
@@ -95,10 +97,10 @@ export default function PolicyUpload({
       {/* Header */}
       <div className="text-center mb-12">
         <h2 className="text-2xl font-bold text-[#0D0D0D] mb-4">
-          Upload your insurance policy
+          {t('uploadPrompt')}
         </h2>
         <p className="text-sm text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed">
-          MedFin will extract your deductibles, copays, network rules, and exclusions. The document is processed in memory and never stored.
+          {t('uploadDesc')}
         </p>
       </div>
 
@@ -150,14 +152,14 @@ export default function PolicyUpload({
             </div>
             
             <h3 className="text-xl font-semibold text-[#0D0D0D] mb-3">
-              Drop your PDF or image here
+              {t('dropZone')}
             </h3>
             <p className="text-sm text-[#6B6B6B] mb-8">
-              PDF, PNG, JPG up to 10MB
+              {t('dropZoneSub')}
             </p>
             
             <button className="bg-[#0D0D0D] text-white text-sm px-6 py-3 rounded-none hover:bg-[#1A1A1A] transition-colors">
-              Choose File
+              {t('chooseFile')}
             </button>
           </div>
         )}

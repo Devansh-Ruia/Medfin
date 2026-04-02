@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function DisclaimerBanner() {
+  const t = useTranslations('disclaimer')
   // visible starts false and is set true by useEffect to avoid SSR mismatch
   const [visible, setVisible] = useState(false)
 
@@ -36,13 +38,13 @@ export default function DisclaimerBanner() {
         {/* Left column - disclaimer text */}
         <div className="flex-1">
           <div className="text-xs tracking-[0.15em] uppercase text-[#9CA3AF] mb-2">
-            IMPORTANT NOTICE
+            {t('label')}
           </div>
           <div className="text-sm text-[#D1D5DB] leading-relaxed">
-            MedFin AI is not a licensed insurance advisor, attorney, or healthcare provider.<br />
-            Nothing on this platform constitutes legal, medical, or financial advice.<br />
-            MedFin does not store, log, or transmit your documents or policy data. All processing happens in memory and is discarded when your session ends.<br />
-            This platform is HIPAA-aware in its design but is not a covered entity and does not offer a Business Associate Agreement.
+            <div>{t('line1')}</div>
+            <div>{t('line2')}</div>
+            <div>{t('line3')}</div>
+            <div>{t('line4')}</div>
           </div>
         </div>
 
@@ -53,10 +55,10 @@ export default function DisclaimerBanner() {
             // rounded-none because every button in this product is a rectangle
             className="bg-white text-[#0D0D0D] text-sm font-medium px-6 py-3 rounded-none hover:bg-[#F9F8F6] transition-colors whitespace-nowrap"
           >
-            I understand, continue
+            {t('acknowledge')}
           </button>
           <div className="text-xs text-[#6B6B6B] text-center mt-2">
-            This preference is saved in your browser.
+            {t('savedNote')}
           </div>
         </div>
       </div>

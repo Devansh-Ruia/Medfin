@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface UploadGateProps {
   toolName: string;
@@ -11,6 +12,7 @@ interface UploadGateProps {
 
 // UploadGate exists because six tools cannot each independently decide how to beg for a policy
 export default function UploadGate({ toolName, description, capabilities, onUploadPolicy }: UploadGateProps) {
+  const t = useTranslations('uploadGate')
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <div className="text-center max-w-lg mx-auto">
@@ -33,9 +35,9 @@ export default function UploadGate({ toolName, description, capabilities, onUplo
           onClick={onUploadPolicy}
           className="bg-[#0D0D0D] text-white text-sm px-8 py-4 rounded-none mt-8 font-medium hover:bg-[#1A1A1A] transition-colors"
         >
-          Upload a Policy
+          {t('cta')}
         </button>
-        <p className="text-xs text-[#6B6B6B] mt-2">Upload your insurance policy PDF to unlock this tool</p>
+        <p className="text-xs text-[#6B6B6B] mt-2">{t('ctaSub')}</p>
       </div>
     </div>
   );

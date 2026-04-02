@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "MedFin AI | Décryptez votre assurance, détectez les erreurs de facturation, cessez de surpayer",
+    "description": "MedFin AI analyse votre police d'assurance en quelques secondes, vérifie les surfacturations sur vos factures médicales et vous indique précisément ce que votre contrat couvre. Sans jargon. Sans stockage de données. Gratuit.",
+    "ogTitle": "MedFin AI | Navigateur financier santé",
+    "ogDescription": "Téléversez votre police d'assurance et découvrez ce qui vous est dû. MedFin détecte les erreurs de facturation, répond à vos questions sur la couverture et vous aide à optimiser votre contrat.",
+    "twitterTitle": "MedFin AI | Cessez de surpayer vos soins de santé",
+    "twitterDescription": "Une intelligence artificielle qui analyse votre police d'assurance pour que vous compreniez enfin ce que vous payez."
+  },
+  "nav": {
+    "howItWorks": "Fonctionnement",
+    "tools": "Outils",
+    "results": "Résultats",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "eyebrow": "Navigateur financier santé",
+    "headline": "Votre police d'assurance est un document financier. Traitez-la comme tel.",
+    "subheading": "MedFin analyse votre police, vérifie vos factures en regard de celle-ci et vous indique précisément où vous êtes surfacturé. Sans approximation. Sans jargon.",
+    "cta": "Analyser votre police",
+    "ctaSub": "Aucun compte requis. Aucune donnée conservée."
+  },
+  "stats": {
+    "errorRate": "des factures médicales contiennent au moins une erreur",
+    "recovered": "montant moyen récupéré par facture contestée",
+    "analysisTime": "temps moyen pour analyser une police avec MedFin",
+    "dataStored": "de vos données conservées après la fin de votre session"
+  },
+  "tools": {
+    "sectionLabel": "Outils",
+    "sectionHeading": "Six outils. Un seul objectif : vous éviter de surpayer.",
+    "sectionSubheading": "Chaque outil cible un point de défaillance précis du système de facturation médicale.",
+    "tool01": "Outil 01",
+    "tool02": "Outil 02",
+    "tool03": "Outil 03",
+    "tool04": "Outil 04",
+    "tool05": "Outil 05",
+    "tool06": "Outil 06",
+    "policyAnalysis": "Analyse de police",
+    "policyAnalysisDesc": "La plupart des gens n'ont jamais véritablement lu leur police d'assurance. MedFin extrait chaque paramètre de couverture, franchise, exclusion et plafond de votre PDF et les présente sous forme de résumé lisible. Téléversez une fois, consultez toute l'année.",
+    "askAI": "Poser une question à l'IA",
+    "askAIDesc": "Les questions de couverture nécessitent généralement 40 minutes d'attente auprès de votre assureur. MedFin y répond instantanément, en se fondant sur votre document de police réel, et non sur des connaissances génériques en assurance.",
+    "billValidation": "Vérification de facture",
+    "billValidationDesc": "Les services de facturation médicale commettent des erreurs à un taux qui serait inacceptable dans tout autre secteur. MedFin vérifie chaque poste de votre facture en regard de votre police et signale tout ce qui ne correspond pas.",
+    "policyOptimization": "Optimisation de police",
+    "policyOptimizationDesc": "Votre contrat actuel est peut-être optimisé pour quelqu'un d'autre que vous. MedFin compare votre utilisation réelle des soins de santé avec les paramètres de votre contrat et met en évidence des ajustements précis et concrets.",
+    "preVisit": "Liste de contrôle pré-visite",
+    "preVisitDesc": "Connaître le coût de votre visite avant de vous y rendre n'est pas un luxe. MedFin génère une liste de contrôle adaptée à votre visite : ce qu'il faut vérifier, ce qu'il faut apporter, quelles questions poser et quel sera votre reste à charge estimé.",
+    "appealLetters": "Lettres de recours",
+    "appealLettersDesc": "Les refus de prise en charge sont annulés dans 40 à 60 pour cent des cas lorsqu'un recours est déposé. MedFin génère une lettre de recours formelle avec les citations ERISA appropriées et le langage juridique adapté au motif de refus, prête à imprimer et à envoyer.",
+    "openTool": "Ouvrir"
+  },
+  "howItWorks": {
+    "sectionLabel": "Fonctionnement",
+    "heading": "Du téléversement à l'analyse en moins d'une minute.",
+    "step1Title": "Téléversez votre police",
+    "step1Desc": "Déposez votre PDF d'assurance dans MedFin. Le document est traité en mémoire et supprimé immédiatement. Rien n'est écrit sur le disque.",
+    "step2Title": "L'IA extrait la structure",
+    "step2Desc": "MedFin cartographie chaque paramètre de couverture, règle de réseau, palier de franchise et exclusion de votre contrat. Le processus prend moins de 30 secondes.",
+    "step3Title": "Utilisez l'un des six outils",
+    "step3Desc": "Tous les outils partagent le même contexte de police. Posez une question, vérifiez une facture, générez une lettre de recours. Tout est fondé sur votre document spécifique.",
+    "step4Title": "Enregistrez les résultats",
+    "step4Desc": "Copiez les réponses, téléchargez votre lettre de recours en PDF ou effectuez une capture d'écran de vos résultats de vérification de facture. Votre session vous appartient."
+  },
+  "results": {
+    "sectionLabel": "Résultats",
+    "heading": "Ce que les utilisateurs découvrent concrètement.",
+    "result1Amount": "$340 récupérés",
+    "result1Desc": "Un patient a téléversé un EOB d'une consultation ambulatoire. MedFin a signalé un double prélèvement pour une unité d'anesthésie apparaissant deux fois sous des codes de facturation différents. L'hôpital a effectué le remboursement en une semaine.",
+    "result2Amount": "$1,200 économisés par an",
+    "result2Desc": "Le contrat actuel d'un travailleur indépendant comportait une franchise de $6,000 qu'il n'atteignait jamais. MedFin a identifié un contrat comparable avec une franchise de $2,500 à $94 de moins par mois.",
+    "result3Amount": "Refus annulé",
+    "result3Desc": "Une demande de prise en charge pour un MRI a été refusée pour absence de nécessité médicale. MedFin a généré un recours citant la section 503 de l'ERISA et la propre définition de nécessité médicale du contrat. La demande a été approuvée dès le premier recours."
+  },
+  "cta": {
+    "heading": "L'Américain moyen surpaie ses soins de santé de $1,000 ou plus par an. La majeure partie est récupérable.",
+    "body": "Téléversez votre police et découvrez précisément ce que vous avez manqué.",
+    "button": "Analyser votre police",
+    "disclaimer": "Aucun compte requis. Aucune donnée conservée. Aucune affiliation avec le secteur de l'assurance."
+  },
+  "footer": {
+    "legal": "Ne constitue pas un service de conseil en assurance agréé. À titre informatif uniquement."
+  },
+  "disclaimer": {
+    "label": "Avis important",
+    "line1": "MedFin AI n'est ni un conseiller en assurance agréé, ni un avocat, ni un prestataire de soins de santé.",
+    "line2": "Rien sur cette plateforme ne constitue un conseil juridique, médical ou financier.",
+    "line3": "MedFin ne stocke, n'enregistre et ne transmet ni vos documents ni les données de votre police. Tout le traitement s'effectue en mémoire et est supprimé à la fin de votre session.",
+    "line4": "Cette plateforme est conçue dans le respect des principes HIPAA, mais n'est pas une entité couverte et ne propose pas de Business Associate Agreement.",
+    "acknowledge": "Je comprends, continuer",
+    "savedNote": "Cette préférence est enregistrée dans votre navigateur."
+  },
+  "dashboard": {
+    "noPolicy": "Aucune police téléversée",
+    "policyAnalyzed": "Police analysée",
+    "aiReady": "IA prête",
+    "uploadNewPolicy": "Téléverser une nouvelle police",
+    "policyScore": "Score de la police",
+    "uploadPrompt": "Téléversez votre police d'assurance",
+    "uploadDesc": "MedFin extraira vos franchises, copaiements, règles de réseau et exclusions. Le document est traité en mémoire et n'est jamais conservé.",
+    "dropZone": "Déposez votre PDF ou image ici",
+    "dropZoneSub": "PDF, PNG, JPG jusqu'à 10 Mo",
+    "chooseFile": "Choisir un fichier",
+    "showFullDetails": "Afficher les détails complets de la police",
+    "quickActions": "Actions rapides",
+    "askQuestion": "Poser une question",
+    "validateBill": "Vérifier une facture",
+    "planVisit": "Planifier une visite",
+    "privacyNote": "Vos données sont traitées localement et ne sont jamais conservées."
+  },
+  "askAI": {
+    "placeholder": "Posez une question sur votre couverture, vos coûts ou vos prestations...",
+    "send": "Envoyer",
+    "errorMessage": "La requête a échoué. Vérifiez votre connexion et réessayez.",
+    "uploadGateDesc": "Posez des questions sur votre couverture en langage courant. MedFin répond en se fondant sur votre document de police spécifique, et non sur des connaissances génériques en assurance.",
+    "capability1": "Suis-je couvert pour un MRI ?",
+    "capability2": "Quel est mon copaiement pour un spécialiste ?",
+    "capability3": "Mon contrat couvre-t-il la kinésithérapie ?",
+    "capability4": "Ai-je besoin d'une autorisation préalable pour une intervention chirurgicale ?"
+  },
+  "bills": {
+    "uploadGateDesc": "Téléversez une photo de votre facture médicale et l'IA vérifie chaque poste en regard de votre police, signalant les surfacturations, les erreurs de facturation et vous indiquant précisément la marche à suivre pour chaque anomalie.",
+    "capability1": "Vérification poste par poste",
+    "capability2": "Détection des surfacturations et des doublons",
+    "capability3": "Solutions spécifiques pour chaque anomalie détectée",
+    "capability4": "Comparaison entre coût prévu et coût réel",
+    "scanBill": "Scanner la facture",
+    "uploadFile": "Téléverser un fichier",
+    "validationResults": "Résultats de la vérification",
+    "issuesFound": "Anomalies détectées",
+    "whatToDo": "Marche à suivre",
+    "validateAnother": "Vérifier une autre facture",
+    "overchargeDetected": "Surfacturation détectée"
+  },
+  "appeal": {
+    "heading": "Contester un refus de prise en charge",
+    "uploadLetter": "Téléverser la lettre de refus",
+    "enterManually": "Saisir manuellement",
+    "serviceDesc": "Description du service",
+    "serviceDate": "Date du service",
+    "amountDenied": "Montant refusé ($)",
+    "denialCode": "Code de refus (si fourni)",
+    "denialReason": "Motif du refus",
+    "insuranceCompany": "Compagnie d'assurance",
+    "claimNumber": "Numéro de dossier",
+    "appealTone": "Ton du recours",
+    "generate": "Générer la lettre de recours",
+    "uploadGateDesc": "Téléversez une lettre de refus de prise en charge et obtenez une lettre de recours professionnelle générée en quelques secondes, formatée en PDF, prête à imprimer et à envoyer.",
+    "capability1": "Extraction automatique du motif de refus",
+    "capability2": "Citations des réglementations ERISA et ACA",
+    "capability3": "Mise en forme professionnelle avec structure appropriée",
+    "capability4": "Téléchargement en PDF prêt à imprimer",
+    "errorMessage": "Le traitement de la lettre de refus a échoué. Vérifiez votre connexion et réessayez."
+  },
+  "preVisit": {
+    "heading": "Planifier votre visite médicale",
+    "visitType": "Quel type de visite prévoyez-vous ?",
+    "providerName": "Nom du praticien (facultatif)",
+    "facilityName": "Nom de l'établissement (facultatif)",
+    "inNetwork": "Ce praticien fait-il partie du réseau ?",
+    "inNetworkYes": "Oui, dans le réseau",
+    "inNetworkNo": "Non, hors réseau",
+    "inNetworkUnsure": "Je ne sais pas",
+    "plannedDate": "Date prévue (facultatif)",
+    "generate": "Générer la liste de contrôle pré-visite",
+    "uploadGateDesc": "Sélectionnez votre type de visite et obtenez une liste de contrôle personnalisée indiquant ce qu'il faut vérifier, apporter et demander, adaptée à votre couverture spécifique.",
+    "capability1": "Étapes de vérification de la couverture",
+    "capability2": "Documents à apporter",
+    "capability3": "Questions à poser à votre praticien",
+    "capability4": "Estimations de coûts basées sur votre police"
+  },
+  "optimize": {
+    "heading": "Optimisation de police",
+    "uploadGateDesc": "Obtenez des recommandations pour optimiser votre couverture, réduire vos coûts et tirer le meilleur parti de votre contrat d'assurance.",
+    "capability1": "Analyse des lacunes de couverture",
+    "capability2": "Possibilités de réduction des coûts",
+    "capability3": "Optimisation HSA/FSA",
+    "capability4": "Recommandations de contrats alternatifs",
+    "potentialSavings": "Économies annuelles potentielles",
+    "aiSummary": "Résumé de l'IA",
+    "opportunities": "Possibilités d'optimisation",
+    "saveUpTo": "Économisez jusqu'à",
+    "effort": "Effort"
+  },
+  "uploadGate": {
+    "cta": "Téléverser une police",
+    "ctaSub": "Téléversez votre police d'assurance en PDF pour accéder à cet outil"
+  },
+  "offline": {
+    "label": "Aucune connexion",
+    "heading": "Vous êtes hors ligne",
+    "body": "MedFin nécessite une connexion pour analyser les polices et vérifier les factures. Les pages consultées précédemment peuvent encore être disponibles.",
+    "retry": "Réessayer"
+  },
+  "languageSwitcher": {
+    "label": "Langue"
+  }
+}

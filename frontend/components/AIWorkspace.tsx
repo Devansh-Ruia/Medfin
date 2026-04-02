@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { PolicyData } from '../lib/api';
 import PolicySummary from './PolicySummary';
 import EstimationTool from './EstimationTool';
@@ -13,6 +14,7 @@ import SavingsTracker from './SavingsTracker';
 import PrivacyPanel from './PrivacyPanel';
 import MarkdownRenderer from './MarkdownRenderer';
 import UploadGate from './UploadGate';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useSavings } from '../contexts/SavingsContext';
 import { useFamily } from '../contexts/FamilyContext';
 import { AlertCircle, Shield, FileText, MessageCircle, Receipt, Scale, TrendingUp } from 'lucide-react';
@@ -25,6 +27,12 @@ interface AIWorkspaceProps {
 }
 
 export default function AIWorkspace({ policyData, onReset, activeSection, onNavigate }: AIWorkspaceProps) {
+  const tDash = useTranslations('dashboard')
+  const tAskAI = useTranslations('askAI')
+  const tBills = useTranslations('bills')
+  const tAppeal = useTranslations('appeal')
+  const tPreVisit = useTranslations('preVisit')
+  const tOptimize = useTranslations('optimize')
   const { getSavingsStats } = useSavings();
   const { getPendingActions } = useFamily();
 
@@ -34,52 +42,52 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
   const toolConfigs = {
     'ask-ai': {
       title: 'Ask AI',
-      description: 'Ask questions about your coverage in plain English. MedFin answers based on your specific policy document, not generic insurance knowledge.',
+      description: tAskAI('uploadGateDesc'),
       capabilities: [
-        'Am I covered for an MRI?',
-        'What is my specialist copay?',
-        'Does my plan cover physical therapy?',
-        'Do I need prior authorization for surgery?'
+        tAskAI('capability1'),
+        tAskAI('capability2'),
+        tAskAI('capability3'),
+        tAskAI('capability4')
       ]
     },
     'bills': {
       title: 'Bill Validation',
-      description: 'Upload a photo of your medical bill and the AI checks every charge against your policy — flagging overcharges, billing errors, and showing you exactly what to do about each issue.',
+      description: tBills('uploadGateDesc'),
       capabilities: [
-        'Line-by-line charge validation',
-        'Overcharge and duplicate detection',
-        'Specific solutions for each issue found',
-        'Expected vs actual cost comparison'
+        tBills('capability1'),
+        tBills('capability2'),
+        tBills('capability3'),
+        tBills('capability4')
       ]
     },
     'appeal': {
       title: 'Appeal Letters',
-      description: 'Upload a claim denial letter and get a professional appeal letter generated in seconds — formatted as a PDF, ready to print and mail.',
+      description: tAppeal('uploadGateDesc'),
       capabilities: [
-        'Automatic denial reason extraction',
-        'ERISA and ACA regulation citations',
-        'Professional formatting with proper structure',
-        'Download as print-ready PDF'
+        tAppeal('capability1'),
+        tAppeal('capability2'),
+        tAppeal('capability3'),
+        tAppeal('capability4')
       ]
     },
     'pre-visit': {
       title: 'Pre-Visit Planning',
-      description: 'Select your visit type and get a personalized checklist of what to verify, bring, and ask — tailored to your specific coverage.',
+      description: tPreVisit('uploadGateDesc'),
       capabilities: [
-        'Coverage verification steps',
-        'Documents to bring',
-        'Questions to ask your provider',
-        'Cost estimates based on your policy'
+        tPreVisit('capability1'),
+        tPreVisit('capability2'),
+        tPreVisit('capability3'),
+        tPreVisit('capability4')
       ]
     },
     'optimize': {
       title: 'Policy Optimization',
-      description: 'Get recommendations on how to optimize your coverage, reduce costs, and make the most of your insurance plan.',
+      description: tOptimize('uploadGateDesc'),
       capabilities: [
-        'Coverage gap analysis',
-        'Cost reduction opportunities',
-        'HSA/FSA optimization',
-        'Alternative plan recommendations'
+        tOptimize('capability1'),
+        tOptimize('capability2'),
+        tOptimize('capability3'),
+        tOptimize('capability4')
       ]
     },
     'family': {
@@ -108,7 +116,7 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
               <div>
                 <h1 className="font-semibold text-sm text-[#0D0D0D]">MedFin</h1>
                 <p className="text-xs text-[#6B6B6B]">
-                  {policyData ? 'Policy analyzed' : 'No policy uploaded'}
+                  {policyData ? tDash('policyAnalyzed') : tDash('noPolicy')}
                 </p>
               </div>
             </div>
@@ -117,22 +125,25 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-[#0A6640] animate-pulse rounded-full"></div>
-                <span className="text-xs text-[#6B6B6B]">AI Ready</span>
+                <span className="text-xs text-[#6B6B6B]">{tDash('aiReady')}</span>
               </div>
               {policyData && policyData?.policy_strength_score && (
                 <span className="text-xs text-[#0D0D0D] font-medium">
-                  Policy Score: {policyData.policy_strength_score}/100
+                  {tDash('policyScore')}: {policyData.policy_strength_score}/100
                 </span>
               )}
             </div>
 
             {/* Actions */}
-            <button
-              onClick={onReset}
-              className="text-sm text-[#0A6640] font-medium underline-offset-2 hover:underline"
-            >
-              Upload New Policy
-            </button>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <button
+                onClick={onReset}
+                className="text-sm text-[#0A6640] font-medium underline-offset-2 hover:underline"
+              >
+                {tDash('uploadNewPolicy')}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -189,29 +200,29 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
               </div>
 
               <button className="text-sm text-[#0A6640] font-medium underline-offset-2 hover:underline mt-4">
-                Show Full Policy Details
+                {tDash('showFullDetails')}
               </button>
             </div>
 
             {/* Quick Actions */}
             <div className="flex flex-wrap gap-4 text-sm">
               <button onClick={() => onNavigate('ask-ai')} className="text-sm text-[#0A6640] font-medium">
-                Ask a question
+                {tDash('askQuestion')}
               </button>
               <span className="text-[#E5E2DC]">|</span>
               <button onClick={() => onNavigate('bills')} className="text-sm text-[#0A6640] font-medium">
-                Validate a bill
+                {tDash('validateBill')}
               </button>
               <span className="text-[#E5E2DC]">|</span>
               <button onClick={() => onNavigate('pre-visit')} className="text-sm text-[#0A6640] font-medium">
-                Plan a visit
+                {tDash('planVisit')}
               </button>
             </div>
 
             {/* Privacy Notice */}
             <div className="text-center">
               <p className="text-xs text-[#6B6B6B]">
-                Your data is processed locally and never stored.
+                {tDash('privacyNote')}
               </p>
             </div>
           </div>

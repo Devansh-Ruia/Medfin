@@ -31,10 +31,15 @@ class ApiClient {
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
     try {
+      const locale = typeof window !== 'undefined'
+        ? localStorage.getItem('medfin_locale') ?? 'en'
+        : 'en';
+
       const response = await fetch(url, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
+          'X-Language': locale,
           ...options?.headers,
         },
         signal: controller.signal,

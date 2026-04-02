@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "MedFin AI | 解读您的保险，发现账单错误，停止多付费用",
+    "description": "MedFin AI 可在数秒内读取您的保险保单，验证医疗账单是否存在多收费用，并准确告知您的保单涵盖哪些内容。无专业术语。不存储数据。免费使用。",
+    "ogTitle": "MedFin AI | 医疗财务导航工具",
+    "ogDescription": "上传您的保险保单，了解您应得的权益。MedFin 可发现账单错误、解答保障范围问题，并帮助您优化保险方案。",
+    "twitterTitle": "MedFin AI | 不再为医疗费用多花冤枉钱",
+    "twitterDescription": "AI 帮您读懂保险保单，让您真正了解自己在为什么付费。"
+  },
+  "nav": {
+    "howItWorks": "使用方法",
+    "tools": "工具",
+    "results": "成效",
+    "getStarted": "立即开始"
+  },
+  "hero": {
+    "eyebrow": "医疗财务导航工具",
+    "headline": "您的保险保单是一份财务文件，请以此对待。",
+    "subheading": "MedFin 读取您的保单，将您的账单与保单进行核对，并准确告诉您哪些收费超出了应有金额。无需猜测，没有术语。",
+    "cta": "分析您的保单",
+    "ctaSub": "无需注册账户。不存储任何数据。"
+  },
+  "stats": {
+    "errorRate": "的医疗账单至少包含一项错误",
+    "recovered": "每笔争议账单平均追回金额",
+    "analysisTime": "使用 MedFin 分析一份保单的平均时间",
+    "dataStored": "会话结束后存储的数据量"
+  },
+  "tools": {
+    "sectionLabel": "工具",
+    "sectionHeading": "六大工具，一个目标：让您不再多付费用。",
+    "sectionSubheading": "每个工具都针对医疗账单系统中的特定问题而构建。",
+    "tool01": "工具 01",
+    "tool02": "工具 02",
+    "tool03": "工具 03",
+    "tool04": "工具 04",
+    "tool05": "工具 05",
+    "tool06": "工具 06",
+    "policyAnalysis": "保单分析",
+    "policyAnalysisDesc": "大多数人从未真正阅读过自己的保险保单。MedFin 从您的 PDF 中提取每项保障参数、免赔额、除外责任和限额，并以易读的摘要形式呈现。上传一次，全年参考。",
+    "askAI": "AI 问答",
+    "askAIDesc": "保障范围的问题通常需要在保险公司电话上等待40分钟。MedFin 可以即时回答这些问题，答案基于您的实际保单文件，而非通用保险知识。",
+    "billValidation": "账单验证",
+    "billValidationDesc": "医疗账单部门的错误率在任何其他行业都会令人汗颜。MedFin 将您账单上的每一项收费与您的保单进行核对，并标记任何不合理之处。",
+    "policyOptimization": "保单优化",
+    "policyOptimizationDesc": "您当前的保险方案可能并不适合您的实际需求。MedFin 将您的实际医疗使用情况与保险方案参数进行对比，并提出具体、可操作的调整建议。",
+    "preVisit": "就诊前清单",
+    "preVisitDesc": "在就诊前了解费用不应是一种奢求。MedFin 生成针对特定就诊的清单：需要核实的事项、需要携带的材料、需要询问的问题，以及预计的自付费用。",
+    "appealLetters": "申诉信函",
+    "appealLettersDesc": "理赔拒绝在申诉后有40%到60%的翻案率。MedFin 生成包含正确 ERISA 引用和针对拒绝原因的法律用语的正式申诉信函，可直接打印邮寄。",
+    "openTool": "打开"
+  },
+  "howItWorks": {
+    "sectionLabel": "使用方法",
+    "heading": "从上传到洞察，不到一分钟。",
+    "step1Title": "上传您的保单",
+    "step1Desc": "将您的保险 PDF 拖入 MedFin。文件在内存中处理后立即丢弃，不会写入磁盘。",
+    "step2Title": "AI 提取保单结构",
+    "step2Desc": "MedFin 分析您保单中的每项保障参数、网络规则、免赔额层级和除外责任。整个过程不到30秒。",
+    "step3Title": "使用六大工具中的任意一个",
+    "step3Desc": "所有工具共享相同的保单上下文。提出问题、验证账单、生成申诉信函——一切都基于您的具体保单文件。",
+    "step4Title": "保存结果",
+    "step4Desc": "复制答案、将申诉信函下载为 PDF，或截图保存账单验证结果。会话由您自行管理。"
+  },
+  "results": {
+    "sectionLabel": "成效",
+    "heading": "用户的真实发现。",
+    "result1Amount": "追回 $340",
+    "result1Desc": "一位患者上传了门诊就诊的 EOB。MedFin 发现一项麻醉费用以不同的计费代码重复出现了两次。医院在一周内退还了多收的费用。",
+    "result2Amount": "每年节省 $1,200",
+    "result2Desc": "一位自由职业者的当前保险方案有 $6,000 的免赔额，但从未达到过该额度。MedFin 发现了一个免赔额为 $2,500 的同类方案，每月还能少付 $94。",
+    "result3Amount": "拒赔翻案成功",
+    "result3Desc": "一项 MRI 理赔因被认为非医疗必需而遭拒。MedFin 生成了引用 ERISA 第503条及保单自身对医疗必要性定义的申诉信函。该理赔在首次申诉后即获批准。"
+  },
+  "cta": {
+    "heading": "普通美国人每年在医疗费用上多付 $1,000 甚至更多。其中大部分是可以追回的。",
+    "body": "上传您的保单，准确了解您一直遗漏的权益。",
+    "button": "分析您的保单",
+    "disclaimer": "无需注册账户。不存储数据。与保险行业无关联。"
+  },
+  "footer": {
+    "legal": "非持牌保险顾问。仅供参考之用。"
+  },
+  "disclaimer": {
+    "label": "重要提示",
+    "line1": "MedFin AI 不是持牌保险顾问、律师或医疗服务提供者。",
+    "line2": "本平台上的任何内容均不构成法律、医疗或财务建议。",
+    "line3": "MedFin 不会存储、记录或传输您的文件或保单数据。所有处理均在内存中完成，会话结束后即被丢弃。",
+    "line4": "本平台在设计上遵循 HIPAA 规范，但不属于受保实体，也不提供商业伙伴协议。",
+    "acknowledge": "我已了解，继续使用",
+    "savedNote": "此偏好设置已保存在您的浏览器中。"
+  },
+  "dashboard": {
+    "noPolicy": "未上传保单",
+    "policyAnalyzed": "保单已分析",
+    "aiReady": "AI 已就绪",
+    "uploadNewPolicy": "上传新保单",
+    "policyScore": "保单评分",
+    "uploadPrompt": "上传您的保险保单",
+    "uploadDesc": "MedFin 将提取您的免赔额、共付额、网络规则和除外责任。文件在内存中处理，不会被存储。",
+    "dropZone": "将 PDF 或图片拖放至此处",
+    "dropZoneSub": "支持 PDF、PNG、JPG，最大 10MB",
+    "chooseFile": "选择文件",
+    "showFullDetails": "查看完整保单详情",
+    "quickActions": "快捷操作",
+    "askQuestion": "提问",
+    "validateBill": "验证账单",
+    "planVisit": "规划就诊",
+    "privacyNote": "您的数据在本地处理，不会被存储。"
+  },
+  "askAI": {
+    "placeholder": "询问有关您的保障范围、费用或福利的问题……",
+    "send": "发送",
+    "errorMessage": "请求失败。请检查您的网络连接后重试。",
+    "uploadGateDesc": "用简单的语言提问有关保障范围的问题。MedFin 基于您的具体保单文件回答，而非通用保险知识。",
+    "capability1": "MRI 在我的保障范围内吗？",
+    "capability2": "我的专科医生共付额是多少？",
+    "capability3": "我的保单是否涵盖物理治疗？",
+    "capability4": "手术是否需要事先授权？"
+  },
+  "bills": {
+    "uploadGateDesc": "上传医疗账单照片，AI 将逐项核对您的保单，标记多收费用和账单错误，并告诉您如何处理每个问题。",
+    "capability1": "逐行收费验证",
+    "capability2": "多收费用和重复收费检测",
+    "capability3": "针对每个问题的具体解决方案",
+    "capability4": "预期费用与实际费用对比",
+    "scanBill": "扫描账单",
+    "uploadFile": "上传文件",
+    "validationResults": "验证结果",
+    "issuesFound": "发现的问题",
+    "whatToDo": "处理建议",
+    "validateAnother": "验证另一张账单",
+    "overchargeDetected": "检测到多收费用"
+  },
+  "appeal": {
+    "heading": "申诉被拒理赔",
+    "uploadLetter": "上传拒赔通知",
+    "enterManually": "手动输入",
+    "serviceDesc": "服务描述",
+    "serviceDate": "服务日期",
+    "amountDenied": "拒赔金额（$）",
+    "denialCode": "拒赔代码（如有）",
+    "denialReason": "拒赔原因",
+    "insuranceCompany": "保险公司",
+    "claimNumber": "理赔编号",
+    "appealTone": "申诉语气",
+    "generate": "生成申诉信函",
+    "uploadGateDesc": "上传理赔拒绝通知，数秒内即可获得专业申诉信函，以 PDF 格式生成，可直接打印邮寄。",
+    "capability1": "自动提取拒赔原因",
+    "capability2": "引用 ERISA 和 ACA 法规条款",
+    "capability3": "专业格式与规范结构",
+    "capability4": "下载为可打印的 PDF",
+    "errorMessage": "处理拒赔通知失败。请检查网络连接后重试。"
+  },
+  "preVisit": {
+    "heading": "规划您的医疗就诊",
+    "visitType": "您计划进行什么类型的就诊？",
+    "providerName": "医疗提供者名称（选填）",
+    "facilityName": "医疗机构名称（选填）",
+    "inNetwork": "该医疗提供者是否在网络内？",
+    "inNetworkYes": "是，在网络内",
+    "inNetworkNo": "否，网络外",
+    "inNetworkUnsure": "不确定",
+    "plannedDate": "计划就诊日期（选填）",
+    "generate": "生成就诊前清单",
+    "uploadGateDesc": "选择就诊类型，获取个性化清单，包括需要核实的事项、携带的材料和要问的问题，均根据您的具体保障范围量身定制。",
+    "capability1": "保障范围核实步骤",
+    "capability2": "需携带的文件",
+    "capability3": "需向医生提出的问题",
+    "capability4": "基于保单的费用预估"
+  },
+  "optimize": {
+    "heading": "保单优化",
+    "uploadGateDesc": "获取关于如何优化保障范围、降低费用并充分利用保险方案的建议。",
+    "capability1": "保障缺口分析",
+    "capability2": "费用节省机会",
+    "capability3": "HSA/FSA 优化",
+    "capability4": "替代方案推荐",
+    "potentialSavings": "潜在年度节省金额",
+    "aiSummary": "AI 摘要",
+    "opportunities": "优化机会",
+    "saveUpTo": "最多可节省",
+    "effort": "所需精力"
+  },
+  "uploadGate": {
+    "cta": "上传保单",
+    "ctaSub": "上传您的保险保单 PDF 以解锁此工具"
+  },
+  "offline": {
+    "label": "无网络连接",
+    "heading": "您当前处于离线状态",
+    "body": "MedFin 需要网络连接来分析保单和验证账单。您之前浏览过的页面可能仍然可用。",
+    "retry": "重试"
+  },
+  "languageSwitcher": {
+    "label": "语言"
+  }
+}

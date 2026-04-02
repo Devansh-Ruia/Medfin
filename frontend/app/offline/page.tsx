@@ -1,22 +1,14 @@
 'use client'
-// This page exists because "no internet" should not look like a browser default error
-export default function OfflinePage() {
-  return (
-    <div className="min-h-screen bg-[#F9F8F6] flex items-center justify-center px-6">
-      <div className="max-w-md text-center">
-        <p className="text-xs tracking-[0.15em] uppercase text-[#6B6B6B] mb-4">NO CONNECTION</p>
-        <h1 className="text-3xl font-bold text-[#0D0D0D] mb-4">You are offline</h1>
-        <p className="text-sm text-[#6B6B6B] leading-relaxed">
-          MedFin requires a connection to analyze policies and validate bills.
-          Your previously viewed pages may still be available below.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-8 bg-[#0D0D0D] text-white text-sm font-medium px-8 py-4 rounded-none"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  )
+// Legacy route redirect -- offline page now lives under /[locale]/offline
+import { useEffect } from 'react'
+import { locales, defaultLocale } from '@/i18n'
+
+export default function OfflineRedirect() {
+  useEffect(() => {
+    const stored = localStorage.getItem('medfin_locale')
+    const locale = (stored && locales.includes(stored as any)) ? stored : defaultLocale
+    window.location.replace(`/${locale}/offline/`)
+  }, [])
+
+  return null
 }

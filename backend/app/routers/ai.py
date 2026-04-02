@@ -19,6 +19,18 @@ from ..security import (
 
 router = APIRouter(tags=["ai"])
 
+LANGUAGE_INSTRUCTIONS = {
+    "en": "Respond in English.",
+    "es": "Responde siempre en español formal.",
+    "fr": "Réponds toujours en français formel.",
+    "zh": "请始终用简体中文回复。",
+    "hi": "हमेशा औपचारिक हिंदी में जवाब दें।",
+}
+
+def get_language_instruction(request: Request) -> str:
+    locale = request.headers.get("X-Language", "en")
+    return LANGUAGE_INSTRUCTIONS.get(locale, LANGUAGE_INSTRUCTIONS["en"])
+
 class PolicyTextRequest(BaseModel):
     policy_text: str
     
@@ -262,10 +274,12 @@ async def ask_policy_question(request: Request, body: QuestionRequest):
         raise HTTPException(status_code=503, detail="AI service not configured")
     
     try:
+        language_instruction = get_language_instruction(request)
         result = await gemini_service.answer_policy_question(
             body.question,
             body.policy_data,
-            body.conversation_history
+            body.conversation_history,
+            language_instruction=language_instruction
         )
         if "error" in result:
             log_security_event("question_failed", {"error": result["error"]}, request)
@@ -276,14 +290,16 @@ async def ask_policy_question(request: Request, body: QuestionRequest):
         raise HTTPException(status_code=500, detail="Failed to process question")
 
 @router.post("/validate-bill")
-async def validate_bill(body: BillValidationRequest):
+async def validate_bill(request: Request, body: BillValidationRequest):
     """Validate a bill image against the policy."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
-    
+
+    language_instruction = get_language_instruction(request)
     result = await gemini_service.validate_bill_against_policy(
         body.bill_image_base64,
-        body.policy_data
+        body.policy_data,
+        language_instruction=language_instruction
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
@@ -291,6 +307,7 @@ async def validate_bill(body: BillValidationRequest):
 
 @router.post("/upload-bill")
 async def upload_bill(
+    request: Request,
     file: UploadFile = File(...),
     policy_data: str = Form(...)
 ):
@@ -330,7 +347,8 @@ async def upload_bill(
         
         # Step 4: Call Gemini service
         logger.info("Step 4: Calling gemini_service.validate_bill_against_policy")
-        result = await gemini_service.validate_bill_against_policy(image_base64, policy)
+        language_instruction = get_language_instruction(request)
+        result = await gemini_service.validate_bill_against_policy(image_base64, policy, language_instruction=language_instruction)
         logger.info(f"Step 4 complete, result keys: {list(result.keys()) if isinstance(result, dict) else 'not a dict'}")
         
         # Step 5: Check for errors in result
@@ -354,44 +372,50 @@ async def upload_bill(
         raise HTTPException(status_code=500, detail=f"Failed to validate bill: {str(e)}")
 
 @router.post("/optimize-policy")
-async def optimize_policy(body: OptimizationRequest):
+async def optimize_policy(request: Request, body: OptimizationRequest):
     """Get optimization recommendations for the policy."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
-    
+
+    language_instruction = get_language_instruction(request)
     result = await gemini_service.recommend_policy_alternatives(
         body.policy_data,
-        body.user_needs
+        body.user_needs,
+        language_instruction=language_instruction
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
     return result
 
 @router.post("/pre-visit-checklist")
-async def generate_pre_visit_checklist(body: PreVisitRequest):
+async def generate_pre_visit_checklist(request: Request, body: PreVisitRequest):
     """Generate a pre-visit checklist for a specific medical visit type."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
-    
+
+    language_instruction = get_language_instruction(request)
     result = await gemini_service.generate_pre_visit_checklist(
         body.visit_type,
         body.policy_data,
-        body.provider_info
+        body.provider_info,
+        language_instruction=language_instruction
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
     return result
 
 @router.post("/generate-appeal")
-async def generate_appeal_letter(body: AppealRequest):
+async def generate_appeal_letter(request: Request, body: AppealRequest):
     """Generate an appeal letter for a denied claim."""
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
     
+    language_instruction = get_language_instruction(request)
     result = await gemini_service.generate_appeal_letter(
         body.denial_info,
         body.policy_data,
-        body.tone
+        body.tone,
+        language_instruction=language_instruction
     )
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
@@ -399,6 +423,7 @@ async def generate_appeal_letter(body: AppealRequest):
 
 @router.post("/upload-denial")
 async def upload_denial_letter(
+    request: Request,
     file: UploadFile = File(...),
     policy_data: str = Form(...),
     tone: str = Form("professional")
@@ -463,10 +488,12 @@ async def upload_denial_letter(
         
         logger.info("[upload-denial] Generating appeal letter...")
         # Generate appeal letter
+        language_instruction = get_language_instruction(request)
         result = await gemini_service.generate_appeal_letter(
             denial_info,
             policy,
-            tone
+            tone,
+            language_instruction=language_instruction
         )
         
         logger.info(f"[upload-denial] Appeal letter generated successfully")

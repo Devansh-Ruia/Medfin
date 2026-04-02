@@ -14,7 +14,13 @@
       "Bash(npx tsc:*)",
       "Bash(npx --no-install tsc --noEmit)",
       "Bash(npx next:*)",
-      "Bash(npx cap:*)"
+      "Bash(npx cap:*)",
+      "Bash(mkdir -p \"app/[locale]/dashboard\")",
+      "Bash(mkdir -p \"app/[locale]/offline\")",
+      "Bash(cp app/page.tsx \"app/[locale]/page.tsx\")",
+      "Bash(cp app/dashboard/page.tsx \"app/[locale]/dashboard/page.tsx\")",
+      "Bash(cp app/offline/page.tsx \"app/[locale]/offline/page.tsx\")",
+      "Bash(node -e \"const m = require\\(''next-intl/middleware''\\); console.log\\(typeof m.default, Object.keys\\(m\\)\\)\")"
     ]
   }
 }

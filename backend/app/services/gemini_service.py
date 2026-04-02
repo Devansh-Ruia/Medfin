@@ -40,13 +40,18 @@ class AIService:
     def is_configured(self) -> bool:
         return self.groq_client is not None
     
-    def _call_groq(self, system_prompt: str, user_prompt: str, messages: List[Dict] = None) -> str:
+    def _call_groq(self, system_prompt: str, user_prompt: str, messages: List[Dict] = None, language_instruction: str = None) -> str:
         """Make a call to Groq API."""
         if not self.groq_client:
             raise Exception("Groq client not configured")
-        
+
+        # Prepend language instruction to system prompt when provided
+        effective_system_prompt = f"{language_instruction}\n\n{system_prompt}" if language_instruction else system_prompt
+
         if messages:
-            # Use provided messages array
+            # Prepend language instruction to the first system message if present
+            if language_instruction and messages and messages[0].get("role") == "system":
+                messages = [{"role": "system", "content": f"{language_instruction}\n\n{messages[0]['content']}"}] + messages[1:]
             response = self.groq_client.chat.completions.create(
                 messages=messages,
                 model=self.model_name,
@@ -57,7 +62,7 @@ class AIService:
             # Use system/user prompt format
             response = self.groq_client.chat.completions.create(
                 messages=[
-                    {"role": "system", "content": system_prompt},
+                    {"role": "system", "content": effective_system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
                 model=self.model_name,
@@ -136,16 +141,17 @@ If a value is not found in policy, use null for numbers and false for booleans."
             return {"error": str(e)}
 
     async def answer_policy_question(
-        self, 
-        question: str, 
+        self,
+        question: str,
         policy_data: Dict[str, Any],
-        conversation_history: List[Dict[str, str]] = None
+        conversation_history: List[Dict[str, str]] = None,
+        language_instruction: str = None
     ) -> Dict[str, Any]:
         """Answer questions about the insurance policy."""
         
         # Check if this question needs web search
         if self._needs_web_search(question):
-            return await self.answer_with_web_search(question, policy_data, conversation_history)
+            return await self.answer_with_web_search(question, policy_data, conversation_history, language_instruction=language_instruction)
         
         # Continue with policy-only logic using Groq
         system_prompt = """You are an expert insurance advisor helping a patient understand their insurance policy. Be helpful, clear, and specific.
@@ -189,8 +195,8 @@ Return as JSON:
             # Add current question
             messages.append({"role": "user", "content": question})
 
-            response_text = self._call_groq("", "", messages)
-            
+            response_text = self._call_groq("", "", messages, language_instruction=language_instruction)
+
             # Try to extract JSON from response
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
@@ -200,7 +206,7 @@ Return as JSON:
         except Exception as e:
             return {"error": str(e)}
 
-    async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+    async def answer_with_web_search(self, question: str, policy_data: Dict[str, Any], conversation_history: List[Dict[str, str]] = None, language_instruction: str = None) -> Dict[str, Any]:
         """Answer a question using Tavily web search + Groq."""
         try:
             # Step 1: Search the web with Tavily
@@ -257,8 +263,8 @@ USER QUESTION: {question}"""
             
             messages.append({"role": "user", "content": user_prompt})
             
-            response_text = self._call_groq("", "", messages)
-            
+            response_text = self._call_groq("", "", messages, language_instruction=language_instruction)
+
             # Try to parse as JSON first (in case Groq returns structured response)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
@@ -270,26 +276,27 @@ USER QUESTION: {question}"""
                     return result
                 except json.JSONDecodeError:
                     pass
-            
+
             return {
                 "answer": response_text,
                 "sources": sources,
                 "search_grounded": bool(sources)
             }
-            
+
         except Exception as e:
             logger.error(f"Web search answer failed: {e}")
             # Fall back to Groq without search
             try:
                 fallback = self._call_groq(
                     "You are a healthcare financial advisor. Answer based on your knowledge.",
-                    question
+                    question,
+                    language_instruction=language_instruction
                 )
                 return {"answer": fallback, "sources": [], "search_grounded": False}
             except Exception as fallback_err:
                 return {"error": str(fallback_err), "search_grounded": False}
 
-    async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any], language_instruction: str = None) -> Dict[str, Any]:
         """Validate a medical bill against insurance policy."""
         
         try:
@@ -368,7 +375,7 @@ For each issue, solution MUST be specific and actionable:
 - Relate to user's specific policy terms"""
 
             bill_context = f"BILL TEXT:\n{bill_text}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
-            response_text = self._call_groq(system_prompt, bill_context)
+            response_text = self._call_groq(system_prompt, bill_context, language_instruction=language_instruction)
             
             # Try to extract JSON from response
             start = response_text.find('{')
@@ -383,7 +390,7 @@ For each issue, solution MUST be specific and actionable:
             logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
-    async def generate_appeal_letter(self, denial_info: Dict[str, Any], policy_data: Dict[str, Any], tone: str = "professional") -> Dict[str, Any]:
+    async def generate_appeal_letter(self, denial_info: Dict[str, Any], policy_data: Dict[str, Any], tone: str = "professional", language_instruction: str = None) -> Dict[str, Any]:
         """Generate an appeal letter for a denied claim."""
         
         system_prompt = f"""You are a healthcare insurance appeals specialist. Write a compelling appeal letter for a denied claim.
@@ -421,7 +428,7 @@ Return as JSON:
 
         try:
             context = f"DENIAL INFO:\n{json.dumps(denial_info, indent=2)}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
-            response_text = self._call_groq(system_prompt, context)
+            response_text = self._call_groq(system_prompt, context, language_instruction=language_instruction)
             
             # Try to extract JSON from response
             start = response_text.find('{')
@@ -436,7 +443,7 @@ Return as JSON:
             logger.error(f"Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
-    async def generate_pre_visit_checklist(self, visit_type: str, policy_data: Dict[str, Any], provider_info: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def generate_pre_visit_checklist(self, visit_type: str, policy_data: Dict[str, Any], provider_info: Dict[str, Any] = None, language_instruction: str = None) -> Dict[str, Any]:
         """Generate a pre-visit checklist based on policy and visit type."""
         
         system_prompt = """You are a healthcare navigation specialist. Create a comprehensive pre-visit checklist for a medical appointment.
@@ -476,8 +483,8 @@ Return as JSON:
             context = f"VISIT TYPE: {visit_type}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
             if provider_info:
                 context += f"\n\nPROVIDER INFO:\n{json.dumps(provider_info, indent=2)}"
-            
-            response_text = self._call_groq(system_prompt, context)
+
+            response_text = self._call_groq(system_prompt, context, language_instruction=language_instruction)
             
             # Try to extract JSON from response
             start = response_text.find('{')
@@ -493,9 +500,10 @@ Return as JSON:
             return {"error": str(e)}
 
     async def recommend_policy_alternatives(
-        self, 
+        self,
         current_policy: Dict[str, Any],
-        user_needs: Dict[str, Any]
+        user_needs: Dict[str, Any],
+        language_instruction: str = None
     ) -> Dict[str, Any]:
         """Recommend optimizations or alternative policies."""
         
@@ -550,7 +558,7 @@ Return as JSON:
 
         try:
             context = f"CURRENT POLICY:\n{json.dumps(current_policy, indent=2)}\n\nUSER NEEDS:\n{json.dumps(user_needs, indent=2)}"
-            response_text = self._call_groq(system_prompt, context)
+            response_text = self._call_groq(system_prompt, context, language_instruction=language_instruction)
             
             # Try to extract JSON from response
             start = response_text.find('{')

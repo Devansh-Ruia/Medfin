@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "MedFin AI | Decode Your Insurance, Catch Billing Errors, Stop Overpaying",
+    "description": "MedFin AI reads your insurance policy in seconds, validates medical bills for overcharges, and tells you exactly what your plan covers. No jargon. No data stored. Free.",
+    "ogTitle": "MedFin AI | Healthcare Financial Navigator",
+    "ogDescription": "Upload your insurance policy and find out what you are owed. MedFin catches billing errors, answers coverage questions, and helps you optimize your plan.",
+    "twitterTitle": "MedFin AI | Stop Overpaying for Healthcare",
+    "twitterDescription": "AI that reads your insurance policy so you actually understand what you are paying for."
+  },
+  "nav": {
+    "howItWorks": "How It Works",
+    "tools": "Tools",
+    "results": "Results",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "eyebrow": "Healthcare Financial Navigator",
+    "headline": "Your insurance policy is a financial document. Treat it like one.",
+    "subheading": "MedFin reads your policy, validates your bills against it, and tells you exactly where you are being charged more than you should be. No guessing. No jargon.",
+    "cta": "Analyze Your Policy",
+    "ctaSub": "No account required. Nothing is stored."
+  },
+  "stats": {
+    "errorRate": "of medical bills contain at least one error",
+    "recovered": "average amount recovered per disputed bill",
+    "analysisTime": "average time to analyze a policy with MedFin",
+    "dataStored": "of your data stored after your session ends"
+  },
+  "tools": {
+    "sectionLabel": "Tools",
+    "sectionHeading": "Six tools. One job: stop you from overpaying.",
+    "sectionSubheading": "Each tool is built around a specific failure point in the healthcare billing system.",
+    "tool01": "Tool 01",
+    "tool02": "Tool 02",
+    "tool03": "Tool 03",
+    "tool04": "Tool 04",
+    "tool05": "Tool 05",
+    "tool06": "Tool 06",
+    "policyAnalysis": "Policy Analysis",
+    "policyAnalysisDesc": "Most people have never actually read their insurance policy. MedFin extracts every coverage parameter, deductible, exclusion, and limit from your PDF and presents it as a readable summary. Upload once, reference all year.",
+    "askAI": "Ask AI",
+    "askAIDesc": "Coverage questions usually require a 40-minute hold with your insurer. MedFin answers them instantly, grounded in your actual policy document, not generic insurance knowledge.",
+    "billValidation": "Bill Validation",
+    "billValidationDesc": "Medical billing departments make errors at a rate that would be embarrassing in any other industry. MedFin checks every line item on your bill against your policy and flags anything that does not add up.",
+    "policyOptimization": "Policy Optimization",
+    "policyOptimizationDesc": "Your current plan may be optimized for someone who is not you. MedFin compares your actual healthcare usage against your plan parameters and surfaces specific, actionable changes.",
+    "preVisit": "Pre-Visit Checklist",
+    "preVisitDesc": "Knowing what your visit will cost before you walk in is not a luxury. MedFin generates a visit-specific checklist: what to verify, what to bring, what questions to ask, and what your expected out-of-pocket cost will be.",
+    "appealLetters": "Appeal Letters",
+    "appealLettersDesc": "Claim denials are overturned 40 to 60 percent of the time when appealed. MedFin generates a formal appeal letter with the correct ERISA citations and denial-specific legal language, ready to print and mail.",
+    "openTool": "Open"
+  },
+  "howItWorks": {
+    "sectionLabel": "How It Works",
+    "heading": "From upload to insight in under a minute.",
+    "step1Title": "Upload your policy",
+    "step1Desc": "Drop your insurance PDF into MedFin. The document is processed in memory and discarded immediately. Nothing is written to disk.",
+    "step2Title": "AI extracts the structure",
+    "step2Desc": "MedFin maps every coverage parameter, network rule, deductible tier, and exclusion in your plan. The process takes under 30 seconds.",
+    "step3Title": "Use any of the six tools",
+    "step3Desc": "All tools share the same policy context. Ask a question, validate a bill, generate an appeal letter. Everything is grounded in your specific document.",
+    "step4Title": "Save the results",
+    "step4Desc": "Copy answers, download your appeal letter as a PDF, or screenshot your bill validation results. Your session is yours to manage."
+  },
+  "results": {
+    "sectionLabel": "Results",
+    "heading": "What people actually find.",
+    "result1Amount": "$340 recovered",
+    "result1Desc": "A patient uploaded an EOB from an outpatient visit. MedFin flagged a duplicate charge for an anesthesia unit that appeared twice under different billing codes. The hospital reversed it within a week.",
+    "result2Amount": "$1,200 saved annually",
+    "result2Desc": "A freelancer's current plan had a $6,000 deductible they were never hitting. MedFin identified a comparable plan with a $2,500 deductible at $94 less per month.",
+    "result3Amount": "Denial overturned",
+    "result3Desc": "An MRI claim was denied as not medically necessary. MedFin generated an appeal citing ERISA Section 503 and the plan's own definition of medical necessity. The claim was approved on first appeal."
+  },
+  "cta": {
+    "heading": "The typical American overpays for healthcare by $1,000 or more per year. Most of it is recoverable.",
+    "body": "Upload your policy and find out exactly what you have been missing.",
+    "button": "Analyze Your Policy",
+    "disclaimer": "No account required. No data stored. No insurance industry affiliation."
+  },
+  "footer": {
+    "legal": "Not a licensed insurance advisor. For informational use only."
+  },
+  "disclaimer": {
+    "label": "Important Notice",
+    "line1": "MedFin AI is not a licensed insurance advisor, attorney, or healthcare provider.",
+    "line2": "Nothing on this platform constitutes legal, medical, or financial advice.",
+    "line3": "MedFin does not store, log, or transmit your documents or policy data. All processing happens in memory and is discarded when your session ends.",
+    "line4": "This platform is HIPAA-aware in its design but is not a covered entity and does not offer a Business Associate Agreement.",
+    "acknowledge": "I understand, continue",
+    "savedNote": "This preference is saved in your browser."
+  },
+  "dashboard": {
+    "noPolicy": "No policy uploaded",
+    "policyAnalyzed": "Policy analyzed",
+    "aiReady": "AI Ready",
+    "uploadNewPolicy": "Upload New Policy",
+    "policyScore": "Policy Score",
+    "uploadPrompt": "Upload your insurance policy",
+    "uploadDesc": "MedFin will extract your deductibles, copays, network rules, and exclusions. The document is processed in memory and never stored.",
+    "dropZone": "Drop your PDF or image here",
+    "dropZoneSub": "PDF, PNG, JPG up to 10MB",
+    "chooseFile": "Choose File",
+    "showFullDetails": "Show Full Policy Details",
+    "quickActions": "Quick Actions",
+    "askQuestion": "Ask a question",
+    "validateBill": "Validate a bill",
+    "planVisit": "Plan a visit",
+    "privacyNote": "Your data is processed locally and never stored."
+  },
+  "askAI": {
+    "placeholder": "Ask about your coverage, costs, or benefits...",
+    "send": "Send",
+    "errorMessage": "The request failed. Check your connection and try again.",
+    "uploadGateDesc": "Ask questions about your coverage in plain English. MedFin answers based on your specific policy document, not generic insurance knowledge.",
+    "capability1": "Am I covered for an MRI?",
+    "capability2": "What is my specialist copay?",
+    "capability3": "Does my plan cover physical therapy?",
+    "capability4": "Do I need prior authorization for surgery?"
+  },
+  "bills": {
+    "uploadGateDesc": "Upload a photo of your medical bill and the AI checks every charge against your policy, flagging overcharges, billing errors, and showing you exactly what to do about each issue.",
+    "capability1": "Line-by-line charge validation",
+    "capability2": "Overcharge and duplicate detection",
+    "capability3": "Specific solutions for each issue found",
+    "capability4": "Expected vs actual cost comparison",
+    "scanBill": "Scan Bill",
+    "uploadFile": "Upload File",
+    "validationResults": "Validation Results",
+    "issuesFound": "Issues Found",
+    "whatToDo": "What To Do",
+    "validateAnother": "Validate Another Bill",
+    "overchargeDetected": "Overcharge Detected"
+  },
+  "appeal": {
+    "heading": "Appeal a Denied Claim",
+    "uploadLetter": "Upload Denial Letter",
+    "enterManually": "Enter Manually",
+    "serviceDesc": "Service Description",
+    "serviceDate": "Service Date",
+    "amountDenied": "Amount Denied ($)",
+    "denialCode": "Denial Code (if provided)",
+    "denialReason": "Denial Reason",
+    "insuranceCompany": "Insurance Company",
+    "claimNumber": "Claim Number",
+    "appealTone": "Appeal Tone",
+    "generate": "Generate Appeal Letter",
+    "uploadGateDesc": "Upload a claim denial letter and get a professional appeal letter generated in seconds, formatted as a PDF, ready to print and mail.",
+    "capability1": "Automatic denial reason extraction",
+    "capability2": "ERISA and ACA regulation citations",
+    "capability3": "Professional formatting with proper structure",
+    "capability4": "Download as print-ready PDF",
+    "errorMessage": "Failed to process denial letter. Check your connection and try again."
+  },
+  "preVisit": {
+    "heading": "Plan Your Medical Visit",
+    "visitType": "What type of visit are you planning?",
+    "providerName": "Provider Name (optional)",
+    "facilityName": "Facility Name (optional)",
+    "inNetwork": "Is this provider in-network?",
+    "inNetworkYes": "Yes, in-network",
+    "inNetworkNo": "No, out-of-network",
+    "inNetworkUnsure": "Not sure",
+    "plannedDate": "Planned Date (optional)",
+    "generate": "Generate Pre-Visit Checklist",
+    "uploadGateDesc": "Select your visit type and get a personalized checklist of what to verify, bring, and ask, tailored to your specific coverage.",
+    "capability1": "Coverage verification steps",
+    "capability2": "Documents to bring",
+    "capability3": "Questions to ask your provider",
+    "capability4": "Cost estimates based on your policy"
+  },
+  "optimize": {
+    "heading": "Policy Optimization",
+    "uploadGateDesc": "Get recommendations on how to optimize your coverage, reduce costs, and make the most of your insurance plan.",
+    "capability1": "Coverage gap analysis",
+    "capability2": "Cost reduction opportunities",
+    "capability3": "HSA/FSA optimization",
+    "capability4": "Alternative plan recommendations",
+    "potentialSavings": "Potential Annual Savings",
+    "aiSummary": "AI Summary",
+    "opportunities": "Optimization Opportunities",
+    "saveUpTo": "Save up to",
+    "effort": "Effort"
+  },
+  "uploadGate": {
+    "cta": "Upload a Policy",
+    "ctaSub": "Upload your insurance policy PDF to unlock this tool"
+  },
+  "offline": {
+    "label": "No Connection",
+    "heading": "You are offline",
+    "body": "MedFin requires a connection to analyze policies and validate bills. Your previously viewed pages may still be available.",
+    "retry": "Try again"
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  }
+}

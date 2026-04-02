@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { api, PolicyData, QuestionAnswer } from '../lib/api';
 import { event } from '../lib/analytics';
 import { Globe, DollarSign, AlertTriangle } from 'lucide-react';
@@ -275,6 +276,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
 };
 
 export default function EstimationTool({ policyData }: EstimationToolProps) {
+  const t = useTranslations('askAI')
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -319,7 +321,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
       console.error(err);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'The request failed. Check your connection and try again.',
+        content: t('errorMessage'),
       }]);
     } finally {
       setLoading(false);
@@ -397,7 +399,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask about your coverage, costs, or benefits..."
+            placeholder={t('placeholder')}
             className="flex-1 px-4 py-3 bg-white border border-[#E5E2DC] rounded-none text-sm focus:ring-2 focus:ring-[#0A6640] focus:border-[#0A6640] transition-all"
             disabled={loading}
           />
@@ -406,7 +408,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
             disabled={loading || !input.trim()}
             className="bg-[#0D0D0D] text-white text-sm px-6 py-3 rounded-none font-medium hover:bg-[#1A1A1A] disabled:opacity-50 transition-all"
           >
-            Send
+            {t('send')}
           </button>
         </div>
       </div>

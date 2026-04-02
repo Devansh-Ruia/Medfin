@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "MedFin AI | Descifre su seguro, detecte errores de facturación, deje de pagar de más",
+    "description": "MedFin AI lee su póliza de seguro en segundos, valida las facturas médicas en busca de cobros excesivos y le indica exactamente qué cubre su plan. Sin jerga. Sin almacenamiento de datos. Gratuito.",
+    "ogTitle": "MedFin AI | Navegador financiero de salud",
+    "ogDescription": "Suba su póliza de seguro y descubra lo que le corresponde. MedFin detecta errores de facturación, responde preguntas sobre su cobertura y le ayuda a optimizar su plan.",
+    "twitterTitle": "MedFin AI | Deje de pagar de más por su atención médica",
+    "twitterDescription": "Inteligencia artificial que lee su póliza de seguro para que usted realmente entienda por qué está pagando."
+  },
+  "nav": {
+    "howItWorks": "Cómo funciona",
+    "tools": "Herramientas",
+    "results": "Resultados",
+    "getStarted": "Comenzar"
+  },
+  "hero": {
+    "eyebrow": "Navegador financiero de salud",
+    "headline": "Su póliza de seguro es un documento financiero. Trátela como tal.",
+    "subheading": "MedFin lee su póliza, valida sus facturas contra ella y le indica exactamente dónde le están cobrando más de lo debido. Sin conjeturas. Sin jerga.",
+    "cta": "Analizar su póliza",
+    "ctaSub": "No se requiere cuenta. No se almacena nada."
+  },
+  "stats": {
+    "errorRate": "de las facturas médicas contienen al menos un error",
+    "recovered": "monto promedio recuperado por factura disputada",
+    "analysisTime": "tiempo promedio para analizar una póliza con MedFin",
+    "dataStored": "de sus datos almacenados después de que finaliza su sesión"
+  },
+  "tools": {
+    "sectionLabel": "Herramientas",
+    "sectionHeading": "Seis herramientas. Un solo objetivo: evitar que pague de más.",
+    "sectionSubheading": "Cada herramienta está diseñada en torno a un punto de fallo específico del sistema de facturación médica.",
+    "tool01": "Herramienta 01",
+    "tool02": "Herramienta 02",
+    "tool03": "Herramienta 03",
+    "tool04": "Herramienta 04",
+    "tool05": "Herramienta 05",
+    "tool06": "Herramienta 06",
+    "policyAnalysis": "Análisis de póliza",
+    "policyAnalysisDesc": "La mayoría de las personas nunca han leído realmente su póliza de seguro. MedFin extrae cada parámetro de cobertura, deducible, exclusión y límite de su PDF y lo presenta como un resumen legible. Súbala una vez, consúltela todo el año.",
+    "askAI": "Consultar IA",
+    "askAIDesc": "Las preguntas sobre cobertura generalmente requieren una espera de 40 minutos con su aseguradora. MedFin las responde al instante, basándose en su documento de póliza real, no en conocimientos genéricos sobre seguros.",
+    "billValidation": "Validación de facturas",
+    "billValidationDesc": "Los departamentos de facturación médica cometen errores a una tasa que sería inaceptable en cualquier otra industria. MedFin verifica cada partida de su factura contra su póliza y señala todo lo que no cuadra.",
+    "policyOptimization": "Optimización de póliza",
+    "policyOptimizationDesc": "Es posible que su plan actual esté optimizado para alguien que no es usted. MedFin compara su uso real de servicios de salud con los parámetros de su plan y presenta cambios específicos y aplicables.",
+    "preVisit": "Lista de verificación previa a la consulta",
+    "preVisitDesc": "Saber cuánto costará su consulta antes de acudir no es un lujo. MedFin genera una lista de verificación específica para su consulta: qué verificar, qué llevar, qué preguntas hacer y cuál será su costo estimado de bolsillo.",
+    "appealLetters": "Cartas de apelación",
+    "appealLettersDesc": "Las denegaciones de reclamos se revierten entre el 40 y el 60 por ciento de las veces cuando se apelan. MedFin genera una carta de apelación formal con las citas correctas de ERISA y el lenguaje legal específico para la denegación, lista para imprimir y enviar.",
+    "openTool": "Abrir"
+  },
+  "howItWorks": {
+    "sectionLabel": "Cómo funciona",
+    "heading": "De la carga al análisis en menos de un minuto.",
+    "step1Title": "Suba su póliza",
+    "step1Desc": "Arrastre su PDF de seguro a MedFin. El documento se procesa en memoria y se descarta inmediatamente. Nada se escribe en disco.",
+    "step2Title": "La IA extrae la estructura",
+    "step2Desc": "MedFin mapea cada parámetro de cobertura, regla de red, nivel de deducible y exclusión de su plan. El proceso toma menos de 30 segundos.",
+    "step3Title": "Utilice cualquiera de las seis herramientas",
+    "step3Desc": "Todas las herramientas comparten el mismo contexto de póliza. Haga una pregunta, valide una factura, genere una carta de apelación. Todo se basa en su documento específico.",
+    "step4Title": "Guarde los resultados",
+    "step4Desc": "Copie las respuestas, descargue su carta de apelación como PDF o capture los resultados de validación de su factura. Su sesión es suya para administrar."
+  },
+  "results": {
+    "sectionLabel": "Resultados",
+    "heading": "Lo que las personas realmente descubren.",
+    "result1Amount": "$340 recuperados",
+    "result1Desc": "Un paciente subió un EOB de una consulta ambulatoria. MedFin señaló un cargo duplicado por una unidad de anestesia que aparecía dos veces bajo diferentes códigos de facturación. El hospital lo revirtió en una semana.",
+    "result2Amount": "$1,200 ahorrados anualmente",
+    "result2Desc": "El plan actual de un trabajador independiente tenía un deducible de $6,000 que nunca alcanzaba. MedFin identificó un plan comparable con un deducible de $2,500 a $94 menos por mes.",
+    "result3Amount": "Denegación revertida",
+    "result3Desc": "Un reclamo de MRI fue denegado por no ser médicamente necesario. MedFin generó una apelación citando la Sección 503 de ERISA y la propia definición de necesidad médica del plan. El reclamo fue aprobado en la primera apelación."
+  },
+  "cta": {
+    "heading": "El estadounidense promedio paga de más por atención médica $1,000 o más al año. La mayor parte es recuperable.",
+    "body": "Suba su póliza y descubra exactamente lo que ha estado perdiendo.",
+    "button": "Analizar su póliza",
+    "disclaimer": "No se requiere cuenta. No se almacenan datos. Sin afiliación a la industria de seguros."
+  },
+  "footer": {
+    "legal": "No es un asesor de seguros autorizado. Solo para uso informativo."
+  },
+  "disclaimer": {
+    "label": "Aviso importante",
+    "line1": "MedFin AI no es un asesor de seguros autorizado, abogado ni proveedor de atención médica.",
+    "line2": "Nada en esta plataforma constituye asesoramiento legal, médico o financiero.",
+    "line3": "MedFin no almacena, registra ni transmite sus documentos ni los datos de su póliza. Todo el procesamiento ocurre en memoria y se descarta cuando finaliza su sesión.",
+    "line4": "Esta plataforma tiene en cuenta HIPAA en su diseño, pero no es una entidad cubierta y no ofrece un Acuerdo de Asociado Comercial.",
+    "acknowledge": "Entiendo, continuar",
+    "savedNote": "Esta preferencia se guarda en su navegador."
+  },
+  "dashboard": {
+    "noPolicy": "No se ha subido ninguna póliza",
+    "policyAnalyzed": "Póliza analizada",
+    "aiReady": "IA lista",
+    "uploadNewPolicy": "Subir nueva póliza",
+    "policyScore": "Puntuación de la póliza",
+    "uploadPrompt": "Suba su póliza de seguro",
+    "uploadDesc": "MedFin extraerá sus deducibles, copagos, reglas de red y exclusiones. El documento se procesa en memoria y nunca se almacena.",
+    "dropZone": "Arrastre su PDF o imagen aquí",
+    "dropZoneSub": "PDF, PNG, JPG hasta 10MB",
+    "chooseFile": "Seleccionar archivo",
+    "showFullDetails": "Mostrar detalles completos de la póliza",
+    "quickActions": "Acciones rápidas",
+    "askQuestion": "Hacer una pregunta",
+    "validateBill": "Validar una factura",
+    "planVisit": "Planificar una consulta",
+    "privacyNote": "Sus datos se procesan localmente y nunca se almacenan."
+  },
+  "askAI": {
+    "placeholder": "Pregunte sobre su cobertura, costos o beneficios...",
+    "send": "Enviar",
+    "errorMessage": "La solicitud falló. Verifique su conexión e intente de nuevo.",
+    "uploadGateDesc": "Haga preguntas sobre su cobertura en español sencillo. MedFin responde basándose en su documento de póliza específico, no en conocimientos genéricos sobre seguros.",
+    "capability1": "¿Tengo cobertura para un MRI?",
+    "capability2": "¿Cuál es mi copago con especialistas?",
+    "capability3": "¿Mi plan cubre la fisioterapia?",
+    "capability4": "¿Necesito autorización previa para una cirugía?"
+  },
+  "bills": {
+    "uploadGateDesc": "Suba una foto de su factura médica y la IA verificará cada cargo contra su póliza, señalando cobros excesivos, errores de facturación y mostrándole exactamente qué hacer con cada problema.",
+    "capability1": "Validación de cargos línea por línea",
+    "capability2": "Detección de cobros excesivos y duplicados",
+    "capability3": "Soluciones específicas para cada problema encontrado",
+    "capability4": "Comparación de costo esperado versus real",
+    "scanBill": "Escanear factura",
+    "uploadFile": "Subir archivo",
+    "validationResults": "Resultados de validación",
+    "issuesFound": "Problemas encontrados",
+    "whatToDo": "Qué hacer",
+    "validateAnother": "Validar otra factura",
+    "overchargeDetected": "Cobro excesivo detectado"
+  },
+  "appeal": {
+    "heading": "Apelar un reclamo denegado",
+    "uploadLetter": "Subir carta de denegación",
+    "enterManually": "Ingresar manualmente",
+    "serviceDesc": "Descripción del servicio",
+    "serviceDate": "Fecha del servicio",
+    "amountDenied": "Monto denegado ($)",
+    "denialCode": "Código de denegación (si se proporcionó)",
+    "denialReason": "Motivo de la denegación",
+    "insuranceCompany": "Compañía de seguros",
+    "claimNumber": "Número de reclamo",
+    "appealTone": "Tono de la apelación",
+    "generate": "Generar carta de apelación",
+    "uploadGateDesc": "Suba una carta de denegación de reclamo y obtenga una carta de apelación profesional generada en segundos, formateada como PDF, lista para imprimir y enviar.",
+    "capability1": "Extracción automática del motivo de denegación",
+    "capability2": "Citas de regulaciones ERISA y ACA",
+    "capability3": "Formato profesional con estructura adecuada",
+    "capability4": "Descarga como PDF listo para imprimir",
+    "errorMessage": "No se pudo procesar la carta de denegación. Verifique su conexión e intente de nuevo."
+  },
+  "preVisit": {
+    "heading": "Planifique su consulta médica",
+    "visitType": "¿Qué tipo de consulta está planificando?",
+    "providerName": "Nombre del proveedor (opcional)",
+    "facilityName": "Nombre del centro médico (opcional)",
+    "inNetwork": "¿Este proveedor está dentro de la red?",
+    "inNetworkYes": "Sí, dentro de la red",
+    "inNetworkNo": "No, fuera de la red",
+    "inNetworkUnsure": "No estoy seguro",
+    "plannedDate": "Fecha planificada (opcional)",
+    "generate": "Generar lista de verificación previa a la consulta",
+    "uploadGateDesc": "Seleccione su tipo de consulta y obtenga una lista de verificación personalizada de qué verificar, llevar y preguntar, adaptada a su cobertura específica.",
+    "capability1": "Pasos para verificación de cobertura",
+    "capability2": "Documentos que debe llevar",
+    "capability3": "Preguntas para hacerle a su proveedor",
+    "capability4": "Estimaciones de costos basadas en su póliza"
+  },
+  "optimize": {
+    "heading": "Optimización de póliza",
+    "uploadGateDesc": "Obtenga recomendaciones sobre cómo optimizar su cobertura, reducir costos y aprovechar al máximo su plan de seguro.",
+    "capability1": "Análisis de brechas de cobertura",
+    "capability2": "Oportunidades de reducción de costos",
+    "capability3": "Optimización de HSA/FSA",
+    "capability4": "Recomendaciones de planes alternativos",
+    "potentialSavings": "Ahorro anual potencial",
+    "aiSummary": "Resumen de IA",
+    "opportunities": "Oportunidades de optimización",
+    "saveUpTo": "Ahorre hasta",
+    "effort": "Esfuerzo"
+  },
+  "uploadGate": {
+    "cta": "Subir una póliza",
+    "ctaSub": "Suba su póliza de seguro en PDF para desbloquear esta herramienta"
+  },
+  "offline": {
+    "label": "Sin conexión",
+    "heading": "No tiene conexión a internet",
+    "body": "MedFin requiere una conexión para analizar pólizas y validar facturas. Las páginas que haya visitado anteriormente podrían seguir disponibles.",
+    "retry": "Intentar de nuevo"
+  },
+  "languageSwitcher": {
+    "label": "Idioma"
+  }
+}
