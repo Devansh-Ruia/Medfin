@@ -4,6 +4,7 @@ import { locales } from '@/i18n'
 import type { Locale } from '@/i18n'
 import type { Metadata } from 'next'
 import { LocalePersist } from '@/components/LocalePersist'
+import DisclaimerBanner from '@/components/DisclaimerBanner'
 
 // generateStaticParams is required for static export -- it tells Next.js which locale paths to pre-render
 export function generateStaticParams() {
@@ -49,6 +50,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <LocalePersist />
+      <DisclaimerBanner />
       {children}
     </NextIntlClientProvider>
   )

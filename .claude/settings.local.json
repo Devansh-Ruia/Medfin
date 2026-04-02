@@ -20,7 +20,12 @@
       "Bash(cp app/page.tsx \"app/[locale]/page.tsx\")",
       "Bash(cp app/dashboard/page.tsx \"app/[locale]/dashboard/page.tsx\")",
       "Bash(cp app/offline/page.tsx \"app/[locale]/offline/page.tsx\")",
-      "Bash(node -e \"const m = require\\(''next-intl/middleware''\\); console.log\\(typeof m.default, Object.keys\\(m\\)\\)\")"
+      "Bash(node -e \"const m = require\\(''next-intl/middleware''\\); console.log\\(typeof m.default, Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"console.log\\(require\\(''next/package.json''\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\(''next-intl/package.json''\\).version\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(NODE_OPTIONS='--stack-trace-limit=50' npx next build)",
+      "Bash(ls C:/Users/super/Downloads/Desktop/medfin-1/frontend/node_modules/next-intl/server*)"
     ]
   }
 }

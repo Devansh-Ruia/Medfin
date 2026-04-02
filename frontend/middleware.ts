@@ -1,14 +1,11 @@
-// Middleware runs on every request and redirects to the correct locale prefix
-// Auto-detection reads Accept-Language header -- the same signal browsers send anyway
-// Note: middleware is inactive when output: 'export' is set in next.config.js
-import createMiddleware from 'next-intl/middleware'
-import { locales, defaultLocale } from './i18n'
+// Middleware is intentionally minimal -- locale routing is handled by generateStaticParams
+// because middleware redirects do not work in static export (output: 'export')
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export default createMiddleware({
-  locales,
-  defaultLocale,
-  localeDetection: true,
-})
+export function middleware(request: NextRequest) {
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],

@@ -6,7 +6,8 @@ import { SavingsProvider } from '../contexts/SavingsContext'
 import { FamilyProvider } from '../contexts/FamilyContext'
 import ErrorBoundary from '../components/ErrorBoundary'
 import ToastProvider from '../components/providers/ToastProvider'
-import DisclaimerBanner from '../components/DisclaimerBanner'
+// DisclaimerBanner moved to [locale]/layout.tsx -- it uses useTranslations which
+// requires NextIntlClientProvider, and that provider only exists in the locale layout
 import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -82,8 +83,7 @@ export default function RootLayout({
           <ErrorBoundary>
             <FamilyProvider>
               <SavingsProvider>
-                {/* DisclaimerBanner sits at the root because every route can be a first visit */}
-                <DisclaimerBanner />
+                {/* DisclaimerBanner is in [locale]/layout.tsx where NextIntlClientProvider exists */}
                 {children}
               </SavingsProvider>
             </FamilyProvider>
