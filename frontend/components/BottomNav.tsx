@@ -59,7 +59,7 @@ export default function BottomNav({ activeItem, onNavigate }: BottomNavProps) {
               <button
                 key={item.id}
                 onClick={() => item.id === 'more' ? setIsMoreOpen(true) : (() => { onNavigate(item.id); event('navigate', { section: item.id }); })()}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 min-h-[44px] min-w-[44px] rounded-lg transition-all duration-200 ${
                   isActive 
                     ? 'text-accent' 
                     : 'text-gray-400 hover:text-gray-600'

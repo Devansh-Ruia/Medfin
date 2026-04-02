@@ -99,7 +99,7 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
       {/* Header */}
       <header className="bg-white border-b border-[#E5E2DC] sticky top-0 z-50">
         <div className="page-container py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[#0A6640] rounded-none flex items-center justify-center">
@@ -112,8 +112,8 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                 </p>
               </div>
             </div>
-            
-            {/* Center Status */}
+
+            {/* Center Status -- stacks below logo on narrow screens */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-[#0A6640] animate-pulse rounded-full"></div>
@@ -125,7 +125,7 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                 </span>
               )}
             </div>
-            
+
             {/* Actions */}
             <button
               onClick={onReset}

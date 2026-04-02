@@ -51,7 +51,7 @@ export default function Sidebar({ activeItem, onNavigate, isCollapsed = false, o
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 text-[#6B6B6B] hover:text-[#0D0D0D] rounded-none hover:bg-[#F9F8F6] transition-all duration-200"
+              className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#6B6B6B] hover:text-[#0D0D0D] rounded-none hover:bg-[#F9F8F6] transition-all duration-200"
             >
               {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
             </button>
