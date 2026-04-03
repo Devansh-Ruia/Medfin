@@ -1,3 +1,6 @@
+import sys
+print("MedFin app_entry.py loading...", file=sys.stderr, flush=True)
+
 # NOTE: This imports from backend/main.py, NOT backend/app/main.py.
 # The two files have diverged -- app/main.py has Sentry, validate_env(), and
 # tighter CORS, but none of that runs in production because Render uses this

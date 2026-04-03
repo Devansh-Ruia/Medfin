@@ -84,17 +84,16 @@ REQUIRED_VARS = ["GEMINI_API_KEY"]
 
 
 def validate_env() -> None:
-    """Warn instead of exit during startup so we can isolate the crash cause.
-    Restore sys.exit(1) once the startup issue is resolved."""
+    """Exit with a clear message if required environment variables are missing."""
     missing = [v for v in REQUIRED_VARS if not os.getenv(v)]
     if missing:
-        import warnings
-        warnings.warn(
-            f"Missing environment variables: {', '.join(missing)}. "
-            "Some features will not work.",
-            RuntimeWarning,
-            stacklevel=2,
+        print(
+            f"STARTUP FAILED: Missing required environment variables: {', '.join(missing)}\n"
+            "Set these in your Render dashboard under Environment.",
+            file=sys.stderr,
+            flush=True,
         )
+        sys.exit(1)
 
 
 settings = Settings()
