@@ -229,17 +229,30 @@ class ApiClient {
   async uploadPolicy(file: File): Promise<{ policy_data: PolicyData }> {
     const formData = new FormData();
     formData.append('file', file);
-    
-    const response = await fetch(`${this.baseUrl}/api/v1/ai/upload-policy`, {
-      method: 'POST',
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      throw await parseAPIError(response);
-    }
 
-    return response.json();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ai/upload-policy`, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        throw await parseAPIError(response);
+      }
+
+      return response.json();
+    } catch (err) {
+      clearTimeout(timeout);
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new ApiError('The server is starting up. Please try again in a moment.', 0);
+      }
+      throw err;
+    }
   }
 
   async askPolicyQuestion(

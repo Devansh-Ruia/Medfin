@@ -17,14 +17,23 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.logging import setup_logging, get_request_id, get_correlation_id
 
+logging.basicConfig(level=logging.INFO)
 setup_logging(settings.log_level)
 logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
 
 
+startup_logger = logging.getLogger("medfin.startup")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     startup_time = time.time()
+    startup_logger.info("MedFin API starting up")
+    startup_logger.info(f"AI provider: {os.getenv('AI_PROVIDER', 'not set')}")
+    startup_logger.info(f"Environment: {os.getenv('ENVIRONMENT', 'not set')}")
+    startup_logger.info(f"GROQ_API_KEY set: {bool(os.getenv('GROQ_API_KEY'))}")
+    startup_logger.info(f"GEMINI_API_KEY set: {bool(os.getenv('GEMINI_API_KEY'))}")
     logger.info("Starting MedFin API", extra={"version": settings.app_version, "environment": settings.environment, "startup_time": datetime.now().isoformat()})
     yield
     logger.info("Shutting down MedFin API", extra={"uptime_seconds": time.time() - startup_time})

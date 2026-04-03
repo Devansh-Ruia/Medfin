@@ -1,17 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api, PolicyData } from '@/lib/api';
 import PolicyUpload from '@/components/PolicyUpload';
 import AIWorkspace from '@/components/AIWorkspace';
 import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
+import { startKeepalive, stopKeepalive } from '@/lib/keepalive';
 
 export default function Dashboard() {
   const [policyData, setPolicyData] = useState<PolicyData | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeNav, setActiveNav] = useState('policy');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    startKeepalive();
+    return () => stopKeepalive();
+  }, []);
 
   const handlePolicyUploaded = (data: PolicyData) => {
     setPolicyData(data);

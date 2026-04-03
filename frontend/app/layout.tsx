@@ -63,22 +63,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        {/* Security headers via meta tags -- output: 'export' does not support headers() in next.config.js */}
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
-        <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta
-          httpEquiv="Content-Security-Policy"
-          content={[
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.sentry.io https://www.googletagmanager.com",
-            "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob: https://www.google-analytics.com",
-            "connect-src 'self' https://*.onrender.com https://*.sentry.io https://api.groq.com https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com",
-            "font-src 'self' https://fonts.gstatic.com",
-            "frame-ancestors 'none'",
-          ].join("; ")}
-        />
       </head>
       <body className={`${inter.className} antialiased`}>
         {GA_ID && (

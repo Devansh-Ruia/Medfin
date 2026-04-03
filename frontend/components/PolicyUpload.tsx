@@ -59,7 +59,11 @@ export default function PolicyUpload({
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to analyze policy. Please try again.');
+      if (err instanceof Error && err.message) {
+        setError(err.message);
+      } else {
+        setError('Upload failed. Check your connection and try again.');
+      }
     } finally {
       setIsAnalyzing(false);
       setProgress('');
