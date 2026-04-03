@@ -48,7 +48,13 @@
       "Bash(python -c \"from app.routers.ai import router; print\\(''ai.py imports OK''\\)\")",
       "Bash(python -c \"from app.security import ALLOWED_MIME_TYPES, ALLOWED_EXTENSIONS; print\\(''MIME:'', ALLOWED_MIME_TYPES\\); print\\(''EXT:'', ALLOWED_EXTENSIONS\\)\")",
       "Bash(python -c \"from app.main import app; print\\(''Backend app imports OK''\\)\")",
-      "Bash(GEMINI_API_KEY=test python -c \"from app.routers.ai import router; print\\(''Router OK''\\)\")"
+      "Bash(GEMINI_API_KEY=test python -c \"from app.routers.ai import router; print\\(''Router OK''\\)\")",
+      "Bash(ALLOWED_ORIGINS=\"http://localhost:3000,https://medfin-phi.vercel.app\" python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''Comma-separated:'', s.allowed_origins\\)\")",
+      "Bash(python -c \"import pydantic_settings; print\\(pydantic_settings.__version__\\); import pydantic; print\\(pydantic.__version__\\)\")",
+      "Bash(python -c \"from pydantic_settings import SettingsConfigDict; help\\(SettingsConfigDict\\)\")",
+      "Bash(python -c \"from pydantic_settings import SettingsConfigDict; print\\([k for k in SettingsConfigDict.__annotations__]\\)\")",
+      "Bash(ALLOWED_ORIGINS='[\"\"https://medfin-phi.vercel.app\"\"]' python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''JSON format:'', s.allowed_origins\\)\")",
+      "Bash(ALLOWED_ORIGINS=\"https://medfin-phi.vercel.app\" python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''Single value:'', s.allowed_origins\\)\")"
     ]
   }
 }

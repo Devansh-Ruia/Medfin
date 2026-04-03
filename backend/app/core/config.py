@@ -1,21 +1,37 @@
-from pydantic_settings import BaseSettings
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Dict, Any
+import json
 import os
 import sys
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", enable_decoding=False)
+
     # App
     app_name: str = "MedFin API"
     app_version: str = "1.0.0"
     debug: bool = False
     environment: str = "production"
-    
+
     # API
     api_v1_prefix: str = "/api/v1"
-    
+
     # Security
     allowed_origins: List[str] = ["https://medfin-phi.vercel.app"]
     api_key_header: str = "X-API-Key"
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        if isinstance(v, list):
+            return v
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("["):
+                return json.loads(v)
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        raise ValueError(f"Cannot parse allowed_origins from value: {v}")
     
     # Rate Limiting
     rate_limit_requests: int = 100
@@ -76,9 +92,6 @@ class Settings(BaseSettings):
         "out_of_network_penalty": 1.5,
         "emergency_multiplier": 2.0,
     }
-
-    class Config:
-        env_file = ".env"
 
 REQUIRED_VARS = ["GEMINI_API_KEY"]
 
