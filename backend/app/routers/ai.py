@@ -12,7 +12,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from ..services.gemini_service import gemini_service
 from ..security import (
-    limiter, validate_file, sanitize_input,
+    limiter, validate_file, validate_upload, sanitize_input,
     validate_question_input, log_security_event,
     RATE_LIMITS
 )
@@ -205,10 +205,8 @@ async def upload_policy(request: Request, file: UploadFile = File(...)):
 
     try:
         content = await file.read()
+        validate_upload(file, content)
         logger.info(f"Read {len(content)} bytes from file")
-
-        if not content:
-            raise HTTPException(status_code=400, detail="Empty file uploaded")
 
         policy_text = ""
 
@@ -320,6 +318,7 @@ async def ask_policy_question(request: Request, body: QuestionRequest):
         raise HTTPException(status_code=500, detail="Failed to process question")
 
 @router.post("/validate-bill")
+@limiter.limit("10/minute")
 async def validate_bill(request: Request, body: BillValidationRequest):
     """Validate a bill image against the policy."""
     if not gemini_service.is_configured():
@@ -346,6 +345,7 @@ async def validate_bill(request: Request, body: BillValidationRequest):
         raise HTTPException(status_code=500, detail="Bill validation failed. Please try again.")
 
 @router.post("/upload-bill")
+@limiter.limit("10/minute")
 async def upload_bill(
     request: Request,
     file: UploadFile = File(...),
@@ -372,12 +372,10 @@ async def upload_bill(
             logger.error(f"Failed to parse policy_data: {e}")
             raise HTTPException(status_code=400, detail=f"Invalid policy data JSON: {str(e)}")
 
-        # Step 2: Read file content
+        # Step 2: Read file content and validate
         logger.info("Step 2: Reading file content")
         content = await file.read()
-        if not content:
-            logger.error("Empty file uploaded")
-            raise HTTPException(status_code=400, detail="Empty file uploaded")
+        validate_upload(file, content)
         logger.info(f"Read {len(content)} bytes")
 
         # Step 3: Convert to base64
@@ -421,6 +419,7 @@ async def upload_bill(
         raise HTTPException(status_code=500, detail=f"Failed to validate bill: {str(e)}")
 
 @router.post("/optimize-policy")
+@limiter.limit("10/minute")
 async def optimize_policy(request: Request, body: OptimizationRequest):
     """Get optimization recommendations for the policy."""
     if not gemini_service.is_configured():
@@ -447,6 +446,7 @@ async def optimize_policy(request: Request, body: OptimizationRequest):
         raise HTTPException(status_code=500, detail="Policy optimization failed. Please try again.")
 
 @router.post("/pre-visit-checklist")
+@limiter.limit("10/minute")
 async def generate_pre_visit_checklist(request: Request, body: PreVisitRequest):
     """Generate a pre-visit checklist for a specific medical visit type."""
     if not gemini_service.is_configured():
@@ -474,6 +474,7 @@ async def generate_pre_visit_checklist(request: Request, body: PreVisitRequest):
         raise HTTPException(status_code=500, detail="Pre-visit checklist generation failed. Please try again.")
 
 @router.post("/generate-appeal")
+@limiter.limit("10/minute")
 async def generate_appeal_letter(request: Request, body: AppealRequest):
     """Generate an appeal letter for a denied claim."""
     if not gemini_service.is_configured():
@@ -501,6 +502,7 @@ async def generate_appeal_letter(request: Request, body: AppealRequest):
         raise HTTPException(status_code=500, detail="Appeal letter generation failed. Please try again.")
 
 @router.post("/upload-denial")
+@limiter.limit("10/minute")
 async def upload_denial_letter(
     request: Request,
     file: UploadFile = File(...),
@@ -524,6 +526,7 @@ async def upload_denial_letter(
         logger.info(f"[upload-denial] Policy data parsed successfully")
 
         content = await file.read()
+        validate_upload(file, content)
         logger.info(f"[upload-denial] Read {len(content)} bytes from file")
 
         # Reset file pointer if needed

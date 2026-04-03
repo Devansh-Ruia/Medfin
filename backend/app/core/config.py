@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import List, Dict, Any
 import os
+import sys
 
 class Settings(BaseSettings):
     # App
@@ -78,5 +79,16 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
+REQUIRED_VARS = ["GEMINI_API_KEY"]
+
+
+def validate_env() -> None:
+    """Failing loudly at startup is better than failing silently at 2am during a user session."""
+    missing = [v for v in REQUIRED_VARS if not os.getenv(v)]
+    if missing:
+        print(f"ERROR: Missing required environment variables: {', '.join(missing)}", file=sys.stderr)
+        sys.exit(1)
+
 
 settings = Settings()

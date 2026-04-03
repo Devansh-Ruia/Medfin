@@ -1,3 +1,5 @@
+import { parseAPIError } from './api-error';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 class ApiError extends Error {
@@ -234,9 +236,9 @@ class ApiClient {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to upload policy');
+      throw await parseAPIError(response);
     }
-    
+
     return response.json();
   }
 
@@ -266,9 +268,9 @@ class ApiClient {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to validate bill');
+      throw await parseAPIError(response);
     }
-    
+
     return response.json();
   }
 
@@ -331,9 +333,9 @@ class ApiClient {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to process denial letter');
+      throw await parseAPIError(response);
     }
-    
+
     return response.json();
   }
 }

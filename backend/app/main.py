@@ -3,8 +3,12 @@ import time
 import psutil
 import os
 from datetime import datetime
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
 from typing import Dict, Any, Optional
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -13,12 +17,38 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from contextlib import asynccontextmanager
-from app.core.config import settings
+from app.core.config import settings, validate_env
 from app.core.logging import setup_logging, get_request_id, get_correlation_id
 
+validate_env()
 setup_logging(settings.log_level)
 logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
+
+
+def scrub_sensitive_data(event: dict, hint: dict) -> dict:
+    # Belt and suspenders -- Sentry should never see document content or user text
+    if "request" in event:
+        event["request"].pop("data", None)
+        event["request"].pop("json", None)
+    return event
+
+
+SENTRY_DSN = os.getenv("SENTRY_DSN_BACKEND", "")
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            FastApiIntegration(),
+            StarletteIntegration(),
+        ],
+        # Never send request bodies -- they may contain document text
+        send_default_pii=False,
+        traces_sample_rate=0.1,   # 10% of requests traced -- enough signal, low noise
+        environment=os.getenv("ENVIRONMENT", "development"),
+        before_send=scrub_sensitive_data,
+    )
 
 
 @asynccontextmanager
@@ -70,9 +100,11 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # HSTS only in production -- localhost with HSTS is a bad time
     if settings.environment == "production":
         response.headers["Strict-Transport-Security"] = (
-            "max-age=31536000; includeSubDomains"
+            "max-age=63072000; includeSubDomains"
         )
     return response
 
@@ -122,13 +154,21 @@ async def log_requests(request: Request, call_next):
         raise
 
 
+# Origins are read from env so production and development never share the same allowlist
+ALLOWED_ORIGINS = [
+    o.strip() for o in os.getenv(
+        "ALLOWED_ORIGINS",
+        ",".join(settings.allowed_origins)
+    ).split(",")
+]
+
 # CORS added LAST so it is the outermost middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],   # only what the API actually uses
+    allow_headers=["Content-Type", "X-Language"],
 )
 
 
@@ -157,6 +197,19 @@ async def global_exception_handler(request: Request, exc: Exception):
                 "request_id": request_id,
             },
         },
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Return the first validation error in a clean format -- not the raw Pydantic error object
+    errors = exc.errors()
+    first_error = errors[0] if errors else {}
+    field = " -> ".join(str(loc) for loc in first_error.get("loc", []))
+    message = first_error.get("msg", "Validation error")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": f"{field}: {message}" if field else message},
     )
 
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { Component, ReactNode } from 'react';
+import * as Sentry from '@sentry/nextjs';
 
 interface Props {
   children: ReactNode;
@@ -11,38 +12,43 @@ interface State {
   hasError: boolean;
   error?: Error;
   errorInfo?: React.ErrorInfo;
+  errorId: string | null;
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorId: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { 
-      hasError: true, 
-      error 
+    return {
+      hasError: true,
+      error,
+      errorId: Math.random().toString(36).slice(2, 9),
     };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by ErrorBoundary:', error, errorInfo);
-    
-    // Log to error tracking service (optional)
+
+    // Report to Sentry
+    Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } });
+
+    // Log to Google Analytics if available
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'exception', {
         description: error.toString(),
         fatal: false
       });
     }
-    
+
     // Store error info for debugging
     this.setState({ errorInfo });
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined, errorId: null });
   };
 
   render() {
@@ -51,9 +57,10 @@ export default class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
       
-      return <ErrorFallback 
-        error={this.state.error} 
+      return <ErrorFallback
+        error={this.state.error}
         errorInfo={this.state.errorInfo}
+        errorId={this.state.errorId}
         onReset={this.handleReset}
       />;
     }
@@ -62,13 +69,15 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-function ErrorFallback({ 
-  error, 
-  errorInfo, 
-  onReset 
-}: { 
-  error?: Error; 
+function ErrorFallback({
+  error,
+  errorInfo,
+  errorId,
+  onReset,
+}: {
+  error?: Error;
   errorInfo?: React.ErrorInfo;
+  errorId?: string | null;
   onReset: () => void;
 }) {
   return (
@@ -83,9 +92,12 @@ function ErrorFallback({
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Something went wrong
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-4">
             We're sorry, but something unexpected happened. Our team has been notified.
           </p>
+          {errorId && (
+            <p className="text-xs text-gray-400 mb-6">Error ID: {errorId}</p>
+          )}
         </div>
         
         <div className="space-y-3">

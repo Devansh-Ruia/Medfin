@@ -91,6 +91,23 @@ def validate_file(file: UploadFile) -> dict:
     
     return result
 
+def validate_upload(file: UploadFile, content: bytes) -> None:
+    """Validate both the declared type and actual size after reading content bytes.
+    content_type can be spoofed but size cannot."""
+    if file.content_type and file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Unsupported file type: {file.content_type}. Upload a PDF or image."
+        )
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="File exceeds 10MB limit."
+        )
+    if len(content) == 0:
+        raise HTTPException(status_code=400, detail="File is empty.")
+
+
 def generate_error_id() -> str:
     """Generate unique error ID for tracking"""
     return str(uuid.uuid4())[:8]
