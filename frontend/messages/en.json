@@ -102,6 +102,7 @@
     "dropZoneSub": "PDF, PNG, JPG up to 10MB",
     "chooseFile": "Choose File",
     "showFullDetails": "Show Full Policy Details",
+    "hideDetails": "Hide Policy Details",
     "quickActions": "Quick Actions",
     "askQuestion": "Ask a question",
     "validateBill": "Validate a bill",

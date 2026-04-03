@@ -73,27 +73,30 @@ export default function RootLayout({
             "default-src 'self'",
             "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.sentry.io https://www.googletagmanager.com",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob:",
-            "connect-src 'self' https://*.onrender.com https://*.sentry.io https://www.google-analytics.com",
+            "img-src 'self' data: blob: https://www.google-analytics.com",
+            "connect-src 'self' https://*.onrender.com https://*.sentry.io https://api.groq.com https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com",
             "font-src 'self' https://fonts.gstatic.com",
             "frame-ancestors 'none'",
           ].join("; ")}
         />
       </head>
-      {GA_ID && (
-        <>
-          <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_ID}');
-            `}
-          </Script>
-        </>
-      )}
       <body className={`${inter.className} antialiased`}>
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', { send_page_view: true });
+              `}
+            </Script>
+          </>
+        )}
         <ServiceWorkerRegistration />
         <ToastProvider>
           <ErrorBoundary>

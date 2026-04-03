@@ -28,12 +28,13 @@ limiter = Limiter(key_func=get_rate_limit_key)
 
 # Security constants
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-ALLOWED_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg'}
+ALLOWED_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg', '.webp'}
 ALLOWED_MIME_TYPES = {
     'application/pdf',
     'image/png',
     'image/jpeg',
-    'image/jpg'
+    'image/jpg',
+    'image/webp'
 }
 
 def sanitize_input(text: str) -> str:

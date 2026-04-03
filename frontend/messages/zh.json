@@ -102,6 +102,7 @@
     "dropZoneSub": "支持 PDF、PNG、JPG，最大 10MB",
     "chooseFile": "选择文件",
     "showFullDetails": "查看完整保单详情",
+    "hideDetails": "隐藏保单详情",
     "quickActions": "快捷操作",
     "askQuestion": "提问",
     "validateBill": "验证账单",

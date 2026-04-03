@@ -102,6 +102,7 @@
     "dropZoneSub": "PDF, PNG, JPG hasta 10MB",
     "chooseFile": "Seleccionar archivo",
     "showFullDetails": "Mostrar detalles completos de la póliza",
+    "hideDetails": "Ocultar detalles de la póliza",
     "quickActions": "Acciones rápidas",
     "askQuestion": "Hacer una pregunta",
     "validateBill": "Validar una factura",

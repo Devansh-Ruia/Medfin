@@ -27,6 +27,7 @@ interface AIWorkspaceProps {
 }
 
 export default function AIWorkspace({ policyData, onReset, activeSection, onNavigate }: AIWorkspaceProps) {
+  const [showFullDetails, setShowFullDetails] = useState(false);
   const tDash = useTranslations('dashboard')
   const tAskAI = useTranslations('askAI')
   const tBills = useTranslations('bills')
@@ -199,9 +200,107 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                 </div>
               </div>
 
-              <button className="text-sm text-[#0A6640] font-medium underline-offset-2 hover:underline mt-4">
-                {tDash('showFullDetails')}
+              <button
+                onClick={() => setShowFullDetails(prev => !prev)}
+                className="text-sm text-[#0A6640] font-medium underline-offset-2 hover:underline mt-4"
+              >
+                {showFullDetails ? tDash('hideDetails') : tDash('showFullDetails')}
               </button>
+
+              {showFullDetails && (
+                <div className="mt-4 border-t border-[#E5E2DC] pt-4 space-y-2">
+                  {policyData?.policy_number && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Policy Number</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.policy_number}</span>
+                    </div>
+                  )}
+                  {policyData?.policy_holder_name && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Policy Holder</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.policy_holder_name}</span>
+                    </div>
+                  )}
+                  {policyData?.insurance_company && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Insurance Company</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.insurance_company}</span>
+                    </div>
+                  )}
+                  {policyData?.plan_name && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Plan Name</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.plan_name}</span>
+                    </div>
+                  )}
+                  {policyData?.plan_type && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Plan Type</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.plan_type}</span>
+                    </div>
+                  )}
+                  {policyData?.annual_deductible_family != null && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Family Deductible</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.annual_deductible_family.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {policyData?.out_of_pocket_max_family != null && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Family OOP Max</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.out_of_pocket_max_family.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {policyData?.copay_specialist != null && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Specialist Copay</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.copay_specialist}</span>
+                    </div>
+                  )}
+                  {policyData?.copay_emergency != null && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Emergency Copay</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.copay_emergency}</span>
+                    </div>
+                  )}
+                  {policyData?.coinsurance_out_of_network != null && (
+                    <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Out-of-Network Coinsurance</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">{policyData.coinsurance_out_of_network}%</span>
+                    </div>
+                  )}
+                  {policyData?.key_benefits && policyData.key_benefits.length > 0 && (
+                    <div className="py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Key Benefits</span>
+                      <ul className="mt-1 space-y-1">
+                        {policyData.key_benefits.map((benefit, i) => (
+                          <li key={i} className="text-sm text-[#0D0D0D]">• {benefit}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {policyData?.coverage_gaps && policyData.coverage_gaps.length > 0 && (
+                    <div className="py-2 border-b border-[#E5E2DC]">
+                      <span className="text-sm text-[#6B6B6B]">Coverage Gaps</span>
+                      <ul className="mt-1 space-y-1">
+                        {policyData.coverage_gaps.map((gap, i) => (
+                          <li key={i} className="text-sm text-[#0D0D0D]">• {gap}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {policyData?.recommendations && policyData.recommendations.length > 0 && (
+                    <div className="py-2">
+                      <span className="text-sm text-[#6B6B6B]">Recommendations</span>
+                      <ul className="mt-1 space-y-1">
+                        {policyData.recommendations.map((rec, i) => (
+                          <li key={i} className="text-sm text-[#0D0D0D]">• {rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Quick Actions */}

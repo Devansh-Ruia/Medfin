@@ -352,49 +352,58 @@ async def upload_bill(
     policy_data: str = Form(...)
 ):
     """Upload a bill image and validate against policy."""
-    import logging
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("medfin.api")
 
     logger.info(f"=== UPLOAD BILL START ===")
     logger.info(f"Filename: {file.filename}, Content-Type: {file.content_type}")
 
     if not gemini_service.is_configured():
-        logger.error("AI service not configured")
         raise HTTPException(status_code=503, detail="AI service not configured")
 
+    if not gemini_service.gemini_configured:
+        raise HTTPException(
+            status_code=503,
+            detail="Image processing requires Gemini configuration. Check GEMINI_API_KEY."
+        )
+
+    # Validate file before reading
+    validation_result = validate_file(file)
+    if not validation_result['valid']:
+        log_security_event("file_upload_rejected", validation_result, request)
+        raise HTTPException(status_code=400, detail=validation_result['error'])
+
+    # Read file content
     try:
-        # Step 1: Parse policy data
-        logger.info("Step 1: Parsing policy_data JSON")
-        try:
-            policy = json.loads(policy_data)
-            logger.info(f"Policy parsed successfully, keys: {list(policy.keys())[:5]}...")
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse policy_data: {e}")
-            raise HTTPException(status_code=400, detail=f"Invalid policy data JSON: {str(e)}")
-
-        # Step 2: Read file content and validate
-        logger.info("Step 2: Reading file content")
         content = await file.read()
-        validate_upload(file, content)
-        logger.info(f"Read {len(content)} bytes")
+    except Exception as e:
+        logger.error(f"Failed to read uploaded bill: {e}")
+        raise HTTPException(status_code=400, detail="Could not read the uploaded file.")
 
-        # Step 3: Convert to base64
-        logger.info("Step 3: Converting to base64")
+    # Validate content type, size, and emptiness
+    if file.content_type not in {"image/jpeg", "image/png", "image/webp", "application/pdf"}:
+        raise HTTPException(status_code=415, detail=f"Unsupported file type: {file.content_type}")
+    if len(content) == 0:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File exceeds 10MB limit.")
+
+    # Parse policy data
+    try:
+        policy = json.loads(policy_data)
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid policy data JSON: {str(e)}")
+
+    try:
         image_base64 = base64.b64encode(content).decode('utf-8')
-        logger.info(f"Base64 length: {len(image_base64)}")
 
-        # Step 4: Call service
-        logger.info("Step 4: Calling gemini_service.validate_bill_against_policy")
         language_instruction = get_language_instruction(request)
-        result = await gemini_service.validate_bill_against_policy(image_base64, policy, language_instruction=language_instruction)
-        logger.info(f"Step 4 complete, result keys: {list(result.keys()) if isinstance(result, dict) else 'not a dict'}")
+        result = await gemini_service.validate_bill_against_policy(
+            image_base64, policy, language_instruction=language_instruction
+        )
 
-        # Step 5: Check for errors in result
         if isinstance(result, dict) and "error" in result:
             logger.error(f"Service returned error: {result['error']}")
-            # Return the error as a proper response instead of 500
-            # This helps with debugging
-            raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
+            raise HTTPException(status_code=500, detail=result["error"])
 
         logger.info("=== UPLOAD BILL SUCCESS ===")
         return result
@@ -408,15 +417,14 @@ async def upload_bill(
             context={
                 "prompt_version": get_prompt_version("bill_validation"),
                 "file_type": file.content_type,
-                "file_size_kb": round(len(content) / 1024, 1) if 'content' in dir() else None,
+                "file_size_kb": round(len(content) / 1024, 1),
             },
         )
-        logger.error(f"=== UPLOAD BILL FAILED ===")
-        logger.error(f"Exception type: {type(e).__name__}")
-        logger.error(f"Exception message: {str(e)}")
-        import traceback
-        logger.error(f"Traceback:\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to validate bill: {str(e)}")
+        logger.error(f"Bill validation failed: {type(e).__name__}: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="Bill validation failed. Check that the image is clear and try again."
+        )
 
 @router.post("/optimize-policy")
 @limiter.limit("10/minute")

@@ -44,7 +44,11 @@
       "Bash(python -m pip_audit)",
       "Bash(python -c \"from sentry_sdk.integrations.fastapi import FastApiIntegration; from sentry_sdk.integrations.starlette import StarletteIntegration; print\\(''Sentry SDK v2 imports OK''\\)\")",
       "Bash(python -c \"import PyPDF2; print\\(''PyPDF2 OK''\\)\")",
-      "Bash(GEMINI_API_KEY=test python -c \"from app.main import app; print\\(''Backend OK''\\)\")"
+      "Bash(GEMINI_API_KEY=test python -c \"from app.main import app; print\\(''Backend OK''\\)\")",
+      "Bash(python -c \"from app.routers.ai import router; print\\(''ai.py imports OK''\\)\")",
+      "Bash(python -c \"from app.security import ALLOWED_MIME_TYPES, ALLOWED_EXTENSIONS; print\\(''MIME:'', ALLOWED_MIME_TYPES\\); print\\(''EXT:'', ALLOWED_EXTENSIONS\\)\")",
+      "Bash(python -c \"from app.main import app; print\\(''Backend app imports OK''\\)\")",
+      "Bash(GEMINI_API_KEY=test python -c \"from app.routers.ai import router; print\\(''Router OK''\\)\")"
     ]
   }
 }

@@ -102,6 +102,7 @@
     "dropZoneSub": "PDF, PNG, JPG jusqu'à 10 Mo",
     "chooseFile": "Choisir un fichier",
     "showFullDetails": "Afficher les détails complets de la police",
+    "hideDetails": "Masquer les détails de la police",
     "quickActions": "Actions rapides",
     "askQuestion": "Poser une question",
     "validateBill": "Vérifier une facture",
