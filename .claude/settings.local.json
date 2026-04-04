@@ -54,7 +54,10 @@
       "Bash(python -c \"from pydantic_settings import SettingsConfigDict; help\\(SettingsConfigDict\\)\")",
       "Bash(python -c \"from pydantic_settings import SettingsConfigDict; print\\([k for k in SettingsConfigDict.__annotations__]\\)\")",
       "Bash(ALLOWED_ORIGINS='[\"\"https://medfin-phi.vercel.app\"\"]' python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''JSON format:'', s.allowed_origins\\)\")",
-      "Bash(ALLOWED_ORIGINS=\"https://medfin-phi.vercel.app\" python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''Single value:'', s.allowed_origins\\)\")"
+      "Bash(ALLOWED_ORIGINS=\"https://medfin-phi.vercel.app\" python -c \"from app.core.config import Settings; s = Settings\\(\\); print\\(''Single value:'', s.allowed_origins\\)\")",
+      "Bash(find C:UserssuperDownloadsDesktopmedfin-1 -name logging.py -o -name log*.py)",
+      "Bash(find C:UserssuperDownloadsDesktopmedfin-1 -name __init__.py -path */app/core/*)",
+      "Bash(git add:*)"
     ]
   }
 }
