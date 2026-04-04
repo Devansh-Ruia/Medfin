@@ -266,40 +266,61 @@ USER QUESTION: {question}"""
         """Validate a medical bill against insurance policy."""
 
         try:
-            # Decode and process image (keep existing logic for now)
+            # Step 1: Decode base64 image
+            logger.info("[bill-validation] Step 1: Decoding base64 image data")
             image_data = base64.b64decode(bill_image_base64)
-            image = Image.open(io.BytesIO(image_data))
+            logger.info(f"[bill-validation] Decoded {len(image_data)} bytes of image data")
 
-            # For now, use Gemini for OCR since Groq vision models might be different
+            # Step 2: Open as PIL Image
+            logger.info("[bill-validation] Step 2: Opening image with PIL")
+            image = Image.open(io.BytesIO(image_data))
+            logger.info(f"[bill-validation] Image opened: size={image.size}, format={image.format}, mode={image.mode}")
+
+            # Step 3: Check Gemini is configured
             if not self.gemini_configured:
+                logger.error("[bill-validation] Gemini not configured - cannot process image")
                 return {"error": "Image processing requires Gemini configuration"}
 
-            # Use Gemini for OCR
+            # Step 4: Create Gemini model and run OCR
+            logger.info("[bill-validation] Step 4: Creating Gemini model (gemini-2.5-flash) for OCR")
             model = genai.GenerativeModel('gemini-2.5-flash')
+            logger.info("[bill-validation] Step 5: Calling generate_content for OCR...")
             response = model.generate_content([
                 "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
                 image
             ])
+            logger.info(f"[bill-validation] OCR response received, candidates={len(response.candidates) if response.candidates else 0}")
 
+            # Step 6: Extract text from response
+            logger.info("[bill-validation] Step 6: Extracting text from OCR response")
             bill_text = response.text
+            logger.info(f"[bill-validation] Extracted {len(bill_text)} characters of bill text")
 
-            # Now use AI provider for analysis
+            # Step 7: Load prompt and call AI provider for analysis
+            logger.info("[bill-validation] Step 7: Loading bill_validation prompt")
             system_prompt = load_prompt("bill_validation")
+            logger.info(f"[bill-validation] Prompt loaded ({len(system_prompt)} chars)")
 
             bill_context = f"BILL TEXT:\n{bill_text}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
+            logger.info(f"[bill-validation] Step 8: Calling AI provider for analysis ({len(bill_context)} chars context)")
             response_text = await self._call_provider(system_prompt, bill_context, language_instruction=language_instruction)
+            logger.info(f"[bill-validation] Provider response received ({len(response_text)} chars)")
 
-            # Try to extract JSON from response
+            # Step 9: Parse JSON response
+            logger.info("[bill-validation] Step 9: Parsing JSON from provider response")
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
-                return json.loads(response_text[start:end])
+                result = json.loads(response_text[start:end])
+                logger.info("[bill-validation] SUCCESS - bill validation complete")
+                return result
+            logger.error(f"[bill-validation] No JSON found in provider response: {response_text[:200]}")
             return {"error": "Could not parse bill validation"}
 
         except Exception as e:
             logger.error(f"=== BILL VALIDATION FAILED ===")
-            logger.error(f"Error: {type(e).__name__}: {e}")
-            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            logger.error(f"[bill-validation] Error at: {type(e).__name__}: {e}")
+            logger.error(f"[bill-validation] Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
     async def generate_appeal_letter(self, denial_info: Dict[str, Any], policy_data: Dict[str, Any], tone: str = "professional", language_instruction: str = None) -> Dict[str, Any]:

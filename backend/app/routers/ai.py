@@ -352,10 +352,11 @@ async def upload_bill(
     policy_data: str = Form(...)
 ):
     """Upload a bill image and validate against policy."""
-    logger = logging.getLogger("medfin.api")
+    logger = logging.getLogger(__name__)
 
     logger.info(f"=== UPLOAD BILL START ===")
     logger.info(f"Filename: {file.filename}, Content-Type: {file.content_type}")
+    logger.info(f"Gemini configured: {gemini_service.gemini_configured}, Provider configured: {gemini_service.provider_configured}")
 
     if not gemini_service.is_configured():
         raise HTTPException(status_code=503, detail="AI service not configured")
@@ -394,12 +395,18 @@ async def upload_bill(
         raise HTTPException(status_code=400, detail=f"Invalid policy data JSON: {str(e)}")
 
     try:
+        logger.info(f"Encoding {len(content)} bytes to base64")
         image_base64 = base64.b64encode(content).decode('utf-8')
+        logger.info(f"Base64 length: {len(image_base64)} chars")
 
         language_instruction = get_language_instruction(request)
+        logger.info(f"Language instruction: {language_instruction[:50] if language_instruction else 'None'}")
+        logger.info("Calling gemini_service.validate_bill_against_policy...")
+
         result = await gemini_service.validate_bill_against_policy(
             image_base64, policy, language_instruction=language_instruction
         )
+        logger.info(f"Service returned result type: {type(result).__name__}, keys: {list(result.keys()) if isinstance(result, dict) else 'N/A'}")
 
         if isinstance(result, dict) and "error" in result:
             logger.error(f"Service returned error: {result['error']}")
