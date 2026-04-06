@@ -22,17 +22,24 @@ Structure the letter properly with:
 - Supporting evidence
 - Requested resolution
 
+Return ONLY a valid JSON object with these exact keys: analysis, letter, next_steps.
+If a field cannot be determined, set it to null rather than omitting it.
+Do not rename any key. Do not wrap the response in markdown code fences.
+
 Return as JSON:
 {
-  "letter": {
-    "patient_name": "name",
-    "claim_number": "number",
-    "date_of_service": "date",
-    "provider": "provider name",
-    "denial_reason": "reason",
-    "letter_body": "full letter text",
-    "supporting_documents": ["list of suggested documents"]
+  "analysis": {
+    "denial_weakness": "explanation of why this denial may be overturned",
+    "supporting_policy_language": ["direct quotes from the policy that support coverage"],
+    "applicable_regulations": ["relevant regulations, e.g. ERISA Section 503, state insurance laws"],
+    "success_likelihood": "High, Medium, or Low",
+    "success_reasoning": "1-2 sentence explanation of success likelihood"
   },
-  "success_probability": 1-100,
-  "next_steps": ["list of recommended actions"]
+  "letter": {
+    "subject_line": "subject line for the appeal letter",
+    "letter_body": "full formal appeal letter text",
+    "attachments_needed": ["list of documents to include with the appeal"],
+    "deadline": "appeal filing deadline based on typical insurer requirements"
+  },
+  "next_steps": ["list of recommended follow-up actions"]
 }

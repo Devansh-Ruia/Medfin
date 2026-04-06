@@ -391,6 +391,40 @@ USER QUESTION: {question}"""
             logger.error(f"[bill-validation] Traceback:\n{traceback.format_exc()}")
             return {"error": str(e)}
 
+    @staticmethod
+    def _validate_appeal_response(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Ensure required appeal fields exist with safe defaults."""
+        analysis_defaults = {
+            "denial_weakness": "",
+            "supporting_policy_language": [],
+            "applicable_regulations": [],
+            "success_likelihood": "Unknown",
+            "success_reasoning": "Could not be determined from the provided information.",
+        }
+        letter_defaults = {
+            "subject_line": "",
+            "letter_body": "",
+            "attachments_needed": [],
+            "deadline": "Check your policy for appeal deadline details.",
+        }
+
+        if "analysis" not in data or not isinstance(data.get("analysis"), dict):
+            data["analysis"] = {}
+        for key, default in analysis_defaults.items():
+            if key not in data["analysis"] or data["analysis"][key] is None:
+                data["analysis"][key] = default
+
+        if "letter" not in data or not isinstance(data.get("letter"), dict):
+            data["letter"] = {}
+        for key, default in letter_defaults.items():
+            if key not in data["letter"] or data["letter"][key] is None:
+                data["letter"][key] = default
+
+        if "next_steps" not in data or not isinstance(data.get("next_steps"), list):
+            data["next_steps"] = []
+
+        return data
+
     async def generate_appeal_letter(self, denial_info: Dict[str, Any], policy_data: Dict[str, Any], tone: str = "professional", language_instruction: str = None) -> Dict[str, Any]:
         """Generate an appeal letter for a denied claim."""
 
@@ -407,7 +441,8 @@ USER QUESTION: {question}"""
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
-                return json.loads(response_text[start:end])
+                result = json.loads(response_text[start:end])
+                return self._validate_appeal_response(result)
             return {"error": "Could not parse appeal letter"}
 
         except Exception as e:

@@ -554,20 +554,21 @@ export interface PreVisitChecklist {
 }
 
 export interface AppealLetter {
-  analysis: {
-    denial_weakness: string;
-    supporting_policy_language: string[];
-    applicable_regulations: string[];
-    success_likelihood: 'High' | 'Medium' | 'Low';
-    success_reasoning: string;
+  analysis?: {
+    denial_weakness?: string;
+    supporting_policy_language?: string[];
+    applicable_regulations?: string[];
+    success_likelihood?: string | null;
+    success_reasoning?: string | null;
   };
-  letter: {
-    subject_line: string;
-    letter_body: string;
-    attachments_needed: string[];
-    deadline: string;
+  letter?: {
+    subject_line?: string;
+    letter_body?: string;
+    attachments_needed?: string[];
+    deadline?: string;
   };
-  next_steps: string[];
+  next_steps?: string[];
+  extracted_denial_info?: DenialInfo;
 }
 
 export interface DenialInfo {

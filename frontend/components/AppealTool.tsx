@@ -230,7 +230,7 @@ const downloadAsPDF = async () => {
       console.error('Failed to generate PDF:', error);
       // Fallback to text download if PDF generation fails
       if (appealLetter) {
-        const blob = new Blob([appealLetter.letter.letter_body], { type: 'text/plain' });
+        const blob = new Blob([appealLetter.letter?.letter_body ?? ''], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -463,7 +463,12 @@ const downloadAsPDF = async () => {
       )}
 
       {/* Results */}
-      {appealLetter && (
+      {appealLetter && !appealLetter.analysis && (
+        <div className="border-l-2 border-[#C0392B] bg-[#FDF2F2] px-4 py-3 text-sm text-[#C0392B]">
+          The appeal analysis returned an unexpected format. Please try again.
+        </div>
+      )}
+      {appealLetter && appealLetter.analysis && (
         <div className="space-y-6">
           {/* Analysis Section */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
@@ -478,31 +483,31 @@ const downloadAsPDF = async () => {
             </div>
 
             {/* Success Likelihood */}
-            <div className={`p-4 rounded-xl mb-4 ${getSuccessColor(appealLetter.analysis.success_likelihood)}`}>
+            <div className={`p-4 rounded-xl mb-4 ${getSuccessColor(appealLetter.analysis?.success_likelihood ?? '')}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-semibold">Success Likelihood</p>
-                  <p className="text-sm opacity-75">{appealLetter.analysis.success_reasoning}</p>
+                  <p className="text-sm opacity-75">{appealLetter.analysis?.success_reasoning ?? ''}</p>
                 </div>
-                <span className="text-2xl font-bold">{appealLetter.analysis.success_likelihood}</span>
+                <span className="text-2xl font-bold">{appealLetter.analysis?.success_likelihood ?? 'Unknown'}</span>
               </div>
             </div>
 
             {/* Denial Weakness */}
             <div className="mb-4">
               <h4 className="font-semibold text-gray-900 mb-2">Why This Denial May Be Wrong</h4>
-              <p 
+              <p
                 className="text-gray-700"
-                dangerouslySetInnerHTML={{ __html: replaceJargon(appealLetter.analysis.denial_weakness) }}
+                dangerouslySetInnerHTML={{ __html: replaceJargon(appealLetter.analysis?.denial_weakness ?? '') }}
               />
             </div>
 
             {/* Supporting Policy Language */}
-            {appealLetter.analysis.supporting_policy_language.length > 0 && (
+            {(appealLetter.analysis?.supporting_policy_language ?? []).length > 0 && (
               <div className="mb-4">
                 <h4 className="font-semibold text-gray-900 mb-2">Supporting Policy Language</h4>
                 <ul className="space-y-1">
-                  {appealLetter.analysis.supporting_policy_language.map((language, i) => (
+                  {(appealLetter.analysis?.supporting_policy_language ?? []).map((language, i) => (
                     <li key={i} className="flex gap-2">
                       <span className="text-emerald-500 mt-1">•</span>
                       <span className="text-gray-700 italic">"{language}"</span>
@@ -513,11 +518,11 @@ const downloadAsPDF = async () => {
             )}
 
             {/* Applicable Regulations */}
-            {appealLetter.analysis.applicable_regulations.length > 0 && (
+            {(appealLetter.analysis?.applicable_regulations ?? []).length > 0 && (
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Applicable Regulations</h4>
                 <ul className="space-y-1">
-                  {appealLetter.analysis.applicable_regulations.map((regulation, i) => (
+                  {(appealLetter.analysis?.applicable_regulations ?? []).map((regulation, i) => (
                     <li key={i} className="flex gap-2">
                       <span className="text-blue-500 mt-1">•</span>
                       <span className="text-gray-700">{regulation}</span>
@@ -534,7 +539,7 @@ const downloadAsPDF = async () => {
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><FileText className="w-5 h-5" /> Your Appeal Letter</h3>
               <div className="flex gap-2">
                 <button
-                  onClick={() => copyToClipboard(appealLetter.letter.letter_body)}
+                  onClick={() => copyToClipboard(appealLetter.letter?.letter_body ?? '')}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                 >
                   <ClipboardCopy className="w-4 h-4" /> Copy
@@ -549,7 +554,7 @@ const downloadAsPDF = async () => {
             </div>
 
             <div className="mb-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter.subject_line}</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter?.subject_line ?? ''}</h4>
             </div>
 
             <div 
@@ -564,15 +569,15 @@ const downloadAsPDF = async () => {
     maxWidth: '800px',
   }}
 >
-  {formatAppealLetter(appealLetter.letter.letter_body)}
+  {formatAppealLetter(appealLetter.letter?.letter_body ?? '')}
 </div>
 
             {/* Attachments Needed */}
-            {appealLetter.letter.attachments_needed.length > 0 && (
+            {(appealLetter.letter?.attachments_needed ?? []).length > 0 && (
               <div className="mt-4 p-4 bg-blue-50 rounded-xl">
                 <h4 className="font-semibold text-blue-800 mb-2">📎 Attachments to Include</h4>
                 <ul className="space-y-1">
-                  {appealLetter.letter.attachments_needed.map((attachment, i) => (
+                  {(appealLetter.letter?.attachments_needed ?? []).map((attachment, i) => (
                     <li key={i} className="flex gap-2">
                       <span className="text-blue-500 mt-1">•</span>
                       <span className="text-blue-700">{attachment}</span>
@@ -585,7 +590,7 @@ const downloadAsPDF = async () => {
             {/* Deadline */}
             <div className="mt-4 p-4 bg-amber-50 rounded-xl">
               <p className="text-amber-800">
-                <strong className="flex items-center gap-2"><Clock className="w-4 h-4" /> Deadline:</strong> {appealLetter.letter.deadline}
+                <strong className="flex items-center gap-2"><Clock className="w-4 h-4" /> Deadline:</strong> {appealLetter.letter?.deadline ?? 'Check your policy for deadline details'}
               </p>
             </div>
           </div>
@@ -594,7 +599,7 @@ const downloadAsPDF = async () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2"><Rocket className="w-5 h-5" /> Next Steps</h3>
             <ol className="space-y-3">
-              {appealLetter.next_steps.map((step, i) => (
+              {(appealLetter.next_steps ?? []).map((step, i) => (
                 <li key={i} className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
                     {i + 1}
