@@ -287,6 +287,7 @@ export const jargonDictionary: Record<string, JargonEntry> = {
 
 // Function to replace jargon in text with simple explanations
 export function replaceJargon(text: string): string {
+  if (!text) return '';
   let processedText = text;
   
   // Sort by length (longest first) to avoid partial matches

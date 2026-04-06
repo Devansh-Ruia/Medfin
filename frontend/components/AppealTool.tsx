@@ -73,6 +73,7 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   };
 
   const cleanLetterText = (text: string): string => {
+  if (!text) return '';
   // Remove all HTML span tags and their jargon content
   // Pattern: matches <span ...>(...)</span> including nested spans
   let cleaned = text;
@@ -198,6 +199,7 @@ const formatAppealLetter = (text: string): JSX.Element[] => {
 };
 
 const formatLetterText = (text: string): string => {
+  if (!text) return '';
   // Ensure double newlines between paragraphs
   let formatted = text
     // Normalize line endings
@@ -210,7 +212,7 @@ const formatLetterText = (text: string): string => {
 };
 
 const downloadAsPDF = async () => {
-    if (!letterRef.current) return;
+    if (!letterRef.current || !appealLetter?.letter?.letter_body) return;
     
     try {
       // Dynamically import html2pdf to avoid SSR issues
@@ -259,6 +261,8 @@ const downloadAsPDF = async () => {
       default: return 'text-[#6B6B6B] bg-[#F9F8F6]';
     }
   };
+
+  const hasLetter = typeof appealLetter?.letter?.letter_body === 'string' && appealLetter.letter.letter_body.trim().length > 0;
 
   return (
     <div className="space-y-6">
@@ -537,40 +541,50 @@ const downloadAsPDF = async () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><FileText className="w-5 h-5" /> Your Appeal Letter</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => copyToClipboard(appealLetter.letter?.letter_body ?? '')}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              {hasLetter && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => copyToClipboard(appealLetter.letter?.letter_body ?? '')}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                  >
+                    <ClipboardCopy className="w-4 h-4" /> Copy
+                  </button>
+                  <button
+                    onClick={downloadAsPDF}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {hasLetter ? (
+              <>
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter?.subject_line ?? ''}</h4>
+                </div>
+
+                <div
+                  ref={letterRef}
+                  style={{
+                    fontFamily: '"Times New Roman", "Georgia", serif',
+                    fontSize: '12pt',
+                    lineHeight: '1.7',
+                    color: '#000',
+                    backgroundColor: '#fff',
+                    padding: '48px',
+                    maxWidth: '800px',
+                  }}
                 >
-                  <ClipboardCopy className="w-4 h-4" /> Copy
-                </button>
-                <button
-                  onClick={downloadAsPDF}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-                >
-                  💾 Download PDF
-                </button>
+                  {formatAppealLetter(appealLetter.letter?.letter_body ?? '')}
+                </div>
+              </>
+            ) : (
+              <div className="border-l-2 border-[#C0392B] bg-[#FDF2F2] px-4 py-3 text-sm text-[#C0392B]">
+                The appeal letter could not be generated. Please try again or enter the denial details manually.
               </div>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Subject: {appealLetter.letter?.subject_line ?? ''}</h4>
-            </div>
-
-            <div 
-  ref={letterRef}
-  style={{
-    fontFamily: '"Times New Roman", "Georgia", serif',
-    fontSize: '12pt',
-    lineHeight: '1.7',
-    color: '#000',
-    backgroundColor: '#fff',
-    padding: '48px',
-    maxWidth: '800px',
-  }}
->
-  {formatAppealLetter(appealLetter.letter?.letter_body ?? '')}
-</div>
+            )}
 
             {/* Attachments Needed */}
             {(appealLetter.letter?.attachments_needed ?? []).length > 0 && (
@@ -606,7 +620,7 @@ const downloadAsPDF = async () => {
                   </span>
                   <span 
                     className="text-gray-700 pt-1"
-                    dangerouslySetInnerHTML={{ __html: replaceJargon(step) }}
+                    dangerouslySetInnerHTML={{ __html: replaceJargon(step ?? '') }}
                   />
                 </li>
               ))}
