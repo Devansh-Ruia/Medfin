@@ -23,6 +23,30 @@ from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 
+# Gemini is picky about mime types -- normalise before sending
+# 'image/jpg' is not a valid MIME type despite browsers sending it
+SUPPORTED_MIME_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+}
+
+MIME_ALIASES = {
+    "image/jpg": "image/jpeg",
+    "image/pjpeg": "image/jpeg",
+    "image/x-png": "image/png",
+}
+
+
+def normalise_mime_type(mime_type: str) -> str:
+    normalised = MIME_ALIASES.get(mime_type, mime_type)
+    if normalised not in SUPPORTED_MIME_TYPES:
+        logger.warning(f"Unsupported mime_type '{mime_type}', defaulting to image/jpeg")
+        return "image/jpeg"
+    return normalised
+
+
 class AIService:
     def __init__(self):
         # Primary: AI Provider (Groq by default, configurable via AI_PROVIDER env var)
@@ -56,6 +80,7 @@ class AIService:
         if not self.gemini_configured:
             raise Exception("Gemini not configured -- check GEMINI_API_KEY")
 
+        mime_type = normalise_mime_type(mime_type)
         image_bytes = base64.b64decode(image_base64)
         response = self._gemini_client.models.generate_content(
             model="gemini-2.5-flash",
@@ -278,34 +303,61 @@ USER QUESTION: {question}"""
             except Exception as fallback_err:
                 return {"error": str(fallback_err), "search_grounded": False}
 
-    async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any], language_instruction: str = None) -> Dict[str, Any]:
+    def extract_text_from_image(self, image_bytes: bytes, mime_type: str = "image/jpeg") -> str:
+        """Extract text from an image using Gemini OCR."""
+        if not self.gemini_configured:
+            raise Exception("Gemini not configured -- check GEMINI_API_KEY")
+
+        mime_type = normalise_mime_type(mime_type)
+        logger.info(f"Sending image to Gemini: {len(image_bytes)} bytes, mime_type={mime_type}")
+
+        response = self._gemini_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
+            ],
+        )
+        return response.text
+
+    def extract_text_from_pdf_image(self, pdf_bytes: bytes) -> str:
+        """Extract text from a scanned/image PDF using Gemini document API."""
+        if not self.gemini_configured:
+            raise Exception("Gemini not configured -- check GEMINI_API_KEY")
+
+        logger.info(f"Sending PDF to Gemini document API: {len(pdf_bytes)} bytes")
+        response = self._gemini_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
+                "Extract all text from this medical bill PDF. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
+            ],
+        )
+        return response.text
+
+    async def validate_bill_against_policy(self, bill_image_base64: str, policy_data: Dict[str, Any], language_instruction: str = None, mime_type: str = "image/jpeg", pre_extracted_text: str = None) -> Dict[str, Any]:
         """Validate a medical bill against insurance policy."""
 
         try:
-            # Step 1: Decode base64 image
-            logger.info("[bill-validation] Step 1: Decoding base64 image data")
-            image_data = base64.b64decode(bill_image_base64)
-            logger.info(f"[bill-validation] Decoded {len(image_data)} bytes of image data")
+            if pre_extracted_text:
+                # Text already extracted (e.g. from PDF via PyPDF2)
+                bill_text = pre_extracted_text
+                logger.info(f"[bill-validation] Using pre-extracted text ({len(bill_text)} chars)")
+            else:
+                # Step 1: Decode base64 image
+                logger.info("[bill-validation] Step 1: Decoding base64 image data")
+                image_data = base64.b64decode(bill_image_base64)
+                logger.info(f"[bill-validation] Decoded {len(image_data)} bytes of image data")
 
-            # Step 2: Check Gemini is configured
-            if not self.gemini_configured:
-                logger.error("[bill-validation] Gemini not configured - cannot process image")
-                return {"error": "Image processing requires Gemini configuration"}
+                # Step 2: Check Gemini is configured
+                if not self.gemini_configured:
+                    logger.error("[bill-validation] Gemini not configured - cannot process image")
+                    return {"error": "Image processing requires Gemini configuration"}
 
-            # Step 3: Call Gemini for OCR using new SDK
-            logger.info("[bill-validation] Step 3: Calling Gemini (gemini-2.5-flash) for OCR")
-            response = self._gemini_client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=[
-                    types.Part.from_bytes(data=image_data, mime_type="image/jpeg"),
-                    "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
-                ],
-            )
-            logger.info("[bill-validation] OCR response received")
-
-            # Step 4: Extract text from response
-            bill_text = response.text
-            logger.info(f"[bill-validation] Extracted {len(bill_text)} characters of bill text")
+                # Step 3: Call Gemini for OCR using new SDK
+                logger.info("[bill-validation] Step 3: Calling Gemini (gemini-2.5-flash) for OCR")
+                bill_text = self.extract_text_from_image(image_data, mime_type)
+                logger.info(f"[bill-validation] Extracted {len(bill_text)} characters of bill text")
 
             # Step 5: Load prompt and call AI provider for analysis
             logger.info("[bill-validation] Step 5: Loading bill_validation prompt")

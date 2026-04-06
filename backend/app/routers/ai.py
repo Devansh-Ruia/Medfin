@@ -394,17 +394,42 @@ async def upload_bill(
         raise HTTPException(status_code=400, detail=f"Invalid policy data JSON: {str(e)}")
 
     try:
-        logger.info(f"Encoding {len(content)} bytes to base64")
-        image_base64 = base64.b64encode(content).decode('utf-8')
-        logger.info(f"Base64 length: {len(image_base64)} chars")
-
+        logger.info(f"Bill upload: filename={file.filename}, content_type={file.content_type}, size={len(content)}")
         language_instruction = get_language_instruction(request)
         logger.info(f"Language instruction: {language_instruction[:50] if language_instruction else 'None'}")
-        logger.info("Calling gemini_service.validate_bill_against_policy...")
 
-        result = await gemini_service.validate_bill_against_policy(
-            image_base64, policy, language_instruction=language_instruction
-        )
+        if file.content_type == "application/pdf":
+            # Try PyPDF2 first -- faster and does not use Gemini quota
+            try:
+                reader = PyPDF2.PdfReader(io.BytesIO(content))
+                extracted_text = "\n".join(
+                    page.extract_text() or "" for page in reader.pages
+                ).strip()
+                logger.info(f"PyPDF2 extracted {len(extracted_text)} chars from bill PDF")
+            except Exception as e:
+                logger.warning(f"PyPDF2 failed on bill PDF: {e}, falling back to Gemini")
+                extracted_text = ""
+
+            if not extracted_text:
+                # Gemini document fallback for scanned/image PDFs
+                extracted_text = gemini_service.extract_text_from_pdf_image(content)
+
+            image_base64 = base64.b64encode(content).decode('utf-8')
+            result = await gemini_service.validate_bill_against_policy(
+                image_base64, policy, language_instruction=language_instruction,
+                pre_extracted_text=extracted_text,
+            )
+        else:
+            # Image path -- JPEG, PNG, WebP
+            image_base64 = base64.b64encode(content).decode('utf-8')
+            logger.info(f"Base64 length: {len(image_base64)} chars")
+            logger.info("Calling gemini_service.validate_bill_against_policy...")
+
+            result = await gemini_service.validate_bill_against_policy(
+                image_base64, policy, language_instruction=language_instruction,
+                mime_type=file.content_type,
+            )
+
         logger.info(f"Service returned result type: {type(result).__name__}, keys: {list(result.keys()) if isinstance(result, dict) else 'N/A'}")
 
         if isinstance(result, dict) and "error" in result:
