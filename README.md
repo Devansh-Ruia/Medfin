@@ -1,44 +1,44 @@
-# 🏥 MedFin AI - Healthcare Financial Navigator
+#  MedFin AI - Healthcare Financial Navigator
 
 AI-powered insurance policy analysis and bill validation platform using Google Gemini.
 
-## 🚀 Live Demo
+##  Live Demo
 - **App:** https://medfin-phi.vercel.app
 - **API:** https://medfin.onrender.com
 
-## ✨ Features
+##  Features
 
-### 📄 Policy Analysis
+###  Policy Analysis
 - Upload insurance policy (PDF or image)
 - AI extracts ALL policy parameters automatically
 - Coverage strength scoring
 - Gap identification
 
-### 💬 AI Q&A (Estimation Tool)
+###  AI Q&A (Estimation Tool)
 - Ask questions about your coverage in natural language
 - Get cost estimates for procedures
 - Understand complex insurance terms
 - Conversational interface
 
-### 📸 Bill Validation
+###  Bill Validation
 - Photo-scan medical bills
 - AI validates charges against your policy
 - Identifies billing errors and overcharges
 - Calculates expected vs actual patient responsibility
 
-### ✨ Policy Optimization
+###  Policy Optimization
 - AI analyzes your healthcare needs
 - Recommends coverage optimizations
 - Suggests alternative plan types
 - Prioritized action items
 
-## 🛠️ Tech Stack
+##  Tech Stack
 - **Frontend:** Next.js 14, TypeScript, Tailwind CSS
 - **Backend:** FastAPI, Python 3.9+
 - **AI:** Google Gemini 1.5 Flash
 - **Deployment:** Vercel + Render
 
-## 📋 API Endpoints
+##  API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -48,7 +48,7 @@ AI-powered insurance policy analysis and bill validation platform using Google G
 | `/api/v1/ai/optimize-policy` | POST | Get optimization recommendations |
 | `/api/v1/ai/health` | GET | Check AI service status |
 
-## 🔐 Environment Variables
+##  Environment Variables
 
 ### Backend (Render)
 | Variable | Description |
@@ -61,7 +61,7 @@ AI-powered insurance policy analysis and bill validation platform using Google G
 |----------|-------------|
 | `NEXT_PUBLIC_API_URL` | Backend API URL |
 
-## 🔒 Privacy
+##  Privacy
 - No policy data is stored permanently
 - All analysis happens in real-time
 - HIPAA-aware design principles
