@@ -240,12 +240,11 @@ async def upload_policy(request: Request, file: UploadFile = File(...)):
                 # Use gemini_service to extract text from image
                 text_extraction_prompt = "Extract all text from this insurance policy document. Return only the extracted text, nothing else."
 
-                model = gemini_service.client.GenerativeModel('gemini-2.5-flash')
-                response = model.generate_content([
+                policy_text = gemini_service.vision_generate(
                     text_extraction_prompt,
-                    {"mime_type": f"image/{image.format.lower()}", "data": image_base64}
-                ])
-                policy_text = response.text
+                    image_base64,
+                    f"image/{(image.format or 'PNG').lower()}",
+                )
                 logger.info(f"Extracted {len(policy_text)} characters from image")
             except Exception as img_error:
                 logger.error(f"Image processing failed: {img_error}")
@@ -564,14 +563,12 @@ async def upload_denial_letter(
         Return as JSON with these exact keys. Use null for any missing information."""
 
         logger.info("[upload-denial] Extracting denial information with vision model...")
-        # Extract denial info using vision model
-        model = gemini_service.client.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content([
+        # Extract denial info using Gemini vision
+        text = gemini_service.vision_generate(
             denial_extraction_prompt,
-            {"mime_type": file.content_type, "data": image_base64}
-        ])
-
-        text = response.text
+            image_base64,
+            file.content_type,
+        )
         logger.info(f"[upload-denial] Vision response received: {len(text)} characters")
 
         start = text.find('{')

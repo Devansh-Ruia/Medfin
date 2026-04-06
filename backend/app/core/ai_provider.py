@@ -69,20 +69,27 @@ class GroqProvider(AIProvider):
 
 
 class GeminiProvider(AIProvider):
-    # Gemini is retained for image OCR only
-    # This stub exists so Gemini can be promoted to primary if needed without restructuring
+    # Updated to google-genai SDK -- the old google-generativeai is dead
 
     def __init__(self, api_key: str, model: str):
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
+        from google import genai
+        self.client = genai.Client(api_key=api_key)
+        self.model = model
 
     async def complete(self, system_prompt, user_message, temperature=0.3, max_tokens=2048) -> str:
-        response = self.model.generate_content(f"{system_prompt}\n\n{user_message}")
+        from google.genai import types
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=f"{system_prompt}\n\n{user_message}",
+            config=types.GenerateContentConfig(
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+            ),
+        )
         return response.text
 
     async def stream(self, system_prompt, user_message, temperature=0.3, max_tokens=2048):
-        # Gemini streaming is not used but must satisfy the interface
+        # Gemini streaming not used as primary -- this satisfies the interface
         result = await self.complete(system_prompt, user_message, temperature, max_tokens)
         yield result
 

@@ -16,8 +16,9 @@ from ..core.prompt_loader import load_prompt
 # Search: Tavily
 from tavily import TavilyClient
 
-# Fallback: Gemini (only for image OCR)
-import google.generativeai as genai
+# Gemini (for image OCR) -- migrated from dead google-generativeai to google-genai
+from google import genai
+from google.genai import types
 from ..core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -36,19 +37,34 @@ class AIService:
         # Search: Tavily
         self.tavily_client = TavilyClient(api_key=settings.tavily_api_key) if settings.tavily_api_key else None
 
-        # Keep existing Gemini setup for image OCR only
+        # Gemini client for image OCR (new google-genai SDK)
         gemini_key = os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
         if gemini_key:
-            genai.configure(api_key=gemini_key)
+            self._gemini_client = genai.Client(api_key=gemini_key)
             self.gemini_configured = True
         else:
+            self._gemini_client = None
             self.gemini_configured = False
-
-        # Keep client reference for backward compat with image OCR in ai.py
-        self.client = genai if self.gemini_configured else None
 
     def is_configured(self) -> bool:
         return self.provider_configured
+
+    def vision_generate(self, prompt: str, image_base64: str, mime_type: str) -> str:
+        """Generate content from an image using Gemini vision.
+        Used by ai.py endpoints that need direct image OCR (upload-policy, upload-denial).
+        """
+        if not self.gemini_configured:
+            raise Exception("Gemini not configured -- check GEMINI_API_KEY")
+
+        image_bytes = base64.b64decode(image_base64)
+        response = self._gemini_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                prompt,
+            ],
+        )
+        return response.text
 
     async def _call_provider(self, system_prompt: str, user_prompt: str, language_instruction: str = None) -> str:
         """Make a call to the configured AI provider."""
@@ -271,43 +287,38 @@ USER QUESTION: {question}"""
             image_data = base64.b64decode(bill_image_base64)
             logger.info(f"[bill-validation] Decoded {len(image_data)} bytes of image data")
 
-            # Step 2: Open as PIL Image
-            logger.info("[bill-validation] Step 2: Opening image with PIL")
-            image = Image.open(io.BytesIO(image_data))
-            logger.info(f"[bill-validation] Image opened: size={image.size}, format={image.format}, mode={image.mode}")
-
-            # Step 3: Check Gemini is configured
+            # Step 2: Check Gemini is configured
             if not self.gemini_configured:
                 logger.error("[bill-validation] Gemini not configured - cannot process image")
                 return {"error": "Image processing requires Gemini configuration"}
 
-            # Step 4: Create Gemini model and run OCR
-            logger.info("[bill-validation] Step 4: Creating Gemini model (gemini-2.5-flash) for OCR")
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            logger.info("[bill-validation] Step 5: Calling generate_content for OCR...")
-            response = model.generate_content([
-                "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
-                image
-            ])
-            logger.info(f"[bill-validation] OCR response received, candidates={len(response.candidates) if response.candidates else 0}")
+            # Step 3: Call Gemini for OCR using new SDK
+            logger.info("[bill-validation] Step 3: Calling Gemini (gemini-2.5-flash) for OCR")
+            response = self._gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[
+                    types.Part.from_bytes(data=image_data, mime_type="image/jpeg"),
+                    "Extract all text from this medical bill. Include patient name, date of service, provider name, services rendered, charges, and any insurance information.",
+                ],
+            )
+            logger.info("[bill-validation] OCR response received")
 
-            # Step 6: Extract text from response
-            logger.info("[bill-validation] Step 6: Extracting text from OCR response")
+            # Step 4: Extract text from response
             bill_text = response.text
             logger.info(f"[bill-validation] Extracted {len(bill_text)} characters of bill text")
 
-            # Step 7: Load prompt and call AI provider for analysis
-            logger.info("[bill-validation] Step 7: Loading bill_validation prompt")
+            # Step 5: Load prompt and call AI provider for analysis
+            logger.info("[bill-validation] Step 5: Loading bill_validation prompt")
             system_prompt = load_prompt("bill_validation")
             logger.info(f"[bill-validation] Prompt loaded ({len(system_prompt)} chars)")
 
             bill_context = f"BILL TEXT:\n{bill_text}\n\nPOLICY DETAILS:\n{json.dumps(policy_data, indent=2)}"
-            logger.info(f"[bill-validation] Step 8: Calling AI provider for analysis ({len(bill_context)} chars context)")
+            logger.info(f"[bill-validation] Step 6: Calling AI provider for analysis ({len(bill_context)} chars context)")
             response_text = await self._call_provider(system_prompt, bill_context, language_instruction=language_instruction)
             logger.info(f"[bill-validation] Provider response received ({len(response_text)} chars)")
 
-            # Step 9: Parse JSON response
-            logger.info("[bill-validation] Step 9: Parsing JSON from provider response")
+            # Step 7: Parse JSON response
+            logger.info("[bill-validation] Step 7: Parsing JSON from provider response")
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
