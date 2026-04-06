@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, PolicyData, OptimizationResult } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
 
 interface OptimizationToolProps {
@@ -171,7 +172,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
             <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
               <p className="text-xs text-[#6B6B6B] uppercase tracking-widest mb-2">Potential Annual Savings</p>
               <p className="text-2xl font-bold text-[#0A6640]">
-                ${(result.annual_potential_savings || 0).toLocaleString()}
+                ${formatCurrency(result.annual_potential_savings || 0)}
               </p>
             </div>
 

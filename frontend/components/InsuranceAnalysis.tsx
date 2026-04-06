@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api, InsuranceInfo, MedicalBill } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
 
 interface InsuranceAnalysisProps {
@@ -195,7 +196,7 @@ export default function InsuranceAnalysis({ insuranceInfo, bills, onInsuranceCha
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">Deductible Progress</span>
                       <span className="font-medium">
-                        ${analysis.coverage_status.deductible.met.toLocaleString()} / ${analysis.coverage_status.deductible.annual.toLocaleString()}
+                        ${formatCurrency(analysis.coverage_status.deductible.met)} / ${formatCurrency(analysis.coverage_status.deductible.annual)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -205,7 +206,7 @@ export default function InsuranceAnalysis({ insuranceInfo, bills, onInsuranceCha
                       ></div>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      ${analysis.coverage_status.deductible.remaining.toLocaleString()} remaining
+                      ${formatCurrency(analysis.coverage_status.deductible.remaining)} remaining
                     </div>
                   </div>
 
@@ -213,7 +214,7 @@ export default function InsuranceAnalysis({ insuranceInfo, bills, onInsuranceCha
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-gray-600">Out-of-Pocket Progress</span>
                       <span className="font-medium">
-                        ${analysis.coverage_status.out_of_pocket.met.toLocaleString()} / ${analysis.coverage_status.out_of_pocket.annual_max.toLocaleString()}
+                        ${formatCurrency(analysis.coverage_status.out_of_pocket.met)} / ${formatCurrency(analysis.coverage_status.out_of_pocket.annual_max)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -223,7 +224,7 @@ export default function InsuranceAnalysis({ insuranceInfo, bills, onInsuranceCha
                       ></div>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      ${analysis.coverage_status.out_of_pocket.remaining.toLocaleString()} until max
+                      ${formatCurrency(analysis.coverage_status.out_of_pocket.remaining)} until max
                     </div>
                   </div>
 

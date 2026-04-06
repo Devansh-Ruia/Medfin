@@ -1,6 +1,7 @@
 'use client';
 
 import { DollarSign, PartyPopper } from 'lucide-react';
+import { formatCurrency } from '../lib/format';
 
 interface CostBreakdownProps {
   totalCost: number;
@@ -57,7 +58,7 @@ export default function VisualCostBreakdown({
     <div className={`bg-gray-50 rounded-xl ${compact ? 'p-3' : 'p-4'} my-4`}>
       {showLabels && (
         <p className="text-sm font-medium text-gray-700 mb-3">
-          Cost Breakdown for ${totalCost.toLocaleString()} Service
+          Cost Breakdown for ${formatCurrency(totalCost)} Service
         </p>
       )}
       
@@ -128,7 +129,7 @@ export default function VisualCostBreakdown({
       {/* Summary */}
       <div className={`mt-3 pt-3 border-t border-gray-200`}>
         <p className={`${compact ? 'text-base' : 'text-lg'} font-bold text-gray-900`}>
-          <DollarSign className="w-6 h-6" /> You pay: ${yourTotal.toLocaleString()}
+          <DollarSign className="w-6 h-6" /> You pay: ${formatCurrency(yourTotal)}
           {!compact && (
             <span className="text-sm font-normal text-gray-600 ml-2">
               ({yourPercent.toFixed(1)}% of total)
@@ -141,7 +142,7 @@ export default function VisualCostBreakdown({
           <div className="mt-3">
             <div className="flex justify-between text-xs text-gray-500 mb-1">
               <span>Progress to Out-of-Pocket Max</span>
-              <span>${currentOutOfPocket.toLocaleString()} / ${outOfPocketMax.toLocaleString()}</span>
+              <span>${formatCurrency(currentOutOfPocket)} / ${formatCurrency(outOfPocketMax)}</span>
             </div>
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 

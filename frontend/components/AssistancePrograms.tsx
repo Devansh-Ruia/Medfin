@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, InsuranceInfo, MedicalBill, AssistanceMatch } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 
 interface AssistanceProgramsProps {
   insuranceInfo: InsuranceInfo;
@@ -93,7 +94,7 @@ export default function AssistancePrograms({
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Potential Savings</div>
               <div className="text-2xl font-bold text-green-600">
-                ${totalSavings.toLocaleString()}
+                ${formatCurrency(totalSavings)}
               </div>
             </div>
 
@@ -140,7 +141,7 @@ export default function AssistancePrograms({
                         <div className="text-right">
                           <div className="text-sm text-gray-500">Max Benefit</div>
                           <div className="font-bold text-green-600">
-                            ${(program.estimated_savings || program.max_benefit || 0).toLocaleString()}
+                            ${formatCurrency(program.estimated_savings || program.max_benefit || 0)}
                           </div>
                         </div>
                       )}

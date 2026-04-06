@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { PolicyData } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import PolicySummary from './PolicySummary';
 import EstimationTool from './EstimationTool';
 import ValidationTool from './ValidationTool';
@@ -171,13 +172,13 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                 <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
                   <span className="text-sm text-[#6B6B6B]">Deductible</span>
                   <span className="text-sm font-medium text-[#0D0D0D] text-right">
-                    ${(policyData?.annual_deductible_individual || 500).toLocaleString()}
+                    ${formatCurrency(policyData?.annual_deductible_individual || 500)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
                   <span className="text-sm text-[#6B6B6B]">Out-of-Pocket Max</span>
                   <span className="text-sm font-medium text-[#0D0D0D] text-right">
-                    ${(policyData?.out_of_pocket_max_individual || 2500).toLocaleString()}
+                    ${formatCurrency(policyData?.out_of_pocket_max_individual || 2500)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
@@ -242,13 +243,13 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
                   {policyData?.annual_deductible_family != null && (
                     <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
                       <span className="text-sm text-[#6B6B6B]">Family Deductible</span>
-                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.annual_deductible_family.toLocaleString()}</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${formatCurrency(policyData.annual_deductible_family)}</span>
                     </div>
                   )}
                   {policyData?.out_of_pocket_max_family != null && (
                     <div className="flex justify-between py-2 border-b border-[#E5E2DC]">
                       <span className="text-sm text-[#6B6B6B]">Family OOP Max</span>
-                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${policyData.out_of_pocket_max_family.toLocaleString()}</span>
+                      <span className="text-sm font-medium text-[#0D0D0D] text-right">${formatCurrency(policyData.out_of_pocket_max_family)}</span>
                     </div>
                   )}
                   {policyData?.copay_specialist != null && (

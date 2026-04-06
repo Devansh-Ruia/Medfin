@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useFamily } from '../contexts/FamilyContext';
 import { useSavings } from '../contexts/SavingsContext';
 import { PolicyData } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import SavingsTracker from './SavingsTracker';
 
@@ -106,7 +107,7 @@ export default function FamilyDashboard({ policyData }: FamilyDashboardProps) {
           </div>
           <div className="bg-gray-50 rounded-xl p-4">
             <p className="text-sm text-gray-500 mb-1">Total Savings</p>
-            <p className="text-2xl font-bold text-emerald-600">${totalSavings.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-emerald-600">${formatCurrency(totalSavings)}</p>
           </div>
         </div>
       </div>
@@ -285,18 +286,18 @@ export default function FamilyDashboard({ policyData }: FamilyDashboardProps) {
               <div>
                 <p className="text-sm text-gray-500 mb-2">Total Deductible Met</p>
                 <p className="text-xl font-bold text-gray-900">
-                  ${familyMembers.reduce((sum, member) => 
+                  ${formatCurrency(familyMembers.reduce((sum, member) =>
                     sum + member.policies.reduce((policySum, policy) => policySum + policy.deductibleMet, 0), 0
-                  ).toLocaleString()}
+                  ))}
                 </p>
               </div>
               
               <div>
                 <p className="text-sm text-gray-500 mb-2">Total Out of Pocket Met</p>
                 <p className="text-xl font-bold text-gray-900">
-                  ${familyMembers.reduce((sum, member) => 
+                  ${formatCurrency(familyMembers.reduce((sum, member) =>
                     sum + member.policies.reduce((policySum, policy) => policySum + policy.outOfPocketMet, 0), 0
-                  ).toLocaleString()}
+                  ))}
                 </p>
               </div>
             </div>

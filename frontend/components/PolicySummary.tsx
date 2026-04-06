@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PolicyData } from '../lib/api';
+import { formatCurrency, formatNumber } from '../lib/format';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 
 interface PolicySummaryProps {
@@ -31,13 +32,13 @@ export default function PolicySummary({ policyData }: PolicySummaryProps) {
         <div className="flex justify-between py-2 border-b border-gray-100">
           <span className="text-muted">Deductible</span>
           <span className="font-semibold text-heading">
-            ${(policyData.annual_deductible_individual || 500).toLocaleString()}
+            ${formatCurrency(policyData.annual_deductible_individual || 500)}
           </span>
         </div>
         <div className="flex justify-between py-2 border-b border-gray-100">
           <span className="text-muted">Out-of-Pocket Max</span>
           <span className="font-semibold text-heading">
-            ${(policyData.out_of_pocket_max_individual || 2500).toLocaleString()}
+            ${formatCurrency(policyData.out_of_pocket_max_individual || 2500)}
           </span>
         </div>
         <div className="flex justify-between py-2 border-b border-gray-100">
@@ -105,7 +106,7 @@ export default function PolicySummary({ policyData }: PolicySummaryProps) {
                     <p className="text-heading font-medium">
                       {value === null ? 'N/A' : 
                          typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
-                         typeof value === 'number' ? value.toLocaleString() :
+                         typeof value === 'number' ? formatNumber(value) :
                          Array.isArray(value) ? value.join(', ') :
                          String(value)}
                     </p>

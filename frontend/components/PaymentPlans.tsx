@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, MedicalBill, PaymentPlanOption } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
 import { Star } from 'lucide-react';
 
@@ -62,14 +63,14 @@ export default function PaymentPlans({ bills, monthlyIncome }: PaymentPlansProps
         <div className="card">
           <div className="text-sm text-gray-500 mb-1">Total Debt</div>
           <div className="text-2xl font-bold text-gray-900">
-            ${totalDebt.toLocaleString()}
+            ${formatCurrency(totalDebt)}
           </div>
         </div>
 
         <div className="card">
           <div className="text-sm text-gray-500 mb-1">Monthly Income</div>
           <div className="text-2xl font-bold text-primary-600">
-            ${monthlyIncome.toLocaleString()}
+            ${formatCurrency(monthlyIncome)}
           </div>
         </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, PolicyData, PreVisitChecklist } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import { replaceJargon } from '../lib/jargonDictionary';
 import { event } from '../lib/analytics';
@@ -252,7 +253,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
             <div className="mb-4">
               <div className="flex justify-between text-sm text-[#6B6B6B] mb-2">
                 <span>Typical Range</span>
-                <span>${checklist.estimated_costs.typical_range_low.toLocaleString()} - ${checklist.estimated_costs.typical_range_high.toLocaleString()}</span>
+                <span>${formatCurrency(checklist.estimated_costs.typical_range_low)} - ${formatCurrency(checklist.estimated_costs.typical_range_high)}</span>
               </div>
             </div>
 
@@ -266,11 +267,11 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
             <div className="mt-4 p-4 bg-[#F9F8F6] rounded-none">
               <p className="text-sm text-[#6B6B6B]">
-                <strong>Your estimated cost:</strong> ${checklist.estimated_costs.your_cost_low.toLocaleString()} - ${checklist.estimated_costs.your_cost_high.toLocaleString()}
+                <strong>Your estimated cost:</strong> ${formatCurrency(checklist.estimated_costs.your_cost_low)} - ${formatCurrency(checklist.estimated_costs.your_cost_high)}
               </p>
               {checklist.estimated_costs.deductible_applies && (
                 <p className="text-sm text-[#6B6B6B] mt-1">
-                  You've reached your out-of-pocket max! Insurance pays 100% for covered services. Your deductible remaining: ${checklist.estimated_costs.deductible_remaining?.toLocaleString() || 'Unknown'}
+                  You've reached your out-of-pocket max! Insurance pays 100% for covered services. Your deductible remaining: ${formatCurrency(checklist.estimated_costs.deductible_remaining) || 'Unknown'}
                 </p>
               )}
             </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import { event } from '../lib/analytics';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 import { Search, Lightbulb, Check, ArrowRight } from 'lucide-react';
@@ -241,7 +242,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
           {/* Summary Header */}
           {result.financial_summary && (
             <div className="text-sm text-[#6B6B6B] mb-6">
-              Billed: ${(result.financial_summary?.billed_amount || 0).toLocaleString()} / Expected: ${(result.financial_summary?.expected_patient_responsibility || 0).toLocaleString()} / Potential savings: ${(result.financial_summary?.potential_savings || 0).toLocaleString()}
+              Billed: ${formatCurrency(result.financial_summary?.billed_amount || 0)} / Expected: ${formatCurrency(result.financial_summary?.expected_patient_responsibility || 0)} / Potential savings: ${formatCurrency(result.financial_summary?.potential_savings || 0)}
             </div>
           )}
 

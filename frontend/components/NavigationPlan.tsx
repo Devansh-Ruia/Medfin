@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api, NavigationPlan as NavigationPlanType, InsuranceInfo, MedicalBill } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
 import { ClipboardCopy } from 'lucide-react';
 
@@ -124,14 +125,14 @@ export default function NavigationPlan({
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Total Medical Debt</div>
               <div className="text-2xl font-bold text-gray-900">
-                ${plan.total_medical_debt.toLocaleString()}
+                ${formatCurrency(plan.total_medical_debt)}
               </div>
             </div>
 
             <div className="card">
               <div className="text-sm text-gray-500 mb-1">Estimated Savings</div>
               <div className="text-2xl font-bold text-green-600">
-                ${plan.estimated_total_savings.toLocaleString()}
+                ${formatCurrency(plan.estimated_total_savings)}
               </div>
             </div>
           </div>
@@ -158,7 +159,7 @@ export default function NavigationPlan({
                     <div className="flex items-center space-x-4 mt-2 text-sm">
                       {action.estimated_savings && (
                         <span className="text-green-600 font-medium">
-                          Save: ${action.estimated_savings.toLocaleString()}
+                          Save: ${formatCurrency(action.estimated_savings)}
                         </span>
                       )}
                       {action.estimated_timeframe && (

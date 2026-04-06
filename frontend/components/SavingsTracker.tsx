@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { api, PolicyData } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
 import { TrendingUp, AlertCircle, CheckCircle, FileText, Receipt, DollarSign } from 'lucide-react';
 
@@ -55,14 +56,14 @@ export default function SavingsTracker({ stats, onAddSavings, compact = false }:
   if (compact) {
     return (
       <div className="text-sm text-muted text-center">
-        Estimated savings: ${stats.totalSaved.toLocaleString()}  •  Time saved: ~{stats.estimatedTimeSaved} hours
+        Estimated savings: ${formatCurrency(stats.totalSaved)}  •  Time saved: ~{stats.estimatedTimeSaved} hours
       </div>
     );
   }
 
   return (
     <div className="text-sm text-muted text-center">
-      Estimated savings: ${stats.totalSaved.toLocaleString()}  •  Time saved: ~{stats.estimatedTimeSaved} hours
+      Estimated savings: ${formatCurrency(stats.totalSaved)}  •  Time saved: ~{stats.estimatedTimeSaved} hours
     </div>
   );
 }
