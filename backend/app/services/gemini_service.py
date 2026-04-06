@@ -12,6 +12,7 @@ from ..core.ai_provider import get_provider
 
 # Prompt loader
 from ..core.prompt_loader import load_prompt
+from ..core.text_utils import sanitize_ai_response
 
 # Search: Tavily
 from tavily import TavilyClient
@@ -155,6 +156,7 @@ class AIService:
             response_text = await self._call_provider(system_prompt, policy_text)
 
             # Try to extract JSON from response
+            response_text = sanitize_ai_response(response_text)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
@@ -205,10 +207,11 @@ class AIService:
             response_text = await self._call_provider_with_messages(messages, language_instruction=language_instruction)
 
             # Try to extract JSON from response
-            start = response_text.find('{')
-            end = response_text.rfind('}') + 1
+            cleaned = sanitize_ai_response(response_text)
+            start = cleaned.find('{')
+            end = cleaned.rfind('}') + 1
             if start != -1 and end > start:
-                return json.loads(response_text[start:end])
+                return json.loads(cleaned[start:end])
             return {"answer": response_text, "confidence": 70}
         except Exception as e:
             return {"error": str(e)}
@@ -273,11 +276,12 @@ USER QUESTION: {question}"""
             response_text = await self._call_provider_with_messages(messages, language_instruction=language_instruction)
 
             # Try to parse as JSON first (in case provider returns structured response)
-            start = response_text.find('{')
-            end = response_text.rfind('}') + 1
+            cleaned = sanitize_ai_response(response_text)
+            start = cleaned.find('{')
+            end = cleaned.rfind('}') + 1
             if start != -1 and end > start:
                 try:
-                    result = json.loads(response_text[start:end])
+                    result = json.loads(cleaned[start:end])
                     result["sources"] = sources
                     result["search_grounded"] = bool(sources)
                     return result
@@ -371,6 +375,7 @@ USER QUESTION: {question}"""
 
             # Step 7: Parse JSON response
             logger.info("[bill-validation] Step 7: Parsing JSON from provider response")
+            response_text = sanitize_ai_response(response_text)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
@@ -398,6 +403,7 @@ USER QUESTION: {question}"""
             response_text = await self._call_provider(system_prompt, context, language_instruction=language_instruction)
 
             # Try to extract JSON from response
+            response_text = sanitize_ai_response(response_text)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
@@ -423,6 +429,7 @@ USER QUESTION: {question}"""
             response_text = await self._call_provider(system_prompt, context, language_instruction=language_instruction)
 
             # Try to extract JSON from response
+            response_text = sanitize_ai_response(response_text)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:
@@ -450,6 +457,7 @@ USER QUESTION: {question}"""
             response_text = await self._call_provider(system_prompt, context, language_instruction=language_instruction)
 
             # Try to extract JSON from response
+            response_text = sanitize_ai_response(response_text)
             start = response_text.find('{')
             end = response_text.rfind('}') + 1
             if start != -1 and end > start:

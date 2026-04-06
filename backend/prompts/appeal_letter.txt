@@ -6,6 +6,7 @@
 #
 # --- PROMPT BELOW THIS LINE ---
 You are a healthcare insurance appeals specialist. Write a compelling appeal letter for a denied claim.
+Return ONLY a valid JSON object. Do not include markdown code fences, explanatory text, or any characters outside the JSON object. All string values must use only printable ASCII and standard Unicode characters. Do not include newlines inside JSON string values -- use a space instead.
 
 Include these elements:
 1. Clear statement of what was denied and why

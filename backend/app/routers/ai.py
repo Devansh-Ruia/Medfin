@@ -18,6 +18,7 @@ from ..security import (
 )
 from ..core.failure_logger import log_ai_error, log_parse_error, log_unsupported_format
 from ..core.prompt_loader import get_prompt_version
+from ..core.text_utils import sanitize_extracted_text, sanitize_ai_response
 
 router = APIRouter(tags=["ai"])
 
@@ -219,7 +220,8 @@ async def upload_policy(request: Request, file: UploadFile = File(...)):
                     extracted = page.extract_text()
                     if extracted:
                         policy_text += extracted + "\n"
-                logger.info(f"Extracted {len(policy_text)} characters from PDF")
+                policy_text = sanitize_extracted_text(policy_text)
+                logger.info(f"Extracted and sanitized {len(policy_text)} characters from PDF")
             except Exception as pdf_error:
                 logger.error(f"PDF extraction failed: {pdf_error}")
                 raise HTTPException(status_code=400, detail=f"Failed to read PDF: {str(pdf_error)}")
@@ -245,7 +247,8 @@ async def upload_policy(request: Request, file: UploadFile = File(...)):
                     image_base64,
                     f"image/{(image.format or 'PNG').lower()}",
                 )
-                logger.info(f"Extracted {len(policy_text)} characters from image")
+                policy_text = sanitize_extracted_text(policy_text)
+                logger.info(f"Extracted and sanitized {len(policy_text)} characters from image")
             except Exception as img_error:
                 logger.error(f"Image processing failed: {img_error}")
                 raise HTTPException(status_code=400, detail=f"Failed to process image: {str(img_error)}")
@@ -413,6 +416,9 @@ async def upload_bill(
             if not extracted_text:
                 # Gemini document fallback for scanned/image PDFs
                 extracted_text = gemini_service.extract_text_from_pdf_image(content)
+
+            extracted_text = sanitize_extracted_text(extracted_text)
+            logger.info(f"Sanitized bill text: {len(extracted_text)} chars")
 
             image_base64 = base64.b64encode(content).decode('utf-8')
             result = await gemini_service.validate_bill_against_policy(
@@ -602,6 +608,8 @@ async def upload_denial_letter(
                 # Scanned/image PDF -- fall back to Gemini document extraction
                 extracted_text = gemini_service.extract_text_from_pdf_image(content)
 
+            extracted_text = sanitize_extracted_text(extracted_text)
+            logger.info(f"[upload-denial] Sanitized denial letter text: {len(extracted_text)} chars")
             logger.info("[upload-denial] Parsing denial info from extracted PDF text...")
             text = await gemini_service._call_provider(
                 system_prompt="You extract structured data from insurance denial letters. Return only valid JSON.",
@@ -618,10 +626,19 @@ async def upload_denial_letter(
             )
         logger.info(f"[upload-denial] Vision response received: {len(text)} characters")
 
+        text = sanitize_ai_response(text)
         start = text.find('{')
         end = text.rfind('}') + 1
         if start != -1 and end > start:
-            denial_info = json.loads(text[start:end])
+            try:
+                denial_info = json.loads(text[start:end])
+            except json.JSONDecodeError as e:
+                logger.error(f"[upload-denial] JSON parse failed after sanitization: {e}")
+                logger.error(f"[upload-denial] Response preview: {text[:200]}")
+                raise HTTPException(
+                    status_code=500,
+                    detail="Could not parse the denial letter analysis. Try uploading a clearer document."
+                )
             logger.info(f"[upload-denial] Successfully parsed denial info: {denial_info}")
         else:
             logger.error(f"[upload-denial] Could not extract denial information")
