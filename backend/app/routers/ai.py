@@ -571,11 +571,10 @@ async def upload_denial_letter(
         # Reset file pointer if needed
         await file.seek(0)
 
-        image_base64 = base64.b64encode(content).decode()
-        logger.info(f"[upload-denial] Content encoded to base64")
+        logger.info(f"Denial upload: filename={file.filename}, content_type={file.content_type}, size={len(content)}")
 
-        # First extract denial info from image
-        denial_extraction_prompt = """Extract the following information from this denial letter image:
+        # First extract denial info from the uploaded document
+        denial_extraction_prompt = """Extract the following information from this denial letter:
         - denial_date (when the denial was sent)
         - service_description (what was denied)
         - service_date (date of service)
@@ -587,13 +586,36 @@ async def upload_denial_letter(
 
         Return as JSON with these exact keys. Use null for any missing information."""
 
-        logger.info("[upload-denial] Extracting denial information with vision model...")
-        # Extract denial info using Gemini vision
-        text = gemini_service.vision_generate(
-            denial_extraction_prompt,
-            image_base64,
-            file.content_type,
-        )
+        if file.content_type == "application/pdf":
+            # PyPDF2 handles text-based PDFs without using Gemini quota
+            try:
+                reader = PyPDF2.PdfReader(io.BytesIO(content))
+                extracted_text = "\n".join(
+                    page.extract_text() or "" for page in reader.pages
+                ).strip()
+                logger.info(f"PyPDF2 extracted {len(extracted_text)} chars from denial letter PDF")
+            except Exception as e:
+                logger.warning(f"PyPDF2 failed on denial PDF: {e}, falling back to Gemini")
+                extracted_text = ""
+
+            if not extracted_text:
+                # Scanned/image PDF -- fall back to Gemini document extraction
+                extracted_text = gemini_service.extract_text_from_pdf_image(content)
+
+            logger.info("[upload-denial] Parsing denial info from extracted PDF text...")
+            text = await gemini_service._call_provider(
+                system_prompt="You extract structured data from insurance denial letters. Return only valid JSON.",
+                user_prompt=denial_extraction_prompt + "\n\nDenial letter text:\n" + extracted_text
+            )
+        else:
+            # Image path (photographed denial letter)
+            image_base64 = base64.b64encode(content).decode()
+            logger.info("[upload-denial] Extracting denial information with vision model...")
+            text = gemini_service.vision_generate(
+                denial_extraction_prompt,
+                image_base64,
+                file.content_type,
+            )
         logger.info(f"[upload-denial] Vision response received: {len(text)} characters")
 
         start = text.find('{')
