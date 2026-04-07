@@ -62,7 +62,8 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/app/routers/ai.py''\\).read\\(\\)\\); print\\(''ai.py: OK''\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/app/routers/ai.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''ai.py: OK''\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/app/routers/ai.py''\\).read\\(\\)\\); print\\(''Syntax OK''\\)\")",
-      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/app/routers/ai.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''Syntax OK''\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''backend/app/routers/ai.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''Syntax OK''\\)\")",
+      "Bash(grep -r \"interface\\\\|type.*=\" /c/Users/super/Downloads/Desktop/medfin-1/frontend/components/*.tsx --include=\"*.tsx\")"
     ]
   }
 }

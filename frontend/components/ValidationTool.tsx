@@ -237,19 +237,24 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
       )}
 
       {/* Results */}
-      {result && (
+      {result && !result.validation_results && !result.financial_summary && !result.issues && (
+        <div className="border-l-2 border-[#C0392B] bg-[#FDF2F2] px-4 py-3 text-sm text-[#C0392B]">
+          The analysis returned an unexpected format. Please try again.
+        </div>
+      )}
+      {result && (result.validation_results || result.financial_summary || result.issues) && (
         <div className="space-y-6">
           {/* Summary Header */}
           {result.financial_summary && (
             <div className="text-sm text-[#6B6B6B] mb-6">
-              Billed: ${formatCurrency(result.financial_summary?.billed_amount || 0)} / Expected: ${formatCurrency(result.financial_summary?.expected_patient_responsibility || 0)} / Potential savings: ${formatCurrency(result.financial_summary?.potential_savings || 0)}
+              Billed: {formatCurrency(result.financial_summary?.billed_amount)} / Expected: {formatCurrency(result.financial_summary?.expected_patient_responsibility)} / Potential savings: {formatCurrency(result.financial_summary?.potential_savings)}
             </div>
           )}
 
           {/* Validation Results */}
           <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h3 className="text-xl font-bold text-[#0D0D0D] mb-6">Validation Results</h3>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="p-4 rounded-none text-center">
                 <p className="text-2xl">
@@ -282,20 +287,22 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
                 <p className="text-sm font-medium text-[#0D0D0D]">Coinsurance</p>
               </div>
               <div className="p-4 rounded-none text-center bg-[#F9F8F6] text-[#0D0D0D]">
-                <ConfidenceMeter value={result.confidence_score || 0} />
+                <ConfidenceMeter value={result.confidence_score ?? 0} />
               </div>
             </div>
 
             {/* Issues Section */}
             {(() => {
               // Normalize old format to new format for backward compatibility
-              const issues = result.issues || (result.issues_found || []).map((w: any) => ({
-                type: 'billing_error' as const,
-                severity: 'medium' as const,
-                description: typeof w === 'string' ? w : w.description || '',
-                solution: typeof w === 'string' ? 'Contact your provider billing department to discuss this charge.' : w.solution || '',
-                potential_savings: null
-              }));
+              const issues = (result.issues ?? []).length > 0
+                ? result.issues
+                : (result.issues_found ?? []).map((w: any) => ({
+                    type: 'billing_error' as const,
+                    severity: 'medium' as const,
+                    description: typeof w === 'string' ? w : w.description || '',
+                    solution: typeof w === 'string' ? 'Contact your provider billing department to discuss this charge.' : w.solution || '',
+                    potential_savings: null
+                  }));
 
               return issues && issues.length > 0 && (
                 <div className="space-y-4 mt-6">
@@ -359,24 +366,24 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
               <div className="mt-6 p-4 bg-[#F9F8F6] rounded-none">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-[#0D0D0D]">
-                    {result.summary.total_issues_found} issue{result.summary.total_issues_found !== 1 ? 's' : ''} found
+                    {result.summary?.total_issues_found ?? 0} issue{(result.summary?.total_issues_found ?? 0) !== 1 ? 's' : ''} found
                   </span>
-                  {result.summary.total_potential_savings > 0 && (
+                  {(result.summary?.total_potential_savings ?? 0) > 0 && (
                     <span className="text-sm font-semibold text-[#0A6640]">
-                      Potential savings: ${result.summary.total_potential_savings}
+                      Potential savings: {formatCurrency(result.summary?.total_potential_savings)}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-[#6B6B6B]">{result.summary.overall_assessment}</p>
+                <p className="text-sm text-[#6B6B6B]">{result.summary?.overall_assessment ?? ''}</p>
               </div>
             )}
 
             {/* Recommendations */}
-            {result.recommendations && result.recommendations.length > 0 && (
+            {(result.recommendations ?? []).length > 0 && (
               <div className="bg-[#E8F5EE] border-l-4 border-[#0A6640] rounded-none p-4">
                 <h4 className="text-sm font-medium text-[#0A6640] mb-3 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> Recommendations</h4>
                 <ul className="text-sm text-[#0A6640] space-y-2">
-                  {result.recommendations.map((rec, i) => (
+                  {(result.recommendations ?? []).map((rec, i) => (
                     <li key={i} className="flex gap-2">
                       <ArrowRight className="w-3 h-3 text-[#0A6640] mt-0.5 flex-shrink-0" />
                       <FormattedText text={rec} />

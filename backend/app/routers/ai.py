@@ -22,6 +22,158 @@ from ..core.text_utils import sanitize_extracted_text, sanitize_ai_response
 
 router = APIRouter(tags=["ai"])
 
+
+# --- Response validators ---
+# Fill missing fields with safe defaults before returning to the frontend.
+
+def validate_question_response(data: dict) -> dict:
+    defaults = {
+        "answer": "",
+        "relevant_policy_details": [],
+        "warnings": [],
+        "follow_up_questions": [],
+        "confidence": None,
+    }
+    for key, default in defaults.items():
+        if key not in data or data[key] is None:
+            if default is not None:
+                data[key] = default
+    return data
+
+
+def validate_bill_response(data: dict) -> dict:
+    defaults = {
+        "validation_results": {},
+        "issues": [],
+        "issues_found": [],
+        "recommendations": [],
+        "confidence_score": None,
+    }
+    for key, default in defaults.items():
+        if key not in data or data[key] is None:
+            if default is not None:
+                data[key] = default
+    # Ensure financial_summary sub-fields exist
+    if "financial_summary" in data and isinstance(data["financial_summary"], dict):
+        fs_defaults = {
+            "billed_amount": None,
+            "expected_insurance_payment": None,
+            "expected_patient_responsibility": None,
+            "actual_patient_responsibility": None,
+            "potential_savings": None,
+        }
+        for key, default in fs_defaults.items():
+            if key not in data["financial_summary"]:
+                data["financial_summary"][key] = default
+    # Ensure validation_results sub-fields exist
+    if "validation_results" in data and isinstance(data["validation_results"], dict):
+        vr_defaults = {
+            "services_covered": [],
+            "services_not_covered": [],
+            "deductible_applied_correctly": None,
+            "copays_correct": None,
+            "coinsurance_correct": None,
+        }
+        for key, default in vr_defaults.items():
+            if key not in data["validation_results"] or data["validation_results"][key] is None:
+                if default is not None:
+                    data["validation_results"][key] = default
+    return data
+
+
+def validate_optimize_response(data: dict) -> dict:
+    defaults = {
+        "current_plan_rating": None,
+        "fit_for_needs": "",
+        "annual_potential_savings": None,
+        "optimizations": [],
+        "alternative_plans": [],
+        "action_items": [],
+        "summary": "",
+    }
+    for key, default in defaults.items():
+        if key not in data or data[key] is None:
+            if default is not None:
+                data[key] = default
+    return data
+
+
+def validate_pre_visit_response(data: dict) -> dict:
+    defaults = {
+        "visit_type": "",
+        "questions_to_ask_provider": [],
+        "questions_to_ask_insurance": [],
+        "documents_to_request_after": [],
+        "network_warnings": [],
+        "money_saving_tips": [],
+        "coverage_summary": "",
+    }
+    for key, default in defaults.items():
+        if key not in data or data[key] is None:
+            if default is not None:
+                data[key] = default
+    # Ensure estimated_costs sub-fields exist
+    if "estimated_costs" in data and isinstance(data["estimated_costs"], dict):
+        ec_defaults = {
+            "typical_range_low": None,
+            "typical_range_high": None,
+            "your_cost_low": None,
+            "your_cost_high": None,
+            "deductible_applies": None,
+            "deductible_remaining": None,
+            "coinsurance_rate": None,
+            "copay_if_applicable": None,
+        }
+        for key, default in ec_defaults.items():
+            if key not in data["estimated_costs"]:
+                data["estimated_costs"][key] = default
+    # Ensure prior_authorization sub-fields exist
+    if "prior_authorization" in data and isinstance(data["prior_authorization"], dict):
+        pa_defaults = {
+            "likely_required": None,
+            "reason": "",
+            "how_to_obtain": "",
+            "typical_timeline": "",
+            "consequence_if_skipped": "",
+        }
+        for key, default in pa_defaults.items():
+            if key not in data["prior_authorization"] or data["prior_authorization"][key] is None:
+                if default is not None:
+                    data["prior_authorization"][key] = default
+    return data
+
+
+def validate_appeal_response(data: dict) -> dict:
+    # Ensure top-level fields
+    if "next_steps" not in data or data["next_steps"] is None:
+        data["next_steps"] = []
+    # Ensure analysis sub-fields exist
+    if "analysis" in data and isinstance(data["analysis"], dict):
+        analysis_defaults = {
+            "denial_weakness": "",
+            "supporting_policy_language": [],
+            "applicable_regulations": [],
+            "success_likelihood": None,
+            "success_reasoning": None,
+        }
+        for key, default in analysis_defaults.items():
+            if key not in data["analysis"] or data["analysis"][key] is None:
+                if default is not None:
+                    data["analysis"][key] = default
+    # Ensure letter sub-fields exist
+    if "letter" in data and isinstance(data["letter"], dict):
+        letter_defaults = {
+            "subject_line": "",
+            "letter_body": "",
+            "attachments_needed": [],
+            "deadline": "Check your policy for appeal deadline details.",
+        }
+        for key, default in letter_defaults.items():
+            if key not in data["letter"] or data["letter"][key] is None:
+                if default is not None:
+                    data["letter"][key] = default
+    return data
+
 LANGUAGE_INSTRUCTIONS = {
     "en": "Respond in English.",
     "es": "Responde siempre en español formal.",
@@ -307,7 +459,7 @@ async def ask_policy_question(request: Request, body: QuestionRequest):
         if "error" in result:
             log_security_event("question_failed", {"error": result["error"]}, request)
             raise HTTPException(status_code=500, detail=result["error"])
-        return result
+        return validate_question_response(result)
     except HTTPException:
         raise
     except Exception as e:
@@ -335,7 +487,7 @@ async def validate_bill(request: Request, body: BillValidationRequest):
         )
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
-        return result
+        return validate_bill_response(result)
     except HTTPException:
         raise
     except Exception as e:
@@ -443,7 +595,7 @@ async def upload_bill(
             raise HTTPException(status_code=500, detail=result["error"])
 
         logger.info("=== UPLOAD BILL SUCCESS ===")
-        return result
+        return validate_bill_response(result) if isinstance(result, dict) else result
 
     except HTTPException:
         raise
@@ -479,7 +631,7 @@ async def optimize_policy(request: Request, body: OptimizationRequest):
         )
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
-        return result
+        return validate_optimize_response(result)
     except HTTPException:
         raise
     except Exception as e:
@@ -507,7 +659,7 @@ async def generate_pre_visit_checklist(request: Request, body: PreVisitRequest):
         )
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
-        return result
+        return validate_pre_visit_response(result)
     except HTTPException:
         raise
     except Exception as e:
@@ -535,7 +687,7 @@ async def generate_appeal_letter(request: Request, body: AppealRequest):
         )
         if "error" in result:
             raise HTTPException(status_code=500, detail=result["error"])
-        return result
+        return validate_appeal_response(result)
     except HTTPException:
         raise
     except Exception as e:
@@ -660,6 +812,7 @@ async def upload_denial_letter(
             logger.error(f"[upload-denial] Error in appeal generation: {result['error']}")
             raise HTTPException(status_code=500, detail=result["error"])
 
+        result = validate_appeal_response(result)
         # Include extracted denial info in response
         result["extracted_denial_info"] = denial_info
         logger.info("[upload-denial] Upload process completed successfully")

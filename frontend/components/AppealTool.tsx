@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { api, PolicyData, AppealLetter, DenialInfo } from '../lib/api';
+import { formatCurrency } from '../lib/format';
 import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
 import { event } from '../lib/analytics';
@@ -33,7 +34,7 @@ export default function AppealTool({ policyData }: AppealToolProps) {
     try {
       const result = await api.uploadDenialLetter(file, policyData, tone);
       setAppealLetter(result);
-      setExtractedInfo(result.extracted_denial_info);
+      setExtractedInfo(result?.extracted_denial_info ?? null);
     } catch (err) {
       console.error(err);
       setError('Failed to process denial letter. Please try again.');
@@ -643,7 +644,7 @@ const downloadAsPDF = async () => {
                 <div>
                   <span className="font-medium text-gray-700">Amount:</span>
                   <span className="ml-2 text-gray-900">
-                    {extractedInfo.amount_denied ? `$${extractedInfo.amount_denied}` : 'Not found'}
+                    {extractedInfo.amount_denied != null ? formatCurrency(extractedInfo.amount_denied) : 'Not found'}
                   </span>
                 </div>
                 <div>

@@ -156,7 +156,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
     <div className="space-y-4">
       {/* Main Answer */}
       <div className="prose prose-sm max-w-none">
-        {parseMarkdown(data.answer)}
+        {parseMarkdown(data?.answer ?? '')}
       </div>
       
       {/* Web Search Indicator */}
@@ -204,13 +204,13 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       )}
 
       {/* Warnings */}
-      {data.warnings && data.warnings.length > 0 && (
+      {(data?.warnings ?? []).length > 0 && (
         <div className="bg-[#FFFBEB] border border-[#D97706] rounded-none p-4">
           <h4 className="font-semibold text-[#D97706] mb-3 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" /> Important Notes
           </h4>
           <ul className="space-y-2">
-            {data.warnings.map((warning: string, i: number) => (
+            {(data?.warnings ?? []).map((warning: string, i: number) => (
               <li key={i} className="text-sm text-[#D97706] flex items-start gap-2">
                 <span className="text-[#D97706] mt-0.5">•</span>
                 <span>{warning}</span>
@@ -221,7 +221,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       )}
 
       {/* Policy Details Referenced */}
-      {data.relevant_policy_details && data.relevant_policy_details.length > 0 && (
+      {(data?.relevant_policy_details ?? []).length > 0 && (
         <div className="border border-[#E5E2DC] rounded-none">
           <button
             onClick={() => setShowDetails(!showDetails)}
@@ -235,7 +235,7 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
           {showDetails && (
             <div className="px-4 pb-3 border-t border-[#E5E2DC]">
               <ul className="space-y-2 mt-3">
-                {data.relevant_policy_details.map((detail: string, i: number) => (
+                {(data?.relevant_policy_details ?? []).map((detail: string, i: number) => (
                   <li key={i} className="text-sm text-[#6B6B6B] flex items-start gap-2">
                     <span className="text-[#6B6B6B] mt-0.5">•</span>
                     <span>{detail}</span>
@@ -248,11 +248,11 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       )}
 
       {/* Follow-up Questions */}
-      {data.follow_up_questions && data.follow_up_questions.length > 0 && (
+      {(data?.follow_up_questions ?? []).length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium text-[#0D0D0D]">Follow-up Questions:</p>
           <div className="flex flex-wrap gap-2">
-            {data.follow_up_questions.map((question, i) => (
+            {(data?.follow_up_questions ?? []).map((question, i) => (
               <button
                 key={i}
                 onClick={() => onFollowUp(question)}
@@ -266,9 +266,9 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
       )}
 
       {/* Confidence Score */}
-      {data.confidence && (
+      {data?.confidence != null && (
         <div className="pt-3 border-t border-[#E5E2DC]">
-          <ConfidenceMeter confidence={data.confidence} />
+          <ConfidenceMeter confidence={data.confidence ?? 0} />
         </div>
       )}
     </div>
@@ -311,10 +311,10 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
       
       const assistantMessage: Message = {
         role: 'assistant',
-        content: response.answer,
+        content: response?.answer ?? 'No answer was returned. Please try again.',
         data: response,
-        sources: response.sources,
-        search_grounded: response.search_grounded,
+        sources: response?.sources ?? undefined,
+        search_grounded: response?.search_grounded ?? undefined,
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {

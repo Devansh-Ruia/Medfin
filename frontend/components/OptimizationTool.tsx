@@ -167,17 +167,22 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
       ) : (
         <div className="space-y-6">
           {/* Results */}
+          {!result.optimizations && !result.summary && !result.alternative_plans ? (
+            <div className="border-l-2 border-[#C0392B] bg-[#FDF2F2] px-4 py-3 text-sm text-[#C0392B]">
+              The analysis returned an unexpected format. Please try again.
+            </div>
+          ) : (
           <div className="space-y-6">
             {/* Potential Annual Savings */}
             <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
               <p className="text-xs text-[#6B6B6B] uppercase tracking-widest mb-2">Potential Annual Savings</p>
               <p className="text-2xl font-bold text-[#0A6640]">
-                ${formatCurrency(result.annual_potential_savings || 0)}
+                {formatCurrency(result?.annual_potential_savings)}
               </p>
             </div>
 
             {/* Summary */}
-            {result.summary && (
+            {result?.summary && (
               <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-2">AI Summary</h3>
                 <p className="text-sm text-[#6B6B6B]">{result.summary}</p>
@@ -185,11 +190,11 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
             )}
 
             {/* Optimizations */}
-            {result.optimizations && result.optimizations.length > 0 && (
+            {(result?.optimizations ?? []).length > 0 && (
               <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Optimization Opportunities</h3>
                 <div className="space-y-4">
-                  {result.optimizations
+                  {(result?.optimizations ?? [])
                     .sort((a, b) => a.priority - b.priority)
                     .map((opt, i) => (
                       <div key={i} className="border-l-4 border-l-[#C0392B] bg-[#FDF2F2] p-4 rounded-none">
@@ -204,7 +209,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
                           {opt.potential_savings > 0 && (
                             <div className="text-right ml-4">
                               <p className="text-sm text-[#6B6B6B]">Save up to</p>
-                              <p className="text-sm font-semibold text-[#0A6640]">${opt.potential_savings}</p>
+                              <p className="text-sm font-semibold text-[#0A6640]">{formatCurrency(opt.potential_savings)}</p>
                             </div>
                           )}
                         </div>
@@ -216,11 +221,11 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
             )}
 
             {/* Alternative Plans */}
-            {result.alternative_plans && result.alternative_plans.length > 0 && (
+            {(result?.alternative_plans ?? []).length > 0 && (
               <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Alternative Plans to Consider</h3>
                 <div className="space-y-4">
-                  {result.alternative_plans.map((plan, i) => (
+                  {(result?.alternative_plans ?? []).map((plan, i) => (
                     <div key={i} className="p-4 border border-[#E5E2DC] rounded-none">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold text-[#0D0D0D]">{plan.plan_type}</h4>
@@ -242,11 +247,11 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
             )}
 
             {/* Action Items */}
-            {result.action_items && result.action_items.length > 0 && (
+            {(result?.action_items ?? []).length > 0 && (
               <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Action Items</h3>
                 <div className="space-y-3">
-                  {result.action_items
+                  {(result?.action_items ?? [])
                     .sort((a, b) => a.priority - b.priority)
                     .map((item, i) => (
                       <div key={i} className="flex items-center gap-4 p-3 bg-[#F9F8F6] rounded-none">
@@ -274,6 +279,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
               Update My Needs & Re-analyze
             </button>
           </div>
+          )}
         </div>
       )}
 

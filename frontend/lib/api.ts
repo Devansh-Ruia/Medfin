@@ -454,14 +454,14 @@ export interface PolicyData {
 }
 
 export interface BillValidationResult {
-  bill_extracted: any;
-  validation_results: {
-    services_covered: string[];
-    services_not_covered: string[];
-    deductible_applied_correctly: boolean;
-    copays_correct: boolean;
-    coinsurance_correct: boolean;
-  };
+  bill_extracted?: any;
+  validation_results?: {
+    services_covered?: string[] | null;
+    services_not_covered?: string[] | null;
+    deductible_applied_correctly?: boolean | null;
+    copays_correct?: boolean | null;
+    coinsurance_correct?: boolean | null;
+  } | null;
   // New format - issues with solutions
   issues?: Array<{
     type: 'overcharge' | 'billing_error' | 'coverage_gap' | 'duplicate' | 'not_covered' | 'coding_error';
@@ -469,88 +469,88 @@ export interface BillValidationResult {
     description: string;
     solution: string;
     potential_savings: number | null;
-  }>;
+  }> | null;
   // Legacy format - for backward compatibility
-  issues_found?: string[];
-  financial_summary: {
-    billed_amount: number;
-    expected_insurance_payment: number;
-    expected_patient_responsibility: number;
-    actual_patient_responsibility: number;
-    potential_savings: number;
-  };
-  recommendations: string[];
-  confidence_score: number;
+  issues_found?: string[] | null;
+  financial_summary?: {
+    billed_amount?: number | null;
+    expected_insurance_payment?: number | null;
+    expected_patient_responsibility?: number | null;
+    actual_patient_responsibility?: number | null;
+    potential_savings?: number | null;
+  } | null;
+  recommendations?: string[] | null;
+  confidence_score?: number | null;
   // New summary format
   summary?: {
-    total_issues_found: number;
-    total_potential_savings: number;
-    overall_assessment: string;
-  };
+    total_issues_found?: number | null;
+    total_potential_savings?: number | null;
+    overall_assessment?: string | null;
+  } | null;
 }
 
 export interface QuestionAnswer {
-  answer: string;
-  relevant_policy_details: string[];
+  answer?: string | null;
+  relevant_policy_details?: string[] | null;
   estimated_costs?: any;
-  warnings: string[];
-  follow_up_questions: string[];
-  confidence: number;
-  sources?: Array<{ title: string; url: string }>;
-  search_grounded?: boolean;
+  warnings?: string[] | null;
+  follow_up_questions?: string[] | null;
+  confidence?: number | null;
+  sources?: Array<{ title: string; url: string }> | null;
+  search_grounded?: boolean | null;
 }
 
 export interface OptimizationResult {
-  current_plan_rating: number;
-  fit_for_needs: string;
-  annual_potential_savings: number;
-  optimizations: Array<{
+  current_plan_rating?: number | null;
+  fit_for_needs?: string | null;
+  annual_potential_savings?: number | null;
+  optimizations?: Array<{
     category: string;
     recommendation: string;
     potential_savings: number;
     effort_level: string;
     priority: number;
-  }>;
-  alternative_plans: Array<{
+  }> | null;
+  alternative_plans?: Array<{
     plan_type: string;
     why_consider: string;
     estimated_premium_change: number;
     coverage_trade_offs: string;
     best_for: string;
-  }>;
-  action_items: Array<{
+  }> | null;
+  action_items?: Array<{
     action: string;
     timeline: string;
     priority: number;
-  }>;
-  summary: string;
+  }> | null;
+  summary?: string | null;
 }
 
 export interface PreVisitChecklist {
-  visit_type: string;
-  estimated_costs: {
-    typical_range_low: number;
-    typical_range_high: number;
-    your_cost_low: number;
-    your_cost_high: number;
-    deductible_applies: boolean;
-    deductible_remaining: number | null;
-    coinsurance_rate: number;
-    copay_if_applicable: number | null;
-  };
-  prior_authorization: {
-    likely_required: boolean;
-    reason: string;
-    how_to_obtain: string;
-    typical_timeline: string;
-    consequence_if_skipped: string;
-  };
-  questions_to_ask_provider: string[];
-  questions_to_ask_insurance: string[];
-  documents_to_request_after: string[];
-  network_warnings: string[];
-  money_saving_tips: string[];
-  coverage_summary: string;
+  visit_type?: string | null;
+  estimated_costs?: {
+    typical_range_low?: number | null;
+    typical_range_high?: number | null;
+    your_cost_low?: number | null;
+    your_cost_high?: number | null;
+    deductible_applies?: boolean | null;
+    deductible_remaining?: number | null;
+    coinsurance_rate?: number | null;
+    copay_if_applicable?: number | null;
+  } | null;
+  prior_authorization?: {
+    likely_required?: boolean | null;
+    reason?: string | null;
+    how_to_obtain?: string | null;
+    typical_timeline?: string | null;
+    consequence_if_skipped?: string | null;
+  } | null;
+  questions_to_ask_provider?: string[] | null;
+  questions_to_ask_insurance?: string[] | null;
+  documents_to_request_after?: string[] | null;
+  network_warnings?: string[] | null;
+  money_saving_tips?: string[] | null;
+  coverage_summary?: string | null;
 }
 
 export interface AppealLetter {

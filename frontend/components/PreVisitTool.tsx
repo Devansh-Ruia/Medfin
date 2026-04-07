@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { api, PolicyData, PreVisitChecklist } from '../lib/api';
-import { formatCurrency } from '../lib/format';
+import { formatCurrency, formatBoolean } from '../lib/format';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import { replaceJargon } from '../lib/jargonDictionary';
 import { event } from '../lib/analytics';
@@ -224,7 +224,12 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
       )}
 
       {/* Results */}
-      {checklist && (
+      {checklist && !checklist.estimated_costs && !checklist.prior_authorization && (
+        <div className="border-l-2 border-[#C0392B] bg-[#FDF2F2] px-4 py-3 text-sm text-[#C0392B]">
+          The analysis returned an unexpected format. Please try again.
+        </div>
+      )}
+      {checklist && (checklist.estimated_costs || checklist.prior_authorization) && (
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
@@ -239,65 +244,70 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
                 Plan Another Visit
               </button>
             </div>
-            
-            <p 
+
+            {checklist?.coverage_summary && (
+            <p
               className="text-[#6B6B6B]"
               dangerouslySetInnerHTML={{ __html: replaceJargon(checklist.coverage_summary) }}
             />
+            )}
           </div>
 
           {/* Cost Breakdown */}
+          {checklist.estimated_costs && (
           <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5" /> Estimated Costs</h4>
-            
+
             <div className="mb-4">
               <div className="flex justify-between text-sm text-[#6B6B6B] mb-2">
                 <span>Typical Range</span>
-                <span>${formatCurrency(checklist.estimated_costs.typical_range_low)} - ${formatCurrency(checklist.estimated_costs.typical_range_high)}</span>
+                <span>{formatCurrency(checklist.estimated_costs?.typical_range_low)} - {formatCurrency(checklist.estimated_costs?.typical_range_high)}</span>
               </div>
             </div>
 
             <VisualCostBreakdown
-              totalCost={checklist.estimated_costs.typical_range_high}
-              deductiblePortion={checklist.estimated_costs.deductible_applies ? Math.min(checklist.estimated_costs.deductible_remaining || 0, checklist.estimated_costs.your_cost_high) : 0}
-              copayPortion={checklist.estimated_costs.copay_if_applicable || 0}
-              coinsurancePortion={checklist.estimated_costs.your_cost_high - (checklist.estimated_costs.copay_if_applicable || 0) - (checklist.estimated_costs.deductible_applies ? Math.min(checklist.estimated_costs.deductible_remaining || 0, checklist.estimated_costs.your_cost_high) : 0)}
-              insurancePays={checklist.estimated_costs.typical_range_high - checklist.estimated_costs.your_cost_high}
+              totalCost={checklist.estimated_costs?.typical_range_high ?? 0}
+              deductiblePortion={checklist.estimated_costs?.deductible_applies ? Math.min(checklist.estimated_costs?.deductible_remaining ?? 0, checklist.estimated_costs?.your_cost_high ?? 0) : 0}
+              copayPortion={checklist.estimated_costs?.copay_if_applicable ?? 0}
+              coinsurancePortion={(checklist.estimated_costs?.your_cost_high ?? 0) - (checklist.estimated_costs?.copay_if_applicable ?? 0) - (checklist.estimated_costs?.deductible_applies ? Math.min(checklist.estimated_costs?.deductible_remaining ?? 0, checklist.estimated_costs?.your_cost_high ?? 0) : 0)}
+              insurancePays={(checklist.estimated_costs?.typical_range_high ?? 0) - (checklist.estimated_costs?.your_cost_high ?? 0)}
             />
 
             <div className="mt-4 p-4 bg-[#F9F8F6] rounded-none">
               <p className="text-sm text-[#6B6B6B]">
-                <strong>Your estimated cost:</strong> ${formatCurrency(checklist.estimated_costs.your_cost_low)} - ${formatCurrency(checklist.estimated_costs.your_cost_high)}
+                <strong>Your estimated cost:</strong> {formatCurrency(checklist.estimated_costs?.your_cost_low)} - {formatCurrency(checklist.estimated_costs?.your_cost_high)}
               </p>
-              {checklist.estimated_costs.deductible_applies && (
+              {checklist.estimated_costs?.deductible_applies && (
                 <p className="text-sm text-[#6B6B6B] mt-1">
-                  You've reached your out-of-pocket max! Insurance pays 100% for covered services. Your deductible remaining: ${formatCurrency(checklist.estimated_costs.deductible_remaining) || 'Unknown'}
+                  You've reached your out-of-pocket max! Insurance pays 100% for covered services. Your deductible remaining: {formatCurrency(checklist.estimated_costs?.deductible_remaining, 'Unknown')}
                 </p>
               )}
             </div>
           </div>
+          )}
 
           {/* Prior Authorization */}
-          {checklist.prior_authorization.likely_required && (
+          {checklist.prior_authorization?.likely_required && (
             <div className="bg-[#FFFBEB] border-l-4 border-[#D97706] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#D97706] mb-3 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Prior Authorization Required</h4>
               <div className="space-y-2 text-[#D97706]">
-                <p><strong>Why:</strong> {checklist.prior_authorization.reason}</p>
-                <p><strong>How to obtain:</strong> {checklist.prior_authorization.how_to_obtain}</p>
-                <p><strong>Timeline:</strong> {checklist.prior_authorization.typical_timeline}</p>
-                <p><strong>If skipped:</strong> {checklist.prior_authorization.consequence_if_skipped}</p>
+                <p><strong>Why:</strong> {checklist.prior_authorization?.reason ?? ''}</p>
+                <p><strong>How to obtain:</strong> {checklist.prior_authorization?.how_to_obtain ?? ''}</p>
+                <p><strong>Timeline:</strong> {checklist.prior_authorization?.typical_timeline ?? ''}</p>
+                <p><strong>If skipped:</strong> {checklist.prior_authorization?.consequence_if_skipped ?? ''}</p>
               </div>
             </div>
           )}
 
           {/* Questions to Ask */}
+          {(checklist?.questions_to_ask_provider ?? []).length > 0 && (
           <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Questions to Ask Your Provider</h4>
             <ul className="space-y-2">
-              {checklist.questions_to_ask_provider.map((question, i) => (
+              {(checklist?.questions_to_ask_provider ?? []).map((question, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="text-[#0A6640] mt-1">•</span>
-                  <span 
+                  <span
                     className="text-[#0D0D0D]"
                     dangerouslySetInnerHTML={{ __html: replaceJargon(question) }}
                   />
@@ -305,16 +315,17 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
               ))}
             </ul>
           </div>
+          )}
 
           {/* Questions for Insurance */}
-          {checklist.questions_to_ask_insurance.length > 0 && (
+          {(checklist?.questions_to_ask_insurance ?? []).length > 0 && (
             <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Questions to Call Your Insurance About</h4>
               <ul className="space-y-2">
-                {checklist.questions_to_ask_insurance.map((question, i) => (
+                {(checklist?.questions_to_ask_insurance ?? []).map((question, i) => (
                   <li key={i} className="flex gap-2">
                     <span className="text-[#0A6640] mt-1">•</span>
-                    <span 
+                    <span
                       className="text-[#0D0D0D]"
                       dangerouslySetInnerHTML={{ __html: replaceJargon(question) }}
                     />
@@ -325,13 +336,14 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
           )}
 
           {/* Documents to Request */}
+          {(checklist?.documents_to_request_after ?? []).length > 0 && (
           <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Documents to Request After Your Visit</h4>
             <ul className="space-y-2">
-              {checklist.documents_to_request_after.map((doc, i) => (
+              {(checklist?.documents_to_request_after ?? []).map((doc, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="text-[#0A6640] mt-1">•</span>
-                  <span 
+                  <span
                     className="text-[#0D0D0D]"
                     dangerouslySetInnerHTML={{ __html: replaceJargon(doc) }}
                   />
@@ -339,16 +351,17 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
               ))}
             </ul>
           </div>
+          )}
 
           {/* Network Warnings */}
-          {checklist.network_warnings.length > 0 && (
+          {(checklist?.network_warnings ?? []).length > 0 && (
             <div className="bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#C0392B] mb-4">Network Warnings</h4>
               <ul className="space-y-2">
-                {checklist.network_warnings.map((warning, i) => (
+                {(checklist?.network_warnings ?? []).map((warning, i) => (
                   <li key={i} className="flex gap-2">
                     <span className="text-[#C0392B] mt-1">•</span>
-                    <span 
+                    <span
                       className="text-[#C0392B]"
                       dangerouslySetInnerHTML={{ __html: replaceJargon(warning) }}
                     />
@@ -359,13 +372,14 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
           )}
 
           {/* Money-Saving Tips */}
+          {(checklist?.money_saving_tips ?? []).length > 0 && (
           <div className="bg-[#E8F5EE] border-l-4 border-[#0A6640] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0A6640] mb-4 flex items-center gap-2"><Lightbulb className="w-5 h-5" /> Money-Saving Tips</h4>
             <ul className="space-y-2">
-              {checklist.money_saving_tips.map((tip, i) => (
+              {(checklist?.money_saving_tips ?? []).map((tip, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="text-[#0A6640] mt-1">•</span>
-                  <span 
+                  <span
                     className="text-[#0A6640]"
                     dangerouslySetInnerHTML={{ __html: replaceJargon(tip) }}
                   />
@@ -373,6 +387,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
               ))}
             </ul>
           </div>
+          )}
         </div>
       )}
 

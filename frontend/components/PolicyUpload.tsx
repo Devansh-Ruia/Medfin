@@ -50,8 +50,8 @@ export default function PolicyUpload({
 
       const granted = await requestNotificationPermission();
       if (granted) {
-        const score = result.policy_data.policy_strength_score;
-        const issueCount = result.policy_data.coverage_gaps?.length ?? 0;
+        const score = result?.policy_data?.policy_strength_score ?? 'N/A';
+        const issueCount = (result?.policy_data?.coverage_gaps ?? []).length;
         sendLocalNotification(
           'Policy analysis complete',
           `Your plan scored ${score}/100. ${issueCount} coverage gap${issueCount !== 1 ? 's' : ''} identified.`
