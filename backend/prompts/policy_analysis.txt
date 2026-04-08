@@ -12,29 +12,38 @@ IMPORTANT: Return a flat JSON object with these EXACT keys. Do NOT use nested ob
 MONETARY VALUES: Return as NUMBERS (e.g., 500, not "$500")
 
 Required keys:
-- individual_deductible: number
-- family_deductible: number
-- individual_oop_max: number
-- family_oop_max: number
-- primary_care_copay: number
+- plan_name: string (name of the plan)
+- insurance_company: string (name of the insurer)
+- plan_type: string ("PPO", "HMO", "EPO", "POS")
+- effective_date: string (effective date of the plan, e.g. "01/01/2025")
+- plan_id: string (plan or group ID number)
+- score: number (overall quality score from 1-100 based on coverage breadth, cost sharing, and network)
+- score_reasoning: string (brief explanation of the score)
+- deductible_individual: number
+- deductible_family: number
+- out_of_pocket_max_individual: number
+- out_of_pocket_max_family: number
+- pcp_copay: number (primary care copay)
 - specialist_copay: number
 - urgent_care_copay: number
 - er_copay: number
-- prescription_copay: number
-- coinsurance: number (as decimal, e.g., 0.2 for 20%)
-- has_hsa: boolean
-- has_fsa: boolean
+- coinsurance: string (e.g. "20%" or "80/20")
 - network_type: string ("PPO", "HMO", "EPO", "POS")
 - referral_required: boolean
-- preauth_required: boolean
-- mental_health_coverage: boolean
-- preventive_care_coverage: boolean
-- maternity_coverage: boolean
-- dental_coverage: boolean
-- vision_coverage: boolean
-- prescription_coverage: boolean
-- out_of_network_coverage: boolean
-- emergency_coverage: boolean
-- urgent_care_coverage: boolean
+- prior_authorization_required: boolean
+- mental_health_coverage: string (e.g. "Covered, $30 copay" or "Not covered")
+- prescription_tier1: string (generic drugs cost, e.g. "$10 copay")
+- prescription_tier2: string (preferred brand cost, e.g. "$35 copay")
+- prescription_tier3: string (non-preferred brand cost, e.g. "$60 copay")
+- prescription_tier4: string (specialty drugs cost, e.g. "30% coinsurance")
+- preventive_care_covered: boolean
+- telehealth_copay: string (e.g. "$0" or "$20 copay")
+- physical_therapy_copay: string (e.g. "$40 copay")
+- physical_therapy_limit: string (e.g. "30 visits per year")
+- lab_work_cost: string (e.g. "$0 in-network" or "20% coinsurance")
+- diagnostic_imaging_cost: string (e.g. "20% coinsurance after deductible")
+- coverage_gaps: array of strings (notable gaps or weaknesses in coverage)
+- strengths: array of strings (notable strengths of the plan)
+- exclusions: array of strings (notable exclusions)
 
-If a value is not found in policy, use null for numbers and false for booleans.
+Return ONLY a valid JSON object with these exact keys. Set any field not found in the document to null. Do not omit fields. Do not wrap the response in markdown code fences. Do not include any text outside the JSON object.
