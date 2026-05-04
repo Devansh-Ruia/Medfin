@@ -78,7 +78,8 @@
       "mcp__plugin_playwright_playwright__browser_click",
       "mcp__plugin_playwright_playwright__browser_wait_for",
       "Bash(tasklist //FI \"IMAGENAME eq node.exe\")",
-      "Bash(taskkill *)"
+      "Bash(taskkill *)",
+      "mcp__plugin_playwright_playwright__browser_run_code_unsafe"
     ]
   }
 }

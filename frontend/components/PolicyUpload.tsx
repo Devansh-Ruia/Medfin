@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { api, PolicyData } from '../lib/api';
 import { Upload, FileText, Brain, CheckCircle } from 'lucide-react';
 import { event } from '../lib/analytics';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface PolicyUploadProps {
   onPolicyUploaded: (data: PolicyData) => void;
@@ -23,6 +25,27 @@ export default function PolicyUpload({
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropInnerRef = useRef<HTMLDivElement>(null);
+  const analyzingRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (reduced || !dropInnerRef.current) return;
+    gsap.to(dropInnerRef.current, {
+      y: dragActive ? -4 : 0,
+      duration: 0.18,
+      ease: 'power2.out',
+    });
+  }, [dragActive, reduced]);
+
+  useEffect(() => {
+    if (reduced || !isAnalyzing || !analyzingRef.current) return;
+    gsap.from(analyzingRef.current, {
+      opacity: 0,
+      duration: 0.2,
+      ease: 'power2.out',
+    });
+  }, [isAnalyzing, reduced]);
 
   const analyzePolicy = async (file: File) => {
     setIsAnalyzing(true);
@@ -111,7 +134,7 @@ export default function PolicyUpload({
       {/* Upload Area */}
       <div className="max-w-2xl mx-auto">
         {isAnalyzing ? (
-          <div className="bg-white p-12 text-center border border-[#E5E2DC] rounded-none">
+          <div ref={analyzingRef} className="bg-white p-12 text-center border border-[#E5E2DC] rounded-none">
             <div className="relative w-20 h-20 mx-auto mb-6">
               <div className="absolute inset-0 bg-[#E8F5EE] rounded-none animate-pulse"></div>
               <div className="absolute inset-2 bg-white rounded-none flex items-center justify-center">
@@ -150,21 +173,23 @@ export default function PolicyUpload({
               aria-label="Upload insurance policy file"
               title="Upload insurance policy file (PDF, PNG, JPG)"
             />
-            
-            <div className="w-16 h-16 mx-auto mb-6 bg-[#F9F8F6] rounded-none flex items-center justify-center">
-              <Upload className="w-8 h-8 text-[#6B6B6B]" />
+
+            <div ref={dropInnerRef}>
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#F9F8F6] rounded-none flex items-center justify-center">
+                <Upload className="w-8 h-8 text-[#6B6B6B]" />
+              </div>
+
+              <h3 className="text-xl font-semibold text-[#0D0D0D] mb-3">
+                {t('dropZone')}
+              </h3>
+              <p className="text-sm text-[#6B6B6B] mb-8">
+                {t('dropZoneSub')}
+              </p>
+
+              <button className="bg-[#0D0D0D] text-white text-sm px-6 py-3 rounded-none hover:bg-[#1A1A1A] transition-colors">
+                {t('chooseFile')}
+              </button>
             </div>
-            
-            <h3 className="text-xl font-semibold text-[#0D0D0D] mb-3">
-              {t('dropZone')}
-            </h3>
-            <p className="text-sm text-[#6B6B6B] mb-8">
-              {t('dropZoneSub')}
-            </p>
-            
-            <button className="bg-[#0D0D0D] text-white text-sm px-6 py-3 rounded-none hover:bg-[#1A1A1A] transition-colors">
-              {t('chooseFile')}
-            </button>
           </div>
         )}
 

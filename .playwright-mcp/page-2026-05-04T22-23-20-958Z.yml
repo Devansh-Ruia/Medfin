@@ -1,0 +1,48 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: M
+          - generic [ref=e10]: MedFinAI
+        - button [ref=e11] [cursor=pointer]:
+          - img [ref=e12]
+      - navigation [ref=e15]:
+        - generic [ref=e16]:
+          - button "Policy" [ref=e17] [cursor=pointer]:
+            - img [ref=e18]
+            - generic [ref=e21]: Policy
+          - button "Ask AI" [ref=e22] [cursor=pointer]:
+            - img [ref=e23]
+            - generic [ref=e25]: Ask AI
+          - button "Bills" [ref=e26] [cursor=pointer]:
+            - img [ref=e27]
+            - generic [ref=e30]: Bills
+          - button "Appeal" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - generic [ref=e36]: Appeal
+          - button "Pre-Visit" [ref=e37] [cursor=pointer]:
+            - img [ref=e38]
+            - generic [ref=e42]: Pre-Visit
+          - button "Optimize" [ref=e43] [cursor=pointer]:
+            - img [ref=e44]
+            - generic [ref=e47]: Optimize
+      - generic [ref=e48]:
+        - button "Settings" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e53]: Settings
+        - button "Account" [ref=e54] [cursor=pointer]:
+          - img [ref=e55]
+          - generic [ref=e58]: Account
+    - main [ref=e60]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - heading "Upload your insurance policy" [level=2] [ref=e64]
+          - paragraph [ref=e65]: MedFin will extract your deductibles, copays, network rules, and exclusions. The document is processed in memory and never stored.
+        - generic [ref=e68] [cursor=pointer]:
+          - img [ref=e70]
+          - heading "Drop your PDF or image here" [level=3] [ref=e73]
+          - paragraph [ref=e74]: PDF, PNG, JPG up to 10MB
+          - button "Choose File" [ref=e75]
+  - region "Notifications alt+T"
+  - alert [ref=e76]

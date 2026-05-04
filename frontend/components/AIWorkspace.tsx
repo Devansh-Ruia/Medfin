@@ -15,6 +15,7 @@ import SavingsTracker from './SavingsTracker';
 import PrivacyPanel from './PrivacyPanel';
 import MarkdownRenderer from './MarkdownRenderer';
 import UploadGate from './UploadGate';
+import { ToolSwap } from './motion/ToolSwap';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useSavings } from '../contexts/SavingsContext';
 import { useFamily } from '../contexts/FamilyContext';
@@ -151,8 +152,10 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
       </header>
 
       <div className="page-container py-8">
-        {/* Dashboard Content */}
-        {activeSection === 'policy' && policyData && (
+        <ToolSwap activeSection={activeSection}>
+          {(section) => {
+            if (section === 'policy' && policyData) {
+              return (
           <div className="space-y-8">
             {/* Policy Summary Table */}
             <div className="bg-white p-6 border border-[#E5E2DC] rounded-none">
@@ -326,69 +329,72 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
               </p>
             </div>
           </div>
-        )}
+              );
+            }
 
-        {/* Other Tabs - Use UploadGate when no policy */}
-        {activeSection === 'pre-visit' && (
-          policyData 
-            ? <PreVisitTool policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['pre-visit'].title}
-                description={toolConfigs['pre-visit'].description}
-                capabilities={toolConfigs['pre-visit'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
-        {activeSection === 'ask-ai' && (
-          policyData 
-            ? <EstimationTool policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['ask-ai'].title}
-                description={toolConfigs['ask-ai'].description}
-                capabilities={toolConfigs['ask-ai'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
-        {activeSection === 'bills' && (
-          policyData 
-            ? <ValidationTool policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['bills'].title}
-                description={toolConfigs['bills'].description}
-                capabilities={toolConfigs['bills'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
-        {activeSection === 'appeal' && (
-          policyData 
-            ? <AppealTool policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['appeal'].title}
-                description={toolConfigs['appeal'].description}
-                capabilities={toolConfigs['appeal'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
-        {activeSection === 'optimize' && (
-          policyData 
-            ? <OptimizationTool policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['optimize'].title}
-                description={toolConfigs['optimize'].description}
-                capabilities={toolConfigs['optimize'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
-        {activeSection === 'family' && (
-          policyData 
-            ? <FamilyDashboard policyData={policyData} />
-            : <UploadGate 
-                toolName={toolConfigs['family'].title}
-                description={toolConfigs['family'].description}
-                capabilities={toolConfigs['family'].capabilities}
-                onUploadPolicy={() => onNavigate('policy')} 
-              />
-        )}
+            if (section === 'pre-visit') {
+              return policyData
+                ? <PreVisitTool policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['pre-visit'].title}
+                    description={toolConfigs['pre-visit'].description}
+                    capabilities={toolConfigs['pre-visit'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            if (section === 'ask-ai') {
+              return policyData
+                ? <EstimationTool policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['ask-ai'].title}
+                    description={toolConfigs['ask-ai'].description}
+                    capabilities={toolConfigs['ask-ai'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            if (section === 'bills') {
+              return policyData
+                ? <ValidationTool policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['bills'].title}
+                    description={toolConfigs['bills'].description}
+                    capabilities={toolConfigs['bills'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            if (section === 'appeal') {
+              return policyData
+                ? <AppealTool policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['appeal'].title}
+                    description={toolConfigs['appeal'].description}
+                    capabilities={toolConfigs['appeal'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            if (section === 'optimize') {
+              return policyData
+                ? <OptimizationTool policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['optimize'].title}
+                    description={toolConfigs['optimize'].description}
+                    capabilities={toolConfigs['optimize'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            if (section === 'family') {
+              return policyData
+                ? <FamilyDashboard policyData={policyData} />
+                : <UploadGate
+                    toolName={toolConfigs['family'].title}
+                    description={toolConfigs['family'].description}
+                    capabilities={toolConfigs['family'].capabilities}
+                    onUploadPolicy={() => onNavigate('policy')}
+                  />;
+            }
+            return null;
+          }}
+        </ToolSwap>
       </div>
     </div>
   );
