@@ -7,6 +7,9 @@ import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
 import { event } from '../lib/analytics';
 import { BarChart3, Rocket, Clock, FileText, ClipboardCopy, Upload, PenLine } from 'lucide-react';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useGsapContext } from '@/hooks/useGsapContext';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -22,6 +25,38 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const letterRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useGsapContext(
+    () => {
+      if (reduced) return;
+      gsap.from('[data-reveal-section]', {
+        opacity: 0,
+        y: 12,
+        duration: 0.32,
+        ease: 'power2.out',
+        stagger: 0.08,
+      });
+    },
+    resultRef,
+    [reduced, !!appealLetter]
+  );
+
+  useGsapContext(
+    () => {
+      if (reduced) return;
+      gsap.from('[data-letter-line]', {
+        opacity: 0,
+        y: 12,
+        duration: 0.32,
+        ease: 'power2.out',
+        stagger: 0.06,
+      });
+    },
+    letterRef,
+    [reduced, appealLetter?.letter?.letter_body]
+  );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -162,7 +197,7 @@ const formatAppealLetter = (text: string): JSX.Element[] => {
     if (isHeaderBlock || isSignatureBlock) {
       // Render each line separately with minimal spacing
       return (
-        <div key={index} style={{ marginBottom: '16px' }}>
+        <div key={index} data-letter-line style={{ marginBottom: '16px' }}>
           {lines.map((line, li) => (
             <div key={li} style={{ lineHeight: '1.6' }}>
               {renderLine(line, li)}
@@ -175,7 +210,7 @@ const formatAppealLetter = (text: string): JSX.Element[] => {
     if (isNumberedList) {
       // Render numbered items as separate lines
       return (
-        <div key={index} style={{ marginBottom: '16px' }}>
+        <div key={index} data-letter-line style={{ marginBottom: '16px' }}>
           {lines.map((line, li) => (
             <div key={li} style={{ marginBottom: '8px', lineHeight: '1.7', paddingLeft: line.match(/^\d+\./) ? '0px' : '0' }}>
               {renderLine(line, li)}
@@ -187,7 +222,7 @@ const formatAppealLetter = (text: string): JSX.Element[] => {
 
     // Regular paragraph
     return (
-      <p key={index} style={{ marginBottom: '16px', lineHeight: '1.7' }}>
+      <p key={index} data-letter-line style={{ marginBottom: '16px', lineHeight: '1.7' }}>
         {lines.map((line, li) => (
           <span key={li}>
             {renderLine(line, li)}
@@ -474,9 +509,9 @@ const downloadAsPDF = async () => {
         </div>
       )}
       {appealLetter && appealLetter.analysis && (
-        <div className="space-y-6">
+        <div ref={resultRef} className="space-y-6">
           {/* Analysis Section */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
+          <div data-reveal-section className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Appeal Analysis</h3>
               <button
@@ -539,7 +574,7 @@ const downloadAsPDF = async () => {
           </div>
 
           {/* Appeal Letter */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
+          <div data-reveal-section className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2"><FileText className="w-5 h-5" /> Your Appeal Letter</h3>
               {hasLetter && (
@@ -611,7 +646,7 @@ const downloadAsPDF = async () => {
           </div>
 
           {/* Next Steps */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
+          <div data-reveal-section className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2"><Rocket className="w-5 h-5" /> Next Steps</h3>
             <ol className="space-y-3">
               {(appealLetter.next_steps ?? []).map((step, i) => (
@@ -630,7 +665,7 @@ const downloadAsPDF = async () => {
 
           {/* Extracted Info (for upload method) */}
           {extractedInfo && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
+            <div data-reveal-section className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2"><ClipboardCopy className="w-5 h-5" /> Extracted Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>

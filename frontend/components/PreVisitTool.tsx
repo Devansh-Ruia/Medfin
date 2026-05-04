@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api, PolicyData, PreVisitChecklist } from '../lib/api';
 import { formatCurrency, formatBoolean } from '../lib/format';
 import VisualCostBreakdown from './VisualCostBreakdown';
 import { replaceJargon } from '../lib/jargonDictionary';
 import { event } from '../lib/analytics';
 import { Lightbulb, DollarSign, ClipboardCopy, AlertTriangle } from 'lucide-react';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useGsapContext } from '@/hooks/useGsapContext';
 
 interface PreVisitToolProps {
   policyData: PolicyData;
@@ -35,6 +38,23 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
   const [checklist, setChecklist] = useState<PreVisitChecklist | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useGsapContext(
+    () => {
+      if (reduced) return;
+      gsap.from('[data-reveal-section]', {
+        opacity: 0,
+        y: 12,
+        duration: 0.32,
+        ease: 'power2.out',
+        stagger: 0.08,
+      });
+    },
+    resultRef,
+    [reduced, !!checklist]
+  );
 
   const handleGenerateChecklist = async () => {
     if (!visitType) {
@@ -230,9 +250,9 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
         </div>
       )}
       {checklist && (checklist.estimated_costs || checklist.prior_authorization) && (
-        <div className="space-y-6">
+        <div ref={resultRef} className="space-y-6">
           {/* Header */}
-          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-[#0D0D0D]">
                 Pre-Visit Checklist: {getActualVisitType()}
@@ -255,7 +275,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Cost Breakdown */}
           {checklist.estimated_costs && (
-          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5" /> Estimated Costs</h4>
 
             <div className="mb-4">
@@ -288,7 +308,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Prior Authorization */}
           {checklist.prior_authorization?.likely_required && (
-            <div className="bg-[#FFFBEB] border-l-4 border-[#D97706] rounded-none p-6">
+            <div data-reveal-section className="bg-[#FFFBEB] border-l-4 border-[#D97706] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#D97706] mb-3 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Prior Authorization Required</h4>
               <div className="space-y-2 text-[#D97706]">
                 <p><strong>Why:</strong> {checklist.prior_authorization?.reason ?? ''}</p>
@@ -301,7 +321,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Questions to Ask */}
           {(checklist?.questions_to_ask_provider ?? []).length > 0 && (
-          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Questions to Ask Your Provider</h4>
             <ul className="space-y-2">
               {(checklist?.questions_to_ask_provider ?? []).map((question, i) => (
@@ -319,7 +339,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Questions for Insurance */}
           {(checklist?.questions_to_ask_insurance ?? []).length > 0 && (
-            <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+            <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Questions to Call Your Insurance About</h4>
               <ul className="space-y-2">
                 {(checklist?.questions_to_ask_insurance ?? []).map((question, i) => (
@@ -337,7 +357,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Documents to Request */}
           {(checklist?.documents_to_request_after ?? []).length > 0 && (
-          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0D0D0D] mb-4">Documents to Request After Your Visit</h4>
             <ul className="space-y-2">
               {(checklist?.documents_to_request_after ?? []).map((doc, i) => (
@@ -355,7 +375,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Network Warnings */}
           {(checklist?.network_warnings ?? []).length > 0 && (
-            <div className="bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none p-6">
+            <div data-reveal-section className="bg-[#FDF2F2] border-l-4 border-[#C0392B] rounded-none p-6">
               <h4 className="text-lg font-semibold text-[#C0392B] mb-4">Network Warnings</h4>
               <ul className="space-y-2">
                 {(checklist?.network_warnings ?? []).map((warning, i) => (
@@ -373,7 +393,7 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
 
           {/* Money-Saving Tips */}
           {(checklist?.money_saving_tips ?? []).length > 0 && (
-          <div className="bg-[#E8F5EE] border-l-4 border-[#0A6640] rounded-none p-6">
+          <div data-reveal-section className="bg-[#E8F5EE] border-l-4 border-[#0A6640] rounded-none p-6">
             <h4 className="text-lg font-semibold text-[#0A6640] mb-4 flex items-center gap-2"><Lightbulb className="w-5 h-5" /> Money-Saving Tips</h4>
             <ul className="space-y-2">
               {(checklist?.money_saving_tips ?? []).map((tip, i) => (

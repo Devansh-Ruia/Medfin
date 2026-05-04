@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { api, PolicyData, QuestionAnswer } from '../lib/api';
 import { event } from '../lib/analytics';
 import { Globe, DollarSign, AlertTriangle } from 'lucide-react';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface EstimationToolProps {
   policyData: PolicyData;
@@ -275,6 +277,42 @@ const AIResponseCard = ({ data, sources, search_grounded, onFollowUp }: {
   );
 };
 
+// Per-message wrapper. Animates only on first mount, only for assistant messages —
+// user messages need to feel instant since the user just typed them.
+function ChatMessage({ msg, onFollowUp }: { msg: Message; onFollowUp: (q: string) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const animated = useRef(false);
+
+  useEffect(() => {
+    if (reduced || animated.current || !ref.current) return;
+    animated.current = true;
+    if (msg.role === 'user') return;
+    gsap.from(ref.current, { opacity: 0, y: 4, duration: 0.2, ease: 'power2.out' });
+  }, [reduced, msg.role]);
+
+  return (
+    <div ref={ref} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className={`max-w-2xl w-full rounded-none px-4 py-3 ${
+        msg.role === 'user'
+          ? 'bg-[#0D0D0D] text-white'
+          : 'bg-[#F9F8F6] text-[#0D0D0D] border border-[#E5E2DC]'
+      }`}>
+        {msg.data ? (
+          <AIResponseCard
+            data={msg.data}
+            sources={msg.sources}
+            search_grounded={msg.search_grounded}
+            onFollowUp={onFollowUp}
+          />
+        ) : (
+          <p className={msg.role === 'user' ? 'text-white' : 'text-[#0D0D0D]'}>{msg.content}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function EstimationTool({ policyData }: EstimationToolProps) {
   const t = useTranslations('askAI')
   const [messages, setMessages] = useState<Message[]>([]);
@@ -331,7 +369,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
   return (
     <div className="bg-white border border-[#E5E2DC] rounded-none overflow-hidden">
       {/* Chat Messages */}
-      <div className="h-[500px] overflow-y-auto p-6 space-y-4">
+      <div data-lenis-prevent className="h-[500px] overflow-y-auto p-6 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-2xl font-bold text-[#0D0D0D] mb-2">Ask me anything about your policy</h3>
@@ -351,27 +389,7 @@ export default function EstimationTool({ policyData }: EstimationToolProps) {
           </div>
         ) : (
           messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`max-w-2xl w-full rounded-none px-4 py-3 ${
-                msg.role === 'user'
-                  ? 'bg-[#0D0D0D] text-white'
-                  : 'bg-[#F9F8F6] text-[#0D0D0D] border border-[#E5E2DC]'
-              }`}>
-                {msg.data ? (
-                  <AIResponseCard 
-                    data={msg.data} 
-                    sources={msg.sources}
-                    search_grounded={msg.search_grounded}
-                    onFollowUp={handleSend} 
-                  />
-                ) : (
-                  <p className={msg.role === 'user' ? 'text-white' : 'text-[#0D0D0D]'}>{msg.content}</p>
-                )}
-              </div>
-            </div>
+            <ChatMessage key={i} msg={msg} onFollowUp={handleSend} />
           ))
         )}
         

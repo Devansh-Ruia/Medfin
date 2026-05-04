@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api, PolicyData, OptimizationResult } from '../lib/api';
 import { formatCurrency } from '../lib/format';
 import MarkdownRenderer from './MarkdownRenderer';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useGsapContext } from '@/hooks/useGsapContext';
 
 interface OptimizationToolProps {
   policyData: PolicyData;
@@ -13,6 +16,23 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useGsapContext(
+    () => {
+      if (reduced) return;
+      gsap.from('[data-reveal-section]', {
+        opacity: 0,
+        y: 12,
+        duration: 0.32,
+        ease: 'power2.out',
+        stagger: 0.08,
+      });
+    },
+    resultRef,
+    [reduced, !!result]
+  );
   
   // User needs form
   const [needs, setNeeds] = useState({
@@ -172,9 +192,9 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
               The analysis returned an unexpected format. Please try again.
             </div>
           ) : (
-          <div className="space-y-6">
+          <div ref={resultRef} className="space-y-6">
             {/* Potential Annual Savings */}
-            <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+            <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
               <p className="text-xs text-[#6B6B6B] uppercase tracking-widest mb-2">Potential Annual Savings</p>
               <p className="text-2xl font-bold text-[#0A6640]">
                 {formatCurrency(result?.annual_potential_savings)}
@@ -183,7 +203,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
 
             {/* Summary */}
             {result?.summary && (
-              <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+              <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-2">AI Summary</h3>
                 <p className="text-sm text-[#6B6B6B]">{result.summary}</p>
               </div>
@@ -191,7 +211,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
 
             {/* Optimizations */}
             {(result?.optimizations ?? []).length > 0 && (
-              <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+              <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Optimization Opportunities</h3>
                 <div className="space-y-4">
                   {(result?.optimizations ?? [])
@@ -222,7 +242,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
 
             {/* Alternative Plans */}
             {(result?.alternative_plans ?? []).length > 0 && (
-              <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+              <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Alternative Plans to Consider</h3>
                 <div className="space-y-4">
                   {(result?.alternative_plans ?? []).map((plan, i) => (
@@ -248,7 +268,7 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
 
             {/* Action Items */}
             {(result?.action_items ?? []).length > 0 && (
-              <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+              <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
                 <h3 className="text-lg font-semibold text-[#0D0D0D] mb-4">Action Items</h3>
                 <div className="space-y-3">
                   {(result?.action_items ?? [])

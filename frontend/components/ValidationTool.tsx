@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api, PolicyData, BillValidationResult } from '../lib/api';
 import { formatCurrency } from '../lib/format';
 import { event } from '../lib/analytics';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 import { Search, Lightbulb, Check, ArrowRight } from 'lucide-react';
 import BillCaptureInput from './BillCaptureInput';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useGsapContext } from '@/hooks/useGsapContext';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -167,6 +170,23 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [showBillDetails, setShowBillDetails] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useGsapContext(
+    () => {
+      if (reduced) return;
+      gsap.from('[data-reveal-section]', {
+        opacity: 0,
+        y: 12,
+        duration: 0.32,
+        ease: 'power2.out',
+        stagger: 0.08,
+      });
+    },
+    resultRef,
+    [reduced, !!result]
+  );
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -243,16 +263,16 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
         </div>
       )}
       {result && (result.validation_results || result.financial_summary || result.issues) && (
-        <div className="space-y-6">
+        <div ref={resultRef} className="space-y-6">
           {/* Summary Header */}
           {result.financial_summary && (
-            <div className="text-sm text-[#6B6B6B] mb-6">
+            <div data-reveal-section className="text-sm text-[#6B6B6B] mb-6">
               Billed: {formatCurrency(result.financial_summary?.billed_amount)} / Expected: {formatCurrency(result.financial_summary?.expected_patient_responsibility)} / Potential savings: {formatCurrency(result.financial_summary?.potential_savings)}
             </div>
           )}
 
           {/* Validation Results */}
-          <div className="bg-white border border-[#E5E2DC] rounded-none p-6">
+          <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <h3 className="text-xl font-bold text-[#0D0D0D] mb-6">Validation Results</h3>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -396,7 +416,7 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
 
           {/* Collapsible Bill Details */}
           {result.bill_extracted && (
-            <div className="bg-white border border-[#E5E2DC] rounded-none overflow-hidden">
+            <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none overflow-hidden">
               <button
                 onClick={() => setShowBillDetails(!showBillDetails)}
                 className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#F9F8F6] transition-colors"
