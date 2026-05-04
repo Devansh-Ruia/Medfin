@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { gsap } from '@/lib/motion/gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useGsapContext } from '@/hooks/useGsapContext';
+import { useAnchorLinkSmoothing } from '@/hooks/useAnchorLinkSmoothing';
 
 // Billing error chart component - inline SVG because an HTTP request for a bar chart is embarrassing
 const BillingErrorChart = () => (
@@ -125,6 +129,10 @@ export default function LandingPage() {
   const tResults = useTranslations('results');
   const tCta = useTranslations('cta');
   const tFooter = useTranslations('footer');
+  const rootRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useAnchorLinkSmoothing();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,10 +142,36 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useGsapContext(
+    () => {
+      if (reduced) return;
+
+      gsap.from('[data-hero]', {
+        y: 16,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+        stagger: 0.08,
+      });
+
+      gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
+        gsap.from(el, {
+          y: 24,
+          opacity: 0,
+          duration: 0.7,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 75%', once: true },
+        });
+      });
+    },
+    rootRef,
+    [reduced]
+  );
+
   const dashboardHref = `/${locale}/dashboard`;
 
   return (
-    <div className="min-h-screen bg-[#F9F8F6]">
+    <div ref={rootRef} className="min-h-screen bg-[#F9F8F6]">
       {/* Nav */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 bg-white transition-all duration-300 ${
@@ -156,9 +190,9 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-8">
-              <Link href="#How-It-Works" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('howItWorks')}</Link>
-              <Link href="#Tools" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('tools')}</Link>
-              <Link href="#Results" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('results')}</Link>
+              <a href="#How-It-Works" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('howItWorks')}</a>
+              <a href="#Tools" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('tools')}</a>
+              <a href="#Results" className="text-sm text-[#6B6B6B] hover:text-[#0D0D0D] transition-colors">{tNav('results')}</a>
             </div>
 
             <div className="flex items-center gap-4">
@@ -179,27 +213,28 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="text-xs tracking-[0.2em] text-[#6B6B6B] uppercase mb-6">
+              <div data-hero="eyebrow" className="text-xs tracking-[0.2em] text-[#6B6B6B] uppercase mb-6">
                 {tHero('eyebrow')}
               </div>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none mb-8">
+              <h1 data-hero="headline" className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none mb-8">
                 {tHero('headline')}
               </h1>
-              <p className="text-base md:text-lg text-[#6B6B6B] leading-relaxed mb-8">
+              <p data-hero="sub" className="text-base md:text-lg text-[#6B6B6B] leading-relaxed mb-8">
                 {tHero('subheading')}
               </p>
               <Link
+                data-hero="cta"
                 href={dashboardHref}
                 className="bg-[#0D0D0D] text-white px-8 py-4 text-sm font-medium rounded-none inline-block hover:bg-[#1A1A1A] transition-colors mb-4"
               >
                 {tHero('cta')}
               </Link>
-              <div className="text-xs text-[#6B6B6B]">
+              <div data-hero="cta-sub" className="text-xs text-[#6B6B6B]">
                 {tHero('ctaSub')}
               </div>
             </div>
 
-            <div className="hidden md:block">
+            <div data-hero="chart" className="hidden md:block">
               <BillingErrorChart />
             </div>
           </div>
@@ -207,7 +242,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats bar */}
-      <section className="bg-[#0D0D0D]">
+      <section data-reveal className="bg-[#0D0D0D]">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
           <div className="py-10 px-8 border-r border-[#2D2D2D]">
             <div className="text-3xl font-bold text-white mb-2">80%</div>
@@ -231,7 +266,7 @@ export default function LandingPage() {
       {/* Tools section */}
       <section id="Tools" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div data-reveal className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               {tTools('sectionHeading')}
             </h2>
@@ -240,7 +275,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="border-b border-[#E5E2DC]">
+          <div data-reveal className="border-b border-[#E5E2DC]">
             <div className="grid md:grid-cols-2 py-16">
               <div className="pr-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool01')}</div>
@@ -254,7 +289,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-b border-[#E5E2DC]">
+          <div data-reveal className="border-b border-[#E5E2DC]">
             <div className="grid md:grid-cols-2 py-16">
               <div className="md:order-2 md:pl-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool02')}</div>
@@ -268,7 +303,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-b border-[#E5E2DC]">
+          <div data-reveal className="border-b border-[#E5E2DC]">
             <div className="grid md:grid-cols-2 py-16">
               <div className="pr-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool03')}</div>
@@ -282,7 +317,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-b border-[#E5E2DC]">
+          <div data-reveal className="border-b border-[#E5E2DC]">
             <div className="grid md:grid-cols-2 py-16">
               <div className="md:order-2 md:pl-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool04')}</div>
@@ -296,7 +331,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-b border-[#E5E2DC]">
+          <div data-reveal className="border-b border-[#E5E2DC]">
             <div className="grid md:grid-cols-2 py-16">
               <div className="pr-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool05')}</div>
@@ -310,7 +345,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pb-16">
+          <div data-reveal className="pb-16">
             <div className="grid md:grid-cols-2 py-16">
               <div className="md:order-2 md:pl-8">
                 <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool06')}</div>
@@ -329,28 +364,28 @@ export default function LandingPage() {
       {/* How It Works */}
       <section id="How-It-Works" className="py-20 bg-[#F9F8F6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div data-reveal className="text-center mb-16">
             <div className="text-xs tracking-[0.2em] text-[#6B6B6B] uppercase mb-4">{tHow('sectionLabel')}</div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{tHow('heading')}</h2>
           </div>
 
           <div className="space-y-12">
-            <div className="border-b border-[#E5E2DC] pb-12">
+            <div data-reveal className="border-b border-[#E5E2DC] pb-12">
               <div className="text-6xl font-bold text-[#E5E2DC] mb-4">1</div>
               <h3 className="text-2xl font-bold mb-4">{tHow('step1Title')}</h3>
               <p className="text-base text-[#6B6B6B] leading-relaxed">{tHow('step1Desc')}</p>
             </div>
-            <div className="border-b border-[#E5E2DC] pb-12">
+            <div data-reveal className="border-b border-[#E5E2DC] pb-12">
               <div className="text-6xl font-bold text-[#E5E2DC] mb-4">2</div>
               <h3 className="text-2xl font-bold mb-4">{tHow('step2Title')}</h3>
               <p className="text-base text-[#6B6B6B] leading-relaxed">{tHow('step2Desc')}</p>
             </div>
-            <div className="border-b border-[#E5E2DC] pb-12">
+            <div data-reveal className="border-b border-[#E5E2DC] pb-12">
               <div className="text-6xl font-bold text-[#E5E2DC] mb-4">3</div>
               <h3 className="text-2xl font-bold mb-4">{tHow('step3Title')}</h3>
               <p className="text-base text-[#6B6B6B] leading-relaxed">{tHow('step3Desc')}</p>
             </div>
-            <div>
+            <div data-reveal>
               <div className="text-6xl font-bold text-[#E5E2DC] mb-4">4</div>
               <h3 className="text-2xl font-bold mb-4">{tHow('step4Title')}</h3>
               <p className="text-base text-[#6B6B6B] leading-relaxed">{tHow('step4Desc')}</p>
@@ -362,12 +397,12 @@ export default function LandingPage() {
       {/* Results section */}
       <section id="Results" className="py-20 bg-[#F9F8F6]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div data-reveal className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">{tResults('heading')}</h2>
           </div>
 
           <div className="space-y-12">
-            <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div data-reveal className="flex flex-col md:flex-row gap-8 items-center">
               <div className="md:w-1/3">
                 <div className="text-5xl font-bold text-[#0A6640]">{tResults('result1Amount')}</div>
               </div>
@@ -376,7 +411,7 @@ export default function LandingPage() {
                 <p className="text-base text-[#6B6B6B] leading-relaxed">{tResults('result1Desc')}</p>
               </div>
             </div>
-            <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div data-reveal className="flex flex-col md:flex-row gap-8 items-center">
               <div className="md:w-1/3">
                 <div className="text-5xl font-bold text-[#0A6640]">{tResults('result2Amount')}</div>
               </div>
@@ -385,7 +420,7 @@ export default function LandingPage() {
                 <p className="text-base text-[#6B6B6B] leading-relaxed">{tResults('result2Desc')}</p>
               </div>
             </div>
-            <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div data-reveal className="flex flex-col md:flex-row gap-8 items-center">
               <div className="md:w-1/3">
                 <div className="text-5xl font-bold text-[#0A6640]">{tResults('result3Amount')}</div>
               </div>
@@ -401,7 +436,7 @@ export default function LandingPage() {
       {/* Final CTA */}
       <section className="py-20 bg-[#0D0D0D]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div data-reveal className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-white mb-6">{tCta('heading')}</h2>
             </div>
