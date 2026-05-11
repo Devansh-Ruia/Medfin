@@ -80,7 +80,20 @@
       "Bash(tasklist //FI \"IMAGENAME eq node.exe\")",
       "Bash(taskkill *)",
       "mcp__plugin_playwright_playwright__browser_run_code_unsafe",
-      "Bash(curl -s -m 3 http://localhost:8000/health)"
+      "Bash(curl -s -m 3 http://localhost:8000/health)",
+      "Bash(rmdir app/\\\\[locale\\\\]/_preview)",
+      "Bash(mkdir -p app/\\\\[locale\\\\]/visual-preview)",
+      "Bash(grep -q -E \"Ready|started server|compiled\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b15w06ply.output\")",
+      "Bash(tail -10 \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b15w06ply.output\")",
+      "Bash(cat \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b15w06ply.output\")",
+      "Bash(tail *)",
+      "Bash(ls C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\ *)",
+      "Bash(wc -l \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b15w06ply.output\")",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Bash(grep -q -E \"Ready in|started server on|✓ Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\bmfgv74ss.output\")",
+      "Bash(grep -q \"Ready in\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b9as2t5am.output\")",
+      "Bash(grep -E \"Local|Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b9as2t5am.output\")"
     ]
   }
 }

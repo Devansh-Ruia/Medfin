@@ -8,6 +8,12 @@ import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
 import { useAnchorLinkSmoothing } from '@/hooks/useAnchorLinkSmoothing';
+import { PolicyAnalysisVisual } from '@/components/landing/visuals/PolicyAnalysisVisual';
+import { BillValidationVisual } from '@/components/landing/visuals/BillValidationVisual';
+import { PreVisitVisual } from '@/components/landing/visuals/PreVisitVisual';
+import { AskAIVisual } from '@/components/landing/visuals/AskAIVisual';
+import { OptimizationVisual } from '@/components/landing/visuals/OptimizationVisual';
+import { AppealVisual } from '@/components/landing/visuals/AppealVisual';
 
 // Billing error chart component - inline SVG because an HTTP request for a bar chart is embarrassing
 const BillingErrorChart = () => (
@@ -37,84 +43,6 @@ const BillingErrorChart = () => (
     <text x="0" y="256" fontSize="32" fill="#0D0D0D" fontFamily="inherit" fontWeight="700">8 in 10</text>
     <text x="0" y="275" fontSize="12" fill="#6B6B6B" fontFamily="inherit">medical bills contain at least one error</text>
     <text x="0" y="292" fontSize="10" fill="#9CA3AF" fontFamily="inherit">Healthcare Financial Management Association, 2023</text>
-  </svg>
-);
-
-// Tool SVG components
-const PolicyAnalysisSVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Document parsing visualization">
-    <rect x="10" y="20" width="80" height="80" fill="#F5F5F5" stroke="#E5E2DC" strokeWidth="1"/>
-    <rect x="15" y="25" width="70" height="2" fill="#CCCCCC"/>
-    <rect x="15" y="30" width="65" height="2" fill="#CCCCCC"/>
-    <rect x="15" y="35" width="68" height="2" fill="#CCCCCC"/>
-    <rect x="15" y="40" width="60" height="2" fill="#CCCCCC"/>
-    <rect x="15" y="45" width="70" height="2" fill="#CCCCCC"/>
-    <rect x="15" y="50" width="62" height="2" fill="#CCCCCC"/>
-    <rect x="110" y="20" width="80" height="80" fill="#E8F5EE" stroke="#0A6640" strokeWidth="1"/>
-    <text x="115" y="35" fontSize="8" fill="#0D0D0D" fontFamily="inherit" fontWeight="600">Deductible:</text>
-    <text x="115" y="45" fontSize="8" fill="#0A6640" fontFamily="inherit">$2,500</text>
-    <text x="115" y="55" fontSize="8" fill="#0D0D0D" fontFamily="inherit" fontWeight="600">Coverage:</text>
-    <text x="115" y="65" fontSize="8" fill="#0A6640" fontFamily="inherit">80%</text>
-    <text x="115" y="75" fontSize="8" fill="#0D0D0D" fontFamily="inherit" fontWeight="600">Network:</text>
-    <text x="115" y="85" fontSize="8" fill="#0A6640" fontFamily="inherit">PPO</text>
-  </svg>
-);
-
-const AskAISVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Chat interface visualization">
-    <rect x="10" y="20" width="180" height="80" fill="#F9F8F6" stroke="#E5E2DC" strokeWidth="1"/>
-    <text x="15" y="35" fontSize="8" fill="#6B6B6B" fontFamily="inherit">Is my MRI covered?</text>
-    <rect x="15" y="45" width="170" height="1" fill="#E5E2DC"/>
-    <text x="15" y="60" fontSize="8" fill="#0D0D0D" fontFamily="inherit">Yes. Your plan covers MRI at 80%</text>
-    <text x="15" y="70" fontSize="8" fill="#0D0D0D" fontFamily="inherit">after deductible. Expected cost: $450</text>
-    <text x="15" y="80" fontSize="8" fill="#0A6640" fontFamily="inherit">See policy section 3.2.1</text>
-  </svg>
-);
-
-const BillValidationSVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Bill validation visualization">
-    <rect x="10" y="20" width="180" height="80" fill="#F9F8F6" stroke="#E5E2DC" strokeWidth="1"/>
-    <text x="15" y="35" fontSize="8" fill="#0D0D0D" fontFamily="inherit">Office visit</text>
-    <text x="150" y="35" fontSize="8" fill="#0A6640" fontFamily="inherit">&#x2713;</text>
-    <text x="15" y="50" fontSize="8" fill="#0D0D0D" fontFamily="inherit">Lab work</text>
-    <text x="150" y="50" fontSize="8" fill="#0A6640" fontFamily="inherit">&#x2713;</text>
-    <text x="15" y="65" fontSize="8" fill="#0D0D0D" fontFamily="inherit">Anesthesia (duplicate)</text>
-    <text x="150" y="65" fontSize="8" fill="#C0392B" fontFamily="inherit">&#x26A0;</text>
-    <text x="15" y="80" fontSize="7" fill="#C0392B" fontFamily="inherit">OVERCHARGE DETECTED</text>
-  </svg>
-);
-
-const OptimizationSVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Plan comparison visualization">
-    <rect x="30" y="40" width="40" height="60" fill="#E5E2DC"/>
-    <text x="35" y="35" fontSize="8" fill="#0D0D0D" fontFamily="inherit" fontWeight="600">Current</text>
-    <text x="35" y="55" fontSize="7" fill="#0D0D0D" fontFamily="inherit">$6,400</text>
-    <text x="35" y="65" fontSize="7" fill="#0D0D0D" fontFamily="inherit">per year</text>
-    <rect x="130" y="40" width="40" height="40" fill="#0A6640"/>
-    <text x="135" y="35" fontSize="8" fill="#0D0D0D" fontFamily="inherit" fontWeight="600">Recommended</text>
-    <text x="135" y="55" fontSize="7" fill="white" fontFamily="inherit">$5,200</text>
-    <text x="135" y="65" fontSize="7" fill="white" fontFamily="inherit">per year</text>
-  </svg>
-);
-
-const PreVisitSVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Checklist visualization">
-    <rect x="10" y="20" width="180" height="80" fill="#F9F8F6" stroke="#E5E2DC" strokeWidth="1"/>
-    <text x="15" y="35" fontSize="8" fill="#0A6640" fontFamily="inherit">&#x2713; Verify network status</text>
-    <text x="15" y="50" fontSize="8" fill="#0A6640" fontFamily="inherit">&#x2713; Bring insurance card</text>
-    <text x="15" y="65" fontSize="8" fill="#0A6640" fontFamily="inherit">&#x2713; Check referral required</text>
-    <text x="15" y="80" fontSize="8" fill="#6B6B6B" fontFamily="inherit">&#x25A1; Estimate out-of-pocket</text>
-  </svg>
-);
-
-const AppealLetterSVG = () => (
-  <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" aria-label="Appeal letter visualization">
-    <rect x="50" y="30" width="100" height="60" fill="#F9F8F6" stroke="#E5E2DC" strokeWidth="1"/>
-    <text x="55" y="45" fontSize="6" fill="#0D0D0D" fontFamily="inherit">APPEAL LETTER</text>
-    <line x1="55" y1="50" x2="145" y2="50" stroke="#E5E2DC" strokeWidth="1"/>
-    <text x="55" y="60" fontSize="5" fill="#6B6B6B" fontFamily="inherit">ERISA Sec. 503</text>
-    <text x="55" y="70" fontSize="5" fill="#6B6B6B" fontFamily="inherit">ACA Sec. 2719</text>
-    <line x1="55" y1="75" x2="145" y2="75" stroke="#E5E2DC" strokeWidth="1"/>
   </svg>
 );
 
@@ -263,9 +191,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Tools section */}
+      {/* Tools section — narrative order: upload → use → think → push back */}
       <section id="Tools" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div data-reveal className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               {tTools('sectionHeading')}
@@ -275,88 +203,25 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div data-reveal className="border-b border-[#E5E2DC]">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="pr-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool01')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('policyAnalysis')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('policyAnalysisDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('policyAnalysis')} &rarr;
-                </Link>
-              </div>
-              <div className="flex justify-center items-center"><PolicyAnalysisSVG /></div>
-            </div>
-          </div>
-
-          <div data-reveal className="border-b border-[#E5E2DC]">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="md:order-2 md:pl-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool02')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('askAI')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('askAIDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('askAI')} &rarr;
-                </Link>
-              </div>
-              <div className="md:order-1 flex justify-center items-center"><AskAISVG /></div>
-            </div>
-          </div>
-
-          <div data-reveal className="border-b border-[#E5E2DC]">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="pr-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool03')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('billValidation')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('billValidationDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('billValidation')} &rarr;
-                </Link>
-              </div>
-              <div className="flex justify-center items-center"><BillValidationSVG /></div>
-            </div>
-          </div>
-
-          <div data-reveal className="border-b border-[#E5E2DC]">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="md:order-2 md:pl-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool04')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('policyOptimization')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('policyOptimizationDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('policyOptimization')} &rarr;
-                </Link>
-              </div>
-              <div className="md:order-1 flex justify-center items-center"><OptimizationSVG /></div>
-            </div>
-          </div>
-
-          <div data-reveal className="border-b border-[#E5E2DC]">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="pr-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool05')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('preVisit')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('preVisitDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('preVisit')} &rarr;
-                </Link>
-              </div>
-              <div className="flex justify-center items-center"><PreVisitSVG /></div>
-            </div>
-          </div>
-
-          <div data-reveal className="pb-16">
-            <div className="grid md:grid-cols-2 py-16">
-              <div className="md:order-2 md:pl-8">
-                <div className="text-xs text-[#6B6B6B] uppercase mb-2">{tTools('tool06')}</div>
-                <h3 className="text-2xl font-bold mb-4">{tTools('appealLetters')}</h3>
-                <p className="text-base text-[#6B6B6B] leading-relaxed mb-6">{tTools('appealLettersDesc')}</p>
-                <Link href={dashboardHref} className="text-[#0A6640] font-medium hover:underline">
-                  {tTools('openTool')} {tTools('appealLetters')} &rarr;
-                </Link>
-              </div>
-              <div className="md:order-1 flex justify-center items-center"><AppealLetterSVG /></div>
-            </div>
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-16">
+            <FeatureBlock label={tTools('tool01')} name={tTools('policyAnalysis')}>
+              <PolicyAnalysisVisual />
+            </FeatureBlock>
+            <FeatureBlock label={tTools('tool02')} name={tTools('billValidation')}>
+              <BillValidationVisual />
+            </FeatureBlock>
+            <FeatureBlock label={tTools('tool03')} name={tTools('preVisit')}>
+              <PreVisitVisual />
+            </FeatureBlock>
+            <FeatureBlock label={tTools('tool04')} name={tTools('askAI')}>
+              <AskAIVisual />
+            </FeatureBlock>
+            <FeatureBlock label={tTools('tool05')} name={tTools('policyOptimization')}>
+              <OptimizationVisual />
+            </FeatureBlock>
+            <FeatureBlock label={tTools('tool06')} name={tTools('appealLetters')}>
+              <AppealVisual />
+            </FeatureBlock>
           </div>
         </div>
       </section>
@@ -468,6 +333,29 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+// Feature block wraps the visual + name. data-reveal is applied here so each
+// block fades up as a single unit. No supporting copy by design: the visual
+// carries the meaning.
+function FeatureBlock({
+  label,
+  name,
+  children,
+}: {
+  label: string;
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div data-reveal>
+      <div className="text-xs tracking-[0.2em] text-[#6B6B6B] uppercase mb-2">
+        {label}
+      </div>
+      <h3 className="text-2xl font-bold tracking-tight mb-5">{name}</h3>
+      {children}
     </div>
   );
 }

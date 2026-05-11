@@ -1,0 +1,196 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e8]: M
+          - generic [ref=e9]: MedFin
+          - generic [ref=e10]: AI
+        - generic [ref=e11]:
+          - combobox "Select language" [ref=e12]:
+            - option "English" [selected]
+            - option "Español"
+            - option "Français"
+            - option "中文"
+            - option "हिन्दी"
+          - link "Get Started" [ref=e13] [cursor=pointer]:
+            - /url: /en/dashboard/
+    - generic [ref=e17]:
+      - generic [ref=e18]: Healthcare Financial Navigator
+      - heading "Your insurance policy is a financial document. Treat it like one." [level=1] [ref=e19]
+      - paragraph [ref=e20]: MedFin reads your policy, validates your bills against it, and tells you exactly where you are being charged more than you should be. No guessing. No jargon.
+      - link "Analyze Your Policy" [ref=e21] [cursor=pointer]:
+        - /url: /en/dashboard/
+      - generic [ref=e22]: No account required. Nothing is stored.
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: 80%
+        - generic [ref=e27]: of medical bills contain at least one error
+      - generic [ref=e28]:
+        - generic [ref=e29]: $1,240
+        - generic [ref=e30]: average amount recovered per disputed bill
+      - generic [ref=e31]:
+        - generic [ref=e32]: 23 min
+        - generic [ref=e33]: average time to analyze a policy with MedFin
+      - generic [ref=e34]:
+        - generic [ref=e35]: 0 bytes
+        - generic [ref=e36]: of your data stored after your session ends
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - 'heading "Six tools. One job: stop you from overpaying." [level=2] [ref=e40]'
+        - paragraph [ref=e41]: Each tool is built around a specific failure point in the healthcare billing system.
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: Tool 01
+          - heading "Policy Analysis" [level=3] [ref=e45]
+          - generic [ref=e46]:
+            - generic [ref=e47]: Policy analysis extracts deductibles, copays, and coverage limits from your insurance documents.
+            - generic [ref=e57]:
+              - generic [ref=e58]: Policy summary
+              - generic [ref=e59]:
+                - generic [ref=e60]:
+                  - generic [ref=e61]: Deductible
+                  - generic [ref=e62]: $500
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Specialist visit
+                  - generic [ref=e65]: $65 copay
+                - generic [ref=e66]:
+                  - generic [ref=e67]: Out-of-pocket max
+                  - generic [ref=e68]: $2,500
+        - generic [ref=e69]:
+          - generic [ref=e70]: Tool 02
+          - heading "Bill Validation" [level=3] [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]: Bill validation reviews your medical bills line by line and flags duplicate charges and billing errors.
+            - generic [ref=e75]:
+              - generic [ref=e76]: Patient statement
+              - generic [ref=e77]:
+                - generic [ref=e78]:
+                  - generic [ref=e79]:
+                    - generic [ref=e80]: "99213"
+                    - generic [ref=e81]: Office visit
+                  - generic [ref=e82]: $120
+                - generic [ref=e83]:
+                  - generic [ref=e84]:
+                    - generic [ref=e85]: "36415"
+                    - generic [ref=e86]: Venipuncture
+                  - generic [ref=e87]: $28
+                - generic [ref=e88]:
+                  - generic [ref=e89]:
+                    - generic [ref=e90]: "36415"
+                    - generic [ref=e91]: Venipuncture
+                  - generic [ref=e92]: $28
+                  - generic [ref=e93]: Duplicate
+                - generic [ref=e94]:
+                  - generic [ref=e95]:
+                    - generic [ref=e96]: "85025"
+                    - generic [ref=e97]: Blood panel
+                  - generic [ref=e98]: $57
+              - generic [ref=e100]: $85 flagged
+        - generic [ref=e101]:
+          - generic [ref=e102]: Tool 03
+          - heading "Pre-Visit Checklist" [level=3] [ref=e103]
+          - generic [ref=e104]:
+            - generic [ref=e105]: Pre-visit planning estimates what a procedure will cost you under your insurance before you receive care.
+            - generic [ref=e107]:
+              - generic [ref=e108]: Cost estimate
+              - generic [ref=e109]:
+                - generic [ref=e110]: MRI Brain
+                - generic [ref=e111]: CPT 70553
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Negotiated rate
+                  - generic [ref=e115]: $1,800
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Insurance pays
+                  - generic [ref=e118]: $1,380
+                - generic [ref=e119]:
+                  - generic [ref=e120]: Your cost
+                  - generic [ref=e121]: $420
+        - generic [ref=e122]:
+          - generic [ref=e123]: Tool 04
+          - heading "Ask AI" [level=3] [ref=e124]
+          - generic [ref=e125]:
+            - generic [ref=e126]: Ask questions about your insurance coverage in plain language and receive specific answers based on your policy.
+            - generic [ref=e128]:
+              - paragraph [ref=e130]: Is my MRI covered?
+              - paragraph [ref=e132]: Yes — with prior authorization. After your $500 deductible, you pay 20% coinsurance.
+        - generic [ref=e133]:
+          - generic [ref=e134]: Tool 05
+          - heading "Policy Optimization" [level=3] [ref=e135]
+          - generic [ref=e136]:
+            - generic [ref=e137]: Policy optimization compares your current plan to alternatives and identifies potential savings.
+            - generic [ref=e139]:
+              - generic [ref=e141]:
+                - generic [ref=e142]: Current plan
+                - generic [ref=e143]: $8,400/year
+              - generic [ref=e144]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]: Suggested plan
+                  - generic [ref=e147]: $6,200/year
+                - generic [ref=e148]: Save $2,200
+        - generic [ref=e149]:
+          - generic [ref=e150]: Tool 06
+          - heading "Appeal Letters" [level=3] [ref=e151]
+          - generic [ref=e152]:
+            - generic [ref=e153]: Appeal letter generation transforms insurance denials into formatted appeal letters citing your policy and clinical evidence.
+            - generic [ref=e155]:
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - generic [ref=e158]: Denied
+                  - generic [ref=e159]: Code 96
+                - paragraph [ref=e160]: Not medically necessary
+              - generic [ref=e163]:
+                - generic [ref=e164]: Appeal drafted
+                - generic [ref=e165]:
+                  - paragraph [ref=e166]: To the BlueCrest Appeals Department
+                  - paragraph [ref=e167]: "Re: Claim denial dated April 14"
+                  - paragraph [ref=e168]: I am writing to formally appeal the denial of... …
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - generic [ref=e172]: How It Works
+        - heading "From upload to insight in under a minute." [level=2] [ref=e173]
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]: "1"
+          - heading "Upload your policy" [level=3] [ref=e177]
+          - paragraph [ref=e178]: Drop your insurance PDF into MedFin. The document is processed in memory and discarded immediately. Nothing is written to disk.
+        - generic [ref=e179]:
+          - generic [ref=e180]: "2"
+          - heading "AI extracts the structure" [level=3] [ref=e181]
+          - paragraph [ref=e182]: MedFin maps every coverage parameter, network rule, deductible tier, and exclusion in your plan. The process takes under 30 seconds.
+        - generic [ref=e183]:
+          - generic [ref=e184]: "3"
+          - heading "Use any of the six tools" [level=3] [ref=e185]
+          - paragraph [ref=e186]: All tools share the same policy context. Ask a question, validate a bill, generate an appeal letter. Everything is grounded in your specific document.
+        - generic [ref=e187]:
+          - generic [ref=e188]: "4"
+          - heading "Save the results" [level=3] [ref=e189]
+          - paragraph [ref=e190]: Copy answers, download your appeal letter as a PDF, or screenshot your bill validation results. Your session is yours to manage.
+    - generic [ref=e192]:
+      - heading "What people actually find." [level=2] [ref=e194]
+      - generic [ref=e195]:
+        - generic [ref=e196]:
+          - generic [ref=e198]: $340 recovered
+          - paragraph [ref=e200]: A patient uploaded an EOB from an outpatient visit. MedFin flagged a duplicate charge for an anesthesia unit that appeared twice under different billing codes. The hospital reversed it within a week.
+        - generic [ref=e201]:
+          - generic [ref=e203]: $1,200 saved annually
+          - paragraph [ref=e205]: A freelancer's current plan had a $6,000 deductible they were never hitting. MedFin identified a comparable plan with a $2,500 deductible at $94 less per month.
+        - generic [ref=e206]:
+          - generic [ref=e208]: Denial overturned
+          - paragraph [ref=e210]: An MRI claim was denied as not medically necessary. MedFin generated an appeal citing ERISA Section 503 and the plan's own definition of medical necessity. The claim was approved on first appeal.
+    - generic [ref=e213]:
+      - heading "The typical American overpays for healthcare by $1,000 or more per year. Most of it is recoverable." [level=2] [ref=e215]
+      - generic [ref=e216]:
+        - paragraph [ref=e217]: Upload your policy and find out exactly what you have been missing.
+        - link "Analyze Your Policy" [ref=e218] [cursor=pointer]:
+          - /url: /en/dashboard/
+        - generic [ref=e219]: No account required. No data stored. No insurance industry affiliation.
+    - contentinfo [ref=e220]:
+      - generic [ref=e221]:
+        - generic [ref=e222]:
+          - generic [ref=e224]: M
+          - generic [ref=e225]: MedFin AI
+        - generic [ref=e226]: Not a licensed insurance advisor. For informational use only.
+  - region "Notifications alt+T"
+  - alert [ref=e228]
