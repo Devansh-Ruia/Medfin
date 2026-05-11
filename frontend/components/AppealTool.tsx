@@ -10,6 +10,7 @@ import { BarChart3, Rocket, Clock, FileText, ClipboardCopy, Upload, PenLine } fr
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -27,6 +28,8 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   const letterRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  // Mobile-only camera capture for denial-letter photos; see PolicyUpload for the same rationale.
+  const isMobile = useMediaQuery('(max-width: 767px)');
 
   useGsapContext(
     () => {
@@ -341,6 +344,7 @@ const downloadAsPDF = async () => {
                   ref={fileInputRef}
                   type="file"
                   accept="image/*,.pdf"
+                  {...(isMobile ? { capture: 'environment' as const } : {})}
                   onChange={handleFileUpload}
                   className="hidden"
                   aria-label="Upload denial letter"

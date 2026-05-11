@@ -8,6 +8,7 @@ import { event } from '../lib/analytics';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface PolicyUploadProps {
   onPolicyUploaded: (data: PolicyData) => void;
@@ -28,6 +29,10 @@ export default function PolicyUpload({
   const dropInnerRef = useRef<HTMLDivElement>(null);
   const analyzingRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  // Surface the rear camera as a capture source on mobile only — desktop Chrome
+  // with a webcam attached will otherwise prompt for webcam capture, wrong UX
+  // for PDF uploads from a downloads folder.
+  const isMobile = useMediaQuery('(max-width: 767px)');
 
   useEffect(() => {
     if (reduced || !dropInnerRef.current) return;
@@ -168,6 +173,7 @@ export default function PolicyUpload({
               ref={fileInputRef}
               type="file"
               accept=".pdf,.png,.jpg,.jpeg"
+              {...(isMobile ? { capture: 'environment' as const } : {})}
               onChange={handleFileSelect}
               className="hidden"
               aria-label="Upload insurance policy file"
