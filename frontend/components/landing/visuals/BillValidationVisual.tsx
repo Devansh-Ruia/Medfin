@@ -1,10 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { FeatureVisualFrame } from './FeatureVisualFrame';
 import { visualTokens as t } from './visualTokens';
 import { billMock } from './mockData';
 
 export function BillValidationVisual() {
+  const tTools = useTranslations('tools');
   return (
-    <FeatureVisualFrame srLabel="Bill validation reviews your medical bills line by line and flags duplicate charges and billing errors.">
+    <FeatureVisualFrame srLabel={tTools('billValidationSrLabel')}>
       <div className="relative">
         <div className={t.rowLabel + ' mb-3 tracking-wider uppercase'}>
           Patient statement

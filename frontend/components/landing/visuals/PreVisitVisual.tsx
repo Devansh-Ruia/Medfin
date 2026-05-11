@@ -1,10 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { FeatureVisualFrame } from './FeatureVisualFrame';
 import { visualTokens as t } from './visualTokens';
 import { preVisitMock } from './mockData';
 
 export function PreVisitVisual() {
+  const tTools = useTranslations('tools');
   return (
-    <FeatureVisualFrame srLabel="Pre-visit planning estimates what a procedure will cost you under your insurance before you receive care.">
+    <FeatureVisualFrame srLabel={tTools('preVisitSrLabel')}>
       <div>
         <div className={t.rowLabel + ' mb-1 tracking-wider uppercase'}>
           Cost estimate

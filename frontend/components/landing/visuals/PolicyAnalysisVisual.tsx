@@ -1,10 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { FeatureVisualFrame } from './FeatureVisualFrame';
 import { visualTokens as t } from './visualTokens';
 import { policyMock } from './mockData';
 
 export function PolicyAnalysisVisual() {
+  const tTools = useTranslations('tools');
   return (
-    <FeatureVisualFrame srLabel="Policy analysis extracts deductibles, copays, and coverage limits from your insurance documents.">
+    <FeatureVisualFrame srLabel={tTools('policyAnalysisSrLabel')}>
       <div className="relative">
         {/* Dense policy text behind — represents the wall of legal copy */}
         <div

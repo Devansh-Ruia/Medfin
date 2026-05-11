@@ -1,10 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { FeatureVisualFrame } from './FeatureVisualFrame';
 import { visualTokens as t } from './visualTokens';
 import { appealMock } from './mockData';
 
 export function AppealVisual() {
+  const tTools = useTranslations('tools');
   return (
-    <FeatureVisualFrame srLabel="Appeal letter generation transforms insurance denials into formatted appeal letters citing your policy and clinical evidence.">
+    <FeatureVisualFrame srLabel={tTools('appealLettersSrLabel')}>
       <div className="space-y-3">
         {/* Denial */}
         <div className={t.innerCard}>

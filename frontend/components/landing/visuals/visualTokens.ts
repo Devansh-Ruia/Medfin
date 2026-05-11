@@ -7,7 +7,6 @@ export const visualTokens = {
   innerCard:
     'bg-[#F9F8F6] border border-[#E5E2DC] rounded-none p-4',
   accentEdge: 'border-l-2 border-[#0A6640]',
-  accentText: 'text-[#0A6640]',
   badge:
     'inline-block text-[10px] tracking-wider uppercase bg-[#0A6640] text-white px-2 py-0.5 rounded-none',
   mutedLine: 'h-1.5 bg-[#E5E2DC]',

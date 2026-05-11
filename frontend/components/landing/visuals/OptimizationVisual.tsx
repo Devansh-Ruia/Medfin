@@ -1,10 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { FeatureVisualFrame } from './FeatureVisualFrame';
 import { visualTokens as t } from './visualTokens';
 import { optimizationMock } from './mockData';
 
 export function OptimizationVisual() {
+  const tTools = useTranslations('tools');
   return (
-    <FeatureVisualFrame srLabel="Policy optimization compares your current plan to alternatives and identifies potential savings.">
+    <FeatureVisualFrame srLabel={tTools('policyOptimizationSrLabel')}>
       <div className="space-y-3">
         <Row plan={optimizationMock.current} />
         <Row plan={optimizationMock.suggested} accent badgeText={optimizationMock.savings} />
