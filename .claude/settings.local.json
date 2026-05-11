@@ -93,7 +93,10 @@
       "mcp__plugin_playwright_playwright__browser_take_screenshot",
       "Bash(grep -q -E \"Ready in|started server on|✓ Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\bmfgv74ss.output\")",
       "Bash(grep -q \"Ready in\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b9as2t5am.output\")",
-      "Bash(grep -E \"Local|Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b9as2t5am.output\")"
+      "Bash(grep -E \"Local|Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\b9as2t5am.output\")",
+      "Bash(git *)",
+      "Bash(grep -q \"Ready in\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\bh521i4fv.output\")",
+      "Bash(grep -E \"Local|Ready\" \"C:\\\\\\\\Users\\\\\\\\super\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\C--Users-super-Downloads-Desktop-medfin-1\\\\\\\\0057ea5e-91a0-4927-b9e8-fdaac3b14f1a\\\\\\\\tasks\\\\\\\\bh521i4fv.output\")"
     ]
   }
 }

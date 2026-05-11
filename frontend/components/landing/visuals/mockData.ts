@@ -29,7 +29,7 @@ export const billMock: { lines: BillLine[]; flaggedTotal: string } = {
 export const askAIMock = {
   question: 'Is my MRI covered?',
   answer:
-    'Yes — with prior authorization. After your $500 deductible, you pay 20% coinsurance.',
+    'Yes, with prior authorization. After your $500 deductible, you pay 20% coinsurance.',
 } as const;
 
 export const optimizationMock = {
