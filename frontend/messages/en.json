@@ -18,6 +18,7 @@
     "headline": "Your insurance policy is a financial document. Treat it like one.",
     "subheading": "MedFin reads your policy, validates your bills against it, and tells you exactly where you are being charged more than you should be. No guessing. No jargon.",
     "cta": "Analyze Your Policy",
+    "ctaSecondary": "Check Your Bill",
     "ctaSub": "No account required. Nothing is stored."
   },
   "stats": {

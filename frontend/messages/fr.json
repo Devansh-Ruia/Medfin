@@ -18,6 +18,7 @@
     "headline": "Votre police d'assurance est un document financier. Traitez-la comme tel.",
     "subheading": "MedFin analyse votre police, vérifie vos factures en regard de celle-ci et vous indique précisément où vous êtes surfacturé. Sans approximation. Sans jargon.",
     "cta": "Analyser votre police",
+    "ctaSecondary": "Vérifier votre facture",
     "ctaSub": "Aucun compte requis. Aucune donnée conservée."
   },
   "stats": {

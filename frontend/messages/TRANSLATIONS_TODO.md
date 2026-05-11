@@ -12,6 +12,7 @@ Convention: when a translator commits a real translation, remove the entry from 
 - `tools.askAISrLabel`
 - `tools.policyOptimizationSrLabel`
 - `tools.appealLettersSrLabel`
+- `hero.ctaSecondary`
 
 ## zh.json (Mandarin)
 
@@ -21,6 +22,7 @@ Convention: when a translator commits a real translation, remove the entry from 
 - `tools.askAISrLabel`
 - `tools.policyOptimizationSrLabel`
 - `tools.appealLettersSrLabel`
+- `hero.ctaSecondary`
 
 ## Context
 

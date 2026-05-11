@@ -150,13 +150,20 @@ export default function LandingPage() {
               <p data-hero="sub" className="text-base md:text-lg text-[#6B6B6B] leading-relaxed mb-8">
                 {tHero('subheading')}
               </p>
-              <Link
-                data-hero="cta"
-                href={dashboardHref}
-                className="bg-[#0D0D0D] text-white px-8 py-4 text-sm font-medium rounded-none inline-block hover:bg-[#1A1A1A] transition-colors mb-4"
-              >
-                {tHero('cta')}
-              </Link>
+              <div data-hero="cta" className="flex flex-col md:flex-row gap-3 mb-4">
+                <Link
+                  href={dashboardHref}
+                  className="bg-[#0D0D0D] text-white px-8 py-4 text-sm font-medium rounded-none inline-flex items-center justify-center hover:bg-[#1A1A1A] transition-colors"
+                >
+                  {tHero('cta')}
+                </Link>
+                <Link
+                  href={dashboardHref}
+                  className="bg-white border border-[#0D0D0D] text-[#0D0D0D] px-8 py-4 text-sm font-medium rounded-none inline-flex items-center justify-center hover:bg-[#F9F8F6] transition-colors"
+                >
+                  {tHero('ctaSecondary')}
+                </Link>
+              </div>
               <div data-hero="cta-sub" className="text-xs text-[#6B6B6B]">
                 {tHero('ctaSub')}
               </div>
