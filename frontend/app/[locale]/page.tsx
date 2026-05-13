@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { gsap } from '@/lib/motion/gsap';
+import { gsap, ensureScrollTrigger } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
 import { useAnchorLinkSmoothing } from '@/hooks/useAnchorLinkSmoothing';
@@ -70,10 +70,24 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // ScrollTrigger ships dynamically (lib/motion/gsap.ts ensureScrollTrigger) so
+  // the dashboard does not pay for code only the landing page uses. The reveal
+  // setup waits on the dynamic import to resolve before scheduling its triggers.
+  const [scrollTriggerReady, setScrollTriggerReady] = useState(false);
+  useEffect(() => {
+    if (reduced) return;
+    let cancelled = false;
+    ensureScrollTrigger().then(() => {
+      if (!cancelled) setScrollTriggerReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [reduced]);
+
   useGsapContext(
     () => {
       if (reduced) return;
-
       gsap.from('[data-hero]', {
         y: 16,
         opacity: 0,
@@ -81,7 +95,14 @@ export default function LandingPage() {
         ease: 'power2.out',
         stagger: 0.08,
       });
+    },
+    rootRef,
+    [reduced]
+  );
 
+  useGsapContext(
+    () => {
+      if (reduced || !scrollTriggerReady) return;
       gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
         gsap.from(el, {
           y: 24,
@@ -93,7 +114,7 @@ export default function LandingPage() {
       });
     },
     rootRef,
-    [reduced]
+    [reduced, scrollTriggerReady]
   );
 
   const dashboardHref = `/${locale}/dashboard`;

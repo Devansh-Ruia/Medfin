@@ -1,11 +1,16 @@
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-// Single registration point. Importing this module is the only sanctioned way to reach
-// GSAP or ScrollTrigger inside the app, so registerPlugin runs once and consumers do
-// not have to remember to call it themselves.
-if (typeof window !== 'undefined') {
+// gsap is imported synchronously so every consumer (useGsapContext, ToolSwap,
+// the dashboard tools) keeps working unchanged. ScrollTrigger is loaded on
+// demand because the only consumer is the landing page; shipping it in the
+// shared vendors chunk made every dashboard route pay for code it never used.
+export { gsap }
+
+let scrollTriggerLoaded = false
+
+export async function ensureScrollTrigger(): Promise<void> {
+  if (scrollTriggerLoaded) return
+  const { ScrollTrigger } = await import('gsap/ScrollTrigger')
   gsap.registerPlugin(ScrollTrigger)
+  scrollTriggerLoaded = true
 }
-
-export { gsap, ScrollTrigger }
