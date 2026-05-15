@@ -30,6 +30,18 @@ const nextConfig = {
         splitChunks: {
           chunks: 'all',
           cacheGroups: {
+            // ScrollTrigger is only consumed by the landing page via
+            // `ensureScrollTrigger()` in lib/motion/gsap.ts. Without this
+            // group, the broader `vendor` cacheGroup below would re-inline
+            // it into the shared vendors chunk and the dashboard route
+            // would pay for code it never executes.
+            gsapScrollTrigger: {
+              test: /[\\/]node_modules[\\/]gsap[\\/]ScrollTrigger/,
+              name: 'gsap-scrolltrigger',
+              chunks: 'async',
+              priority: 30,
+              enforce: true,
+            },
             vendor: {
               test: /[\\/]node_modules[\\/]/,
               name: 'vendors',
