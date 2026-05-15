@@ -70,24 +70,10 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ScrollTrigger ships dynamically (lib/motion/gsap.ts ensureScrollTrigger) so
-  // the dashboard does not pay for code only the landing page uses. The reveal
-  // setup waits on the dynamic import to resolve before scheduling its triggers.
-  const [scrollTriggerReady, setScrollTriggerReady] = useState(false);
-  useEffect(() => {
-    if (reduced) return;
-    let cancelled = false;
-    ensureScrollTrigger().then(() => {
-      if (!cancelled) setScrollTriggerReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [reduced]);
-
   useGsapContext(
     () => {
       if (reduced) return;
+
       gsap.from('[data-hero]', {
         y: 16,
         opacity: 0,
@@ -100,22 +86,32 @@ export default function LandingPage() {
     [reduced]
   );
 
-  useGsapContext(
-    () => {
-      if (reduced || !scrollTriggerReady) return;
-      gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-        gsap.from(el, {
-          y: 24,
-          opacity: 0,
-          duration: 0.7,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 75%', once: true },
+  // ScrollTrigger lives in a dynamic chunk so the dashboard route doesn't pay
+  // for it. The reveal pass waits on `ensureScrollTrigger()`; the hero stagger
+  // above runs immediately because it only uses the static `gsap` export.
+  useEffect(() => {
+    if (reduced) return;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
+    let cancelled = false;
+    ensureScrollTrigger().then(() => {
+      if (cancelled || !rootRef.current) return;
+      ctx = gsap.context(() => {
+        gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
+          gsap.from(el, {
+            y: 24,
+            opacity: 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 75%', once: true },
+          });
         });
-      });
-    },
-    rootRef,
-    [reduced, scrollTriggerReady]
-  );
+      }, rootRef);
+    });
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
+  }, [reduced]);
 
   const dashboardHref = `/${locale}/dashboard`;
 

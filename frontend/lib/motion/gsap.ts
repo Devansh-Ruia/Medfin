@@ -1,16 +1,22 @@
 import { gsap } from 'gsap'
 
-// gsap is imported synchronously so every consumer (useGsapContext, ToolSwap,
-// the dashboard tools) keeps working unchanged. ScrollTrigger is loaded on
-// demand because the only consumer is the landing page; shipping it in the
-// shared vendors chunk made every dashboard route pay for code it never used.
+// `gsap` is exported synchronously so callers like `useGsapContext`, `ToolSwap`,
+// and the dashboard tools can import without an await. ScrollTrigger is loaded
+// on demand via `ensureScrollTrigger()` because only the landing page consumes
+// it — keeping it out of the shared vendors chunk saves ~20 kB on every other
+// route's first-load JS.
 export { gsap }
 
-let scrollTriggerLoaded = false
+let scrollTriggerPromise: Promise<void> | null = null
 
-export async function ensureScrollTrigger(): Promise<void> {
-  if (scrollTriggerLoaded) return
-  const { ScrollTrigger } = await import('gsap/ScrollTrigger')
-  gsap.registerPlugin(ScrollTrigger)
-  scrollTriggerLoaded = true
+export function ensureScrollTrigger(): Promise<void> {
+  if (typeof window === 'undefined') {
+    return Promise.resolve()
+  }
+  if (!scrollTriggerPromise) {
+    scrollTriggerPromise = import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      gsap.registerPlugin(ScrollTrigger)
+    })
+  }
+  return scrollTriggerPromise
 }
