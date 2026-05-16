@@ -10,6 +10,7 @@ import BillCaptureInput from './BillCaptureInput';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
+import { VerdictBanner } from '@/components/tools/VerdictBanner';
 
 interface ValidationToolProps {
   policyData: PolicyData;
@@ -264,12 +265,34 @@ export default function ValidationTool({ policyData }: ValidationToolProps) {
       )}
       {result && (result.validation_results || result.financial_summary || result.issues) && (
         <div ref={resultRef} className="space-y-6">
-          {/* Summary Header */}
-          {result.financial_summary && (
-            <div data-reveal-section className="text-sm text-[#6B6B6B] mb-6">
-              Billed: {formatCurrency(result.financial_summary?.billed_amount)} / Expected: {formatCurrency(result.financial_summary?.expected_patient_responsibility)} / Potential savings: {formatCurrency(result.financial_summary?.potential_savings)}
-            </div>
-          )}
+          {(() => {
+            const issueCount = result.summary?.total_issues_found
+              ?? result.issues?.length
+              ?? 0;
+            const savings = result.summary?.total_potential_savings
+              ?? result.financial_summary?.potential_savings
+              ?? null;
+            const billed = result.financial_summary?.billed_amount ?? null;
+            let headline: string;
+            if (issueCount === 0) {
+              headline = 'No errors found on this bill.';
+            } else {
+              const plural = issueCount === 1 ? 'issue' : 'issues';
+              headline = savings != null && savings > 0
+                ? `We found ${issueCount} ${plural} that could save you ${formatCurrency(savings)}.`
+                : `We found ${issueCount} ${plural} on this bill.`;
+            }
+            const supportingFact = billed != null
+              ? `Billed total: ${formatCurrency(billed)}`
+              : undefined;
+            return (
+              <VerdictBanner
+                eyebrow="BILL REVIEWED"
+                headline={headline}
+                supportingFact={supportingFact}
+              />
+            );
+          })()}
 
           {/* Validation Results */}
           <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">

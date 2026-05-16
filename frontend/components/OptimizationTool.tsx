@@ -7,6 +7,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
+import { VerdictBanner } from '@/components/tools/VerdictBanner';
 
 interface OptimizationToolProps {
   policyData: PolicyData;
@@ -193,13 +194,23 @@ export default function OptimizationTool({ policyData }: OptimizationToolProps) 
             </div>
           ) : (
           <div ref={resultRef} className="space-y-6">
-            {/* Potential Annual Savings */}
-            <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
-              <p className="text-xs text-[#6B6B6B] uppercase tracking-widest mb-2">Potential Annual Savings</p>
-              <p className="text-2xl font-bold text-[#0A6640]">
-                {formatCurrency(result?.annual_potential_savings)}
-              </p>
-            </div>
+            {(() => {
+              const savings = result?.annual_potential_savings ?? null;
+              const altCount = result?.alternative_plans?.length ?? 0;
+              const headline = savings != null && savings > 0
+                ? `Switching plans could save you ${formatCurrency(savings)} per year.`
+                : 'Your current plan is a reasonable fit.';
+              const supportingFact = altCount > 0
+                ? `${altCount} alternative plan${altCount === 1 ? '' : 's'} analyzed.`
+                : undefined;
+              return (
+                <VerdictBanner
+                  eyebrow="OPTIMIZATION ANALYZED"
+                  headline={headline}
+                  supportingFact={supportingFact}
+                />
+              );
+            })()}
 
             {/* Summary */}
             {result?.summary && (

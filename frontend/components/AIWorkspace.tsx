@@ -16,6 +16,7 @@ import PrivacyPanel from './PrivacyPanel';
 import MarkdownRenderer from './MarkdownRenderer';
 import UploadGate from './UploadGate';
 import { ToolSwap } from './motion/ToolSwap';
+import { VerdictBanner } from './tools/VerdictBanner';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useSavings } from '../contexts/SavingsContext';
 import { useFamily } from '../contexts/FamilyContext';
@@ -155,8 +156,24 @@ export default function AIWorkspace({ policyData, onReset, activeSection, onNavi
         <ToolSwap activeSection={activeSection}>
           {(section) => {
             if (section === 'policy' && policyData) {
+              const deductible = policyData.annual_deductible_individual ?? null;
+              const oopMax = policyData.out_of_pocket_max_individual ?? null;
+              const strength = policyData.policy_strength_score ?? null;
+              let headline = 'Policy analyzed.';
+              if (deductible != null && oopMax != null) {
+                headline = `Your plan covers in-network care with a ${formatCurrency(deductible)} deductible and ${formatCurrency(oopMax)} out-of-pocket max.`;
+              } else if (deductible != null) {
+                headline = `Your plan has a ${formatCurrency(deductible)} deductible.`;
+              } else if (oopMax != null) {
+                headline = `Your plan caps out-of-pocket costs at ${formatCurrency(oopMax)}.`;
+              }
               return (
           <div className="space-y-8">
+            <VerdictBanner
+              eyebrow="POLICY ANALYZED"
+              headline={headline}
+              supportingFact={strength != null ? `Plan strength: ${strength}/100` : undefined}
+            />
             {/* Policy Summary Table */}
             <div className="bg-white p-6 border border-[#E5E2DC] rounded-none">
               <div className="space-y-3">
