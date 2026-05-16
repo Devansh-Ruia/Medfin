@@ -1,0 +1,200 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e8]: M
+          - generic [ref=e9]: MedFin
+          - generic [ref=e10]: AI
+        - generic [ref=e11]:
+          - combobox "Select language" [ref=e12]:
+            - option "English"
+            - option "Español"
+            - option "Français" [selected]
+            - option "中文"
+            - option "हिन्दी"
+          - link "Commencer" [ref=e13] [cursor=pointer]:
+            - /url: /fr/dashboard/
+    - generic [ref=e17]:
+      - generic [ref=e18]: Navigateur financier santé
+      - heading "Votre police d'assurance est un document financier. Traitez-la comme tel." [level=1] [ref=e19]
+      - paragraph [ref=e20]: MedFin analyse votre police, vérifie vos factures en regard de celle-ci et vous indique précisément où vous êtes surfacturé. Sans approximation. Sans jargon.
+      - generic [ref=e21]:
+        - link "Analyser votre police" [ref=e22] [cursor=pointer]:
+          - /url: /fr/dashboard/
+        - link "Vérifier votre facture" [ref=e23] [cursor=pointer]:
+          - /url: /fr/dashboard/
+      - generic [ref=e24]: Un outil indépendant. Sans affiliation avec aucune compagnie d'assurance maladie.
+      - generic [ref=e25]: Aucun compte requis. Aucune donnée conservée.
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: 80%
+        - generic [ref=e30]: des factures médicales contiennent au moins une erreur
+      - generic [ref=e31]:
+        - generic [ref=e32]: $1,240
+        - generic [ref=e33]: montant moyen récupéré par facture contestée
+      - generic [ref=e34]:
+        - generic [ref=e35]: 23 min
+        - generic [ref=e36]: temps moyen pour analyser une police avec MedFin
+      - generic [ref=e37]:
+        - generic [ref=e38]: 0 bytes
+        - generic [ref=e39]: de vos données conservées après la fin de votre session
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - 'heading "Six outils. Un seul objectif : vous éviter de surpayer." [level=2] [ref=e43]'
+        - paragraph [ref=e44]: Chaque outil cible un point de défaillance précis du système de facturation médicale.
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]: Outil 01
+          - heading "Analyse de police" [level=3] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: L'analyse de police extrait les franchises, les tickets modérateurs et les plafonds de couverture de vos documents d'assurance.
+            - generic [ref=e60]:
+              - generic [ref=e61]: Policy summary
+              - generic [ref=e62]:
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Deductible
+                  - generic [ref=e65]: $500
+                - generic [ref=e66]:
+                  - generic [ref=e67]: Specialist visit
+                  - generic [ref=e68]: $65 copay
+                - generic [ref=e69]:
+                  - generic [ref=e70]: Out-of-pocket max
+                  - generic [ref=e71]: $2,500
+        - generic [ref=e72]:
+          - generic [ref=e73]: Outil 02
+          - heading "Vérification de facture" [level=3] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e76]: La vérification de facture examine vos factures médicales poste par poste et signale les frais en double et les erreurs de facturation.
+            - generic [ref=e78]:
+              - generic [ref=e79]: Patient statement
+              - generic [ref=e80]:
+                - generic [ref=e81]:
+                  - generic [ref=e82]:
+                    - generic [ref=e83]: "99213"
+                    - generic [ref=e84]: Office visit
+                  - generic [ref=e85]: $120
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: "36415"
+                    - generic [ref=e89]: Venipuncture
+                  - generic [ref=e90]: $28
+                - generic [ref=e91]:
+                  - generic [ref=e92]:
+                    - generic [ref=e93]: "36415"
+                    - generic [ref=e94]: Venipuncture
+                  - generic [ref=e95]: $28
+                  - generic [ref=e96]: Duplicate
+                - generic [ref=e97]:
+                  - generic [ref=e98]:
+                    - generic [ref=e99]: "85025"
+                    - generic [ref=e100]: Blood panel
+                  - generic [ref=e101]: $57
+              - generic [ref=e103]: $85 flagged
+        - generic [ref=e104]:
+          - generic [ref=e105]: Outil 03
+          - heading "Liste de contrôle pré-visite" [level=3] [ref=e106]
+          - generic [ref=e107]:
+            - generic [ref=e108]: La planification pré-visite estime le coût d'un acte selon votre assurance avant que vous receviez les soins.
+            - generic [ref=e110]:
+              - generic [ref=e111]: Cost estimate
+              - generic [ref=e112]:
+                - generic [ref=e113]: MRI Brain
+                - generic [ref=e114]: CPT 70553
+              - generic [ref=e115]:
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Negotiated rate
+                  - generic [ref=e118]: $1,800
+                - generic [ref=e119]:
+                  - generic [ref=e120]: Insurance pays
+                  - generic [ref=e121]: $1,380
+                - generic [ref=e122]:
+                  - generic [ref=e123]: Your cost
+                  - generic [ref=e124]: $420
+        - generic [ref=e125]:
+          - generic [ref=e126]: Outil 04
+          - heading "Poser une question à l'IA" [level=3] [ref=e127]
+          - generic [ref=e128]:
+            - generic [ref=e129]: Posez des questions sur votre couverture d'assurance en langage clair et recevez des réponses précises fondées sur votre police.
+            - generic [ref=e131]:
+              - paragraph [ref=e133]: Is my MRI covered?
+              - paragraph [ref=e135]: Yes, with prior authorization. After your $500 deductible, you pay 20% coinsurance.
+        - generic [ref=e136]:
+          - generic [ref=e137]: Outil 05
+          - heading "Optimisation de police" [level=3] [ref=e138]
+          - generic [ref=e139]:
+            - generic [ref=e140]: L'optimisation de police compare votre contrat actuel à des alternatives et identifie des économies potentielles.
+            - generic [ref=e142]:
+              - generic [ref=e144]:
+                - generic [ref=e145]: Current plan
+                - generic [ref=e146]: $8,400/year
+              - generic [ref=e147]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: Suggested plan
+                  - generic [ref=e150]: $6,200/year
+                - generic [ref=e151]: Save $2,200
+        - generic [ref=e152]:
+          - generic [ref=e153]: Outil 06
+          - heading "Lettres de recours" [level=3] [ref=e154]
+          - generic [ref=e155]:
+            - generic [ref=e156]: La génération de lettres de recours transforme les refus d'assurance en lettres de recours formatées citant votre police et les preuves cliniques.
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - generic [ref=e160]:
+                  - generic [ref=e161]: Denied
+                  - generic [ref=e162]: Code 96
+                - paragraph [ref=e163]: Not medically necessary
+              - generic [ref=e166]:
+                - generic [ref=e167]: Appeal drafted
+                - generic [ref=e168]:
+                  - paragraph [ref=e169]: To the BlueCrest Appeals Department
+                  - paragraph [ref=e170]: "Re: Claim denial dated April 14"
+                  - paragraph [ref=e171]: I am writing to formally appeal the denial of... …
+    - generic [ref=e173]:
+      - generic [ref=e174]:
+        - generic [ref=e175]: Fonctionnement
+        - heading "Du téléversement à l'analyse en moins d'une minute." [level=2] [ref=e176]
+      - generic [ref=e177]:
+        - generic [ref=e178]:
+          - generic [ref=e179]: "1"
+          - heading "Téléversez votre police" [level=3] [ref=e180]
+          - paragraph [ref=e181]: Déposez votre PDF d'assurance dans MedFin. Le document est traité en mémoire et supprimé immédiatement. Rien n'est écrit sur le disque.
+        - generic [ref=e182]:
+          - generic [ref=e183]: "2"
+          - heading "L'IA extrait la structure" [level=3] [ref=e184]
+          - paragraph [ref=e185]: MedFin cartographie chaque paramètre de couverture, règle de réseau, palier de franchise et exclusion de votre contrat. Le processus prend moins de 30 secondes.
+        - generic [ref=e186]:
+          - generic [ref=e187]: "3"
+          - heading "Utilisez l'un des six outils" [level=3] [ref=e188]
+          - paragraph [ref=e189]: Tous les outils partagent le même contexte de police. Posez une question, vérifiez une facture, générez une lettre de recours. Tout est fondé sur votre document spécifique.
+        - generic [ref=e190]:
+          - generic [ref=e191]: "4"
+          - heading "Enregistrez les résultats" [level=3] [ref=e192]
+          - paragraph [ref=e193]: Copiez les réponses, téléchargez votre lettre de recours en PDF ou effectuez une capture d'écran de vos résultats de vérification de facture. Votre session vous appartient.
+    - generic [ref=e195]:
+      - heading "Ce que les utilisateurs découvrent concrètement." [level=2] [ref=e197]
+      - generic [ref=e198]:
+        - generic [ref=e199]:
+          - generic [ref=e201]: $340 récupérés
+          - paragraph [ref=e203]: Un patient a téléversé un EOB d'une consultation ambulatoire. MedFin a signalé un double prélèvement pour une unité d'anesthésie apparaissant deux fois sous des codes de facturation différents. L'hôpital a effectué le remboursement en une semaine.
+        - generic [ref=e204]:
+          - generic [ref=e206]: $1,200 économisés par an
+          - paragraph [ref=e208]: Le contrat actuel d'un travailleur indépendant comportait une franchise de $6,000 qu'il n'atteignait jamais. MedFin a identifié un contrat comparable avec une franchise de $2,500 à $94 de moins par mois.
+        - generic [ref=e209]:
+          - generic [ref=e211]: Refus annulé
+          - paragraph [ref=e213]: Une demande de prise en charge pour un MRI a été refusée pour absence de nécessité médicale. MedFin a généré un recours citant la section 503 de l'ERISA et la propre définition de nécessité médicale du contrat. La demande a été approuvée dès le premier recours.
+    - generic [ref=e216]:
+      - heading "L'Américain moyen surpaie ses soins de santé de $1,000 ou plus par an. La majeure partie est récupérable." [level=2] [ref=e218]
+      - generic [ref=e219]:
+        - paragraph [ref=e220]: Téléversez votre police et découvrez précisément ce que vous avez manqué.
+        - link "Analyser votre police" [ref=e221] [cursor=pointer]:
+          - /url: /fr/dashboard/
+        - generic [ref=e222]: Aucun compte requis. Aucune donnée conservée. Aucune affiliation avec le secteur de l'assurance.
+    - contentinfo [ref=e223]:
+      - generic [ref=e224]:
+        - generic [ref=e225]:
+          - generic [ref=e227]: M
+          - generic [ref=e228]: MedFin AI
+        - generic [ref=e229]: Ne constitue pas un service de conseil en assurance agréé. À titre informatif uniquement.
+  - region "Notifications alt+T"
+  - alert [ref=e230]

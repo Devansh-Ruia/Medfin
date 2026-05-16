@@ -12,7 +12,8 @@ Convention: when a translator commits a real translation, remove the entry from 
 - `tools.askAISrLabel`
 - `tools.policyOptimizationSrLabel`
 - `tools.appealLettersSrLabel`
-- `hero.ctaSecondary`
+- `hero.ctaSecondary` — source: "Check Your Bill"
+- `hero.affiliation` — source: "An independent tool. Not affiliated with any insurance company."
 
 ## zh.json (Mandarin)
 
@@ -22,7 +23,8 @@ Convention: when a translator commits a real translation, remove the entry from 
 - `tools.askAISrLabel`
 - `tools.policyOptimizationSrLabel`
 - `tools.appealLettersSrLabel`
-- `hero.ctaSecondary`
+- `hero.ctaSecondary` — source: "Check Your Bill"
+- `hero.affiliation` — source: "An independent tool. Not affiliated with any insurance company."
 
 ## Context
 

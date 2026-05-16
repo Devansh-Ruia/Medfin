@@ -1,0 +1,199 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation "Main navigation" [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e8]: M
+          - generic [ref=e9]: MedFin
+          - generic [ref=e10]: AI
+        - generic [ref=e11]:
+          - combobox "Select language" [ref=e12]:
+            - option "English"
+            - option "Español" [selected]
+            - option "Français"
+            - option "中文"
+            - option "हिन्दी"
+          - link "Comenzar" [ref=e13] [cursor=pointer]:
+            - /url: /es/dashboard/
+    - generic [ref=e17]:
+      - generic [ref=e18]: Navegador financiero de salud
+      - heading "Su póliza de seguro es un documento financiero. Trátela como tal." [level=1] [ref=e19]
+      - paragraph [ref=e20]: MedFin lee su póliza, valida sus facturas contra ella y le indica exactamente dónde le están cobrando más de lo debido. Sin conjeturas. Sin jerga.
+      - generic [ref=e21]:
+        - link "Analizar su póliza" [ref=e22] [cursor=pointer]:
+          - /url: /es/dashboard/
+        - link "Revisar su factura" [ref=e23] [cursor=pointer]:
+          - /url: /es/dashboard/
+      - generic [ref=e24]: Una herramienta independiente. No afiliada a ninguna compañía de seguros médicos.
+      - generic [ref=e25]: No se requiere cuenta. No se almacena nada.
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: 80%
+        - generic [ref=e30]: de las facturas médicas contienen al menos un error
+      - generic [ref=e31]:
+        - generic [ref=e32]: $1,240
+        - generic [ref=e33]: monto promedio recuperado por factura disputada
+      - generic [ref=e34]:
+        - generic [ref=e35]: 23 min
+        - generic [ref=e36]: tiempo promedio para analizar una póliza con MedFin
+      - generic [ref=e37]:
+        - generic [ref=e38]: 0 bytes
+        - generic [ref=e39]: de sus datos almacenados después de que finaliza su sesión
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - 'heading "Seis herramientas. Un solo objetivo: evitar que pague de más." [level=2] [ref=e43]'
+        - paragraph [ref=e44]: Cada herramienta está diseñada en torno a un punto de fallo específico del sistema de facturación médica.
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]: Herramienta 01
+          - heading "Análisis de póliza" [level=3] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: El análisis de póliza extrae deducibles, copagos y límites de cobertura de sus documentos de seguro.
+            - generic [ref=e60]:
+              - generic [ref=e61]: Policy summary
+              - generic [ref=e62]:
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Deductible
+                  - generic [ref=e65]: $500
+                - generic [ref=e66]:
+                  - generic [ref=e67]: Specialist visit
+                  - generic [ref=e68]: $65 copay
+                - generic [ref=e69]:
+                  - generic [ref=e70]: Out-of-pocket max
+                  - generic [ref=e71]: $2,500
+        - generic [ref=e72]:
+          - generic [ref=e73]: Herramienta 02
+          - heading "Validación de facturas" [level=3] [ref=e74]
+          - generic [ref=e75]:
+            - generic [ref=e76]: La validación de facturas revisa sus facturas médicas partida por partida y señala cargos duplicados y errores de facturación.
+            - generic [ref=e78]:
+              - generic [ref=e79]: Patient statement
+              - generic [ref=e80]:
+                - generic [ref=e81]:
+                  - generic [ref=e82]:
+                    - generic [ref=e83]: "99213"
+                    - generic [ref=e84]: Office visit
+                  - generic [ref=e85]: $120
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: "36415"
+                    - generic [ref=e89]: Venipuncture
+                  - generic [ref=e90]: $28
+                - generic [ref=e91]:
+                  - generic [ref=e92]:
+                    - generic [ref=e93]: "36415"
+                    - generic [ref=e94]: Venipuncture
+                  - generic [ref=e95]: $28
+                  - generic [ref=e96]: Duplicate
+                - generic [ref=e97]:
+                  - generic [ref=e98]:
+                    - generic [ref=e99]: "85025"
+                    - generic [ref=e100]: Blood panel
+                  - generic [ref=e101]: $57
+              - generic [ref=e103]: $85 flagged
+        - generic [ref=e104]:
+          - generic [ref=e105]: Herramienta 03
+          - heading "Lista de verificación previa a la consulta" [level=3] [ref=e106]
+          - generic [ref=e107]:
+            - generic [ref=e108]: La planificación previa a la consulta estima cuánto le costará un procedimiento según su seguro antes de recibir la atención.
+            - generic [ref=e110]:
+              - generic [ref=e111]: Cost estimate
+              - generic [ref=e112]:
+                - generic [ref=e113]: MRI Brain
+                - generic [ref=e114]: CPT 70553
+              - generic [ref=e115]:
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Negotiated rate
+                  - generic [ref=e118]: $1,800
+                - generic [ref=e119]:
+                  - generic [ref=e120]: Insurance pays
+                  - generic [ref=e121]: $1,380
+                - generic [ref=e122]:
+                  - generic [ref=e123]: Your cost
+                  - generic [ref=e124]: $420
+        - generic [ref=e125]:
+          - generic [ref=e126]: Herramienta 04
+          - heading "Consultar IA" [level=3] [ref=e127]
+          - generic [ref=e128]:
+            - generic [ref=e129]: Haga preguntas sobre su cobertura de seguro en lenguaje sencillo y reciba respuestas específicas basadas en su póliza.
+            - generic [ref=e131]:
+              - paragraph [ref=e133]: Is my MRI covered?
+              - paragraph [ref=e135]: Yes, with prior authorization. After your $500 deductible, you pay 20% coinsurance.
+        - generic [ref=e136]:
+          - generic [ref=e137]: Herramienta 05
+          - heading "Optimización de póliza" [level=3] [ref=e138]
+          - generic [ref=e139]:
+            - generic [ref=e140]: La optimización de póliza compara su plan actual con alternativas e identifica ahorros potenciales.
+            - generic [ref=e142]:
+              - generic [ref=e144]:
+                - generic [ref=e145]: Current plan
+                - generic [ref=e146]: $8,400/year
+              - generic [ref=e147]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: Suggested plan
+                  - generic [ref=e150]: $6,200/year
+                - generic [ref=e151]: Save $2,200
+        - generic [ref=e152]:
+          - generic [ref=e153]: Herramienta 06
+          - heading "Cartas de apelación" [level=3] [ref=e154]
+          - generic [ref=e155]:
+            - generic [ref=e156]: La generación de cartas de apelación transforma denegaciones del seguro en cartas formales que citan su póliza y evidencia clínica.
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - generic [ref=e160]:
+                  - generic [ref=e161]: Denied
+                  - generic [ref=e162]: Code 96
+                - paragraph [ref=e163]: Not medically necessary
+              - generic [ref=e166]:
+                - generic [ref=e167]: Appeal drafted
+                - generic [ref=e168]:
+                  - paragraph [ref=e169]: To the BlueCrest Appeals Department
+                  - paragraph [ref=e170]: "Re: Claim denial dated April 14"
+                  - paragraph [ref=e171]: I am writing to formally appeal the denial of... …
+    - generic [ref=e173]:
+      - generic [ref=e174]:
+        - generic [ref=e175]: Cómo funciona
+        - heading "De la carga al análisis en menos de un minuto." [level=2] [ref=e176]
+      - generic [ref=e177]:
+        - generic [ref=e178]:
+          - generic [ref=e179]: "1"
+          - heading "Suba su póliza" [level=3] [ref=e180]
+          - paragraph [ref=e181]: Arrastre su PDF de seguro a MedFin. El documento se procesa en memoria y se descarta inmediatamente. Nada se escribe en disco.
+        - generic [ref=e182]:
+          - generic [ref=e183]: "2"
+          - heading "La IA extrae la estructura" [level=3] [ref=e184]
+          - paragraph [ref=e185]: MedFin mapea cada parámetro de cobertura, regla de red, nivel de deducible y exclusión de su plan. El proceso toma menos de 30 segundos.
+        - generic [ref=e186]:
+          - generic [ref=e187]: "3"
+          - heading "Utilice cualquiera de las seis herramientas" [level=3] [ref=e188]
+          - paragraph [ref=e189]: Todas las herramientas comparten el mismo contexto de póliza. Haga una pregunta, valide una factura, genere una carta de apelación. Todo se basa en su documento específico.
+        - generic [ref=e190]:
+          - generic [ref=e191]: "4"
+          - heading "Guarde los resultados" [level=3] [ref=e192]
+          - paragraph [ref=e193]: Copie las respuestas, descargue su carta de apelación como PDF o capture los resultados de validación de su factura. Su sesión es suya para administrar.
+    - generic [ref=e195]:
+      - heading "Lo que las personas realmente descubren." [level=2] [ref=e197]
+      - generic [ref=e198]:
+        - generic [ref=e199]:
+          - generic [ref=e201]: $340 recuperados
+          - paragraph [ref=e203]: Un paciente subió un EOB de una consulta ambulatoria. MedFin señaló un cargo duplicado por una unidad de anestesia que aparecía dos veces bajo diferentes códigos de facturación. El hospital lo revirtió en una semana.
+        - generic [ref=e204]:
+          - generic [ref=e206]: $1,200 ahorrados anualmente
+          - paragraph [ref=e208]: El plan actual de un trabajador independiente tenía un deducible de $6,000 que nunca alcanzaba. MedFin identificó un plan comparable con un deducible de $2,500 a $94 menos por mes.
+        - generic [ref=e209]:
+          - generic [ref=e211]: Denegación revertida
+          - paragraph [ref=e213]: Un reclamo de MRI fue denegado por no ser médicamente necesario. MedFin generó una apelación citando la Sección 503 de ERISA y la propia definición de necesidad médica del plan. El reclamo fue aprobado en la primera apelación.
+    - generic [ref=e216]:
+      - heading "El estadounidense promedio paga de más por atención médica $1,000 o más al año. La mayor parte es recuperable." [level=2] [ref=e218]
+      - generic [ref=e219]:
+        - paragraph [ref=e220]: Suba su póliza y descubra exactamente lo que ha estado perdiendo.
+        - link "Analizar su póliza" [ref=e221] [cursor=pointer]:
+          - /url: /es/dashboard/
+        - generic [ref=e222]: No se requiere cuenta. No se almacenan datos. Sin afiliación a la industria de seguros.
+    - contentinfo [ref=e223]:
+      - generic [ref=e224]:
+        - generic [ref=e225]:
+          - generic [ref=e227]: M
+          - generic [ref=e228]: MedFin AI
+        - generic [ref=e229]: No es un asesor de seguros autorizado. Solo para uso informativo.
+  - region "Notifications alt+T"

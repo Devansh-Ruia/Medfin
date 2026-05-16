@@ -6,11 +6,12 @@ import { formatCurrency } from '../lib/format';
 import { replaceJargon } from '../lib/jargonDictionary';
 import ReactMarkdown from 'react-markdown';
 import { event } from '../lib/analytics';
-import { BarChart3, Rocket, Clock, FileText, ClipboardCopy, Upload, PenLine } from 'lucide-react';
+import { BarChart3, Rocket, FileText, ClipboardCopy, Upload, PenLine } from 'lucide-react';
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { VerdictBanner } from '@/components/tools/VerdictBanner';
 
 interface AppealToolProps {
   policyData: PolicyData;
@@ -126,6 +127,23 @@ export default function AppealTool({ policyData }: AppealToolProps) {
   // Clean up extra whitespace left behind
   cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
   return cleaned;
+};
+
+// Deadlines come back from the API as free text; sometimes ISO, sometimes
+// natural-language ("30 days from denial date"). Try Date parsing first; on
+// invalid input, return the raw string verbatim so the user still sees what
+// the API said.
+const formatDeadline = (raw: string | undefined | null): string | null => {
+  if (!raw) return null;
+  const parsed = new Date(raw);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+  return raw;
 };
 
 const formatAppealLetter = (text: string): JSX.Element[] => {
@@ -514,6 +532,16 @@ const downloadAsPDF = async () => {
       )}
       {appealLetter && appealLetter.analysis && (
         <div ref={resultRef} className="space-y-6">
+          {/* Verdict — deadline surfaced here instead of being buried in the letter card below */}
+          <VerdictBanner
+            eyebrow="APPEAL DRAFTED"
+            headline={
+              formatDeadline(appealLetter.letter?.deadline)
+                ? `Appeal letter ready. Deadline to file: ${formatDeadline(appealLetter.letter?.deadline)}.`
+                : 'Appeal letter ready.'
+            }
+          />
+
           {/* Analysis Section */}
           <div data-reveal-section className="bg-white rounded-2xl border border-gray-100 shadow-subtle p-6">
             <div className="flex items-center justify-between mb-6">
@@ -641,12 +669,6 @@ const downloadAsPDF = async () => {
               </div>
             )}
 
-            {/* Deadline */}
-            <div className="mt-4 p-4 bg-amber-50 rounded-xl">
-              <p className="text-amber-800">
-                <strong className="flex items-center gap-2"><Clock className="w-4 h-4" /> Deadline:</strong> {appealLetter.letter?.deadline ?? 'Check your policy for deadline details'}
-              </p>
-            </div>
           </div>
 
           {/* Next Steps */}

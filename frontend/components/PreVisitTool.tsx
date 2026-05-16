@@ -10,6 +10,7 @@ import { Lightbulb, DollarSign, ClipboardCopy, AlertTriangle } from 'lucide-reac
 import { gsap } from '@/lib/motion/gsap';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useGsapContext } from '@/hooks/useGsapContext';
+import { VerdictBanner } from '@/components/tools/VerdictBanner';
 
 interface PreVisitToolProps {
   policyData: PolicyData;
@@ -251,6 +252,32 @@ export default function PreVisitTool({ policyData }: PreVisitToolProps) {
       )}
       {checklist && (checklist.estimated_costs || checklist.prior_authorization) && (
         <div ref={resultRef} className="space-y-6">
+          {(() => {
+            const low = checklist.estimated_costs?.your_cost_low ?? null;
+            const high = checklist.estimated_costs?.your_cost_high ?? null;
+            let headline = 'Estimate ready.';
+            if (low != null && high != null) {
+              const meaningful = high > low * 1.1;
+              headline = meaningful
+                ? `Your estimated cost: ${formatCurrency(low)}–${formatCurrency(high)}.`
+                : `Your estimated cost: ${formatCurrency(low)}.`;
+            } else if (low != null) {
+              headline = `Your estimated cost: ${formatCurrency(low)}.`;
+            } else if (high != null) {
+              headline = `Your estimated cost: ${formatCurrency(high)}.`;
+            }
+            const supportingFact = checklist.prior_authorization?.likely_required === true
+              ? 'Prior authorization required.'
+              : undefined;
+            return (
+              <VerdictBanner
+                eyebrow="ESTIMATE READY"
+                headline={headline}
+                supportingFact={supportingFact}
+              />
+            );
+          })()}
+
           {/* Header */}
           <div data-reveal-section className="bg-white border border-[#E5E2DC] rounded-none p-6">
             <div className="flex items-center justify-between mb-4">

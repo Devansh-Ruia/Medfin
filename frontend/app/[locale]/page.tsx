@@ -181,6 +181,9 @@ export default function LandingPage() {
                   {tHero('ctaSecondary')}
                 </Link>
               </div>
+              <div className="text-xs text-[#6B6B6B] mb-2">
+                {tHero('affiliation')}
+              </div>
               <div data-hero="cta-sub" className="text-xs text-[#6B6B6B]">
                 {tHero('ctaSub')}
               </div>
